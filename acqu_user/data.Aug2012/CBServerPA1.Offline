@@ -1,0 +1,121 @@
+##-----------------------------------------------------------------------
+##--Author	JRM Annand   13th Jan 2004
+##--Update	JRM Annand... 1st Dec 2004
+#########################################################################
+#	Server setup file
+#########################################################################
+#
+## Number of Input streams (sources of data), Record length to write data
+## and switch 0/1 = no/yes to control data write
+##              Number streams	Record Len	Save Data
+Input-Streams:	1		32768		0
+#
+#########################################################################
+# Optional directory spec. If not specified File-Names must contain the full
+# directory path
+#
+File-Directory: /home/adlarson/data201208/raw/
+#
+##
+## Specify each input stream
+## From disk file, ACQU (Mk1) format, save any output to file (save=1)
+## Input data record length, Output data record length
+##
+##            	Source	Format	Save?	RecLen	Buffers	Swap	MarkID
+Stream-Spec:	File	Mk1	0	32768	32	0	400
+#########################################################################
+# Now the list of data files to analyse
+#		File Name	1st rec	Last rec
+##
+File-Name:	CB_41940.dat	0	0
+File-Name:	CB_41941.dat	0	0
+File-Name:	CB_41942.dat	0	0
+File-Name:	CB_41943.dat	0	0
+File-Name:	CB_41944.dat	0	0
+File-Name:	CB_41945.dat	0	0
+File-Name:	CB_41946.dat	0	0
+File-Name:	CB_41947.dat	0	0
+File-Name:	CB_41948.dat	0	0
+File-Name:	CB_41949.dat	0	0
+File-Name:	CB_41950.dat	0	0
+File-Name:	CB_41951.dat	0	0
+File-Name:	CB_41952.dat	0	0
+File-Name:	CB_41953.dat	0	0
+File-Name:	CB_41954.dat	0	0
+File-Name:	CB_41955.dat	0	0
+File-Name:	CB_41956.dat	0	0
+File-Name:	CB_41957.dat	0	0
+File-Name:	CB_41958.dat	0	0
+File-Name:	CB_41959.dat	0	0
+File-Name:	CB_42026.dat	0	0
+File-Name:	CB_42027.dat	0	0
+File-Name:	CB_42030.dat	0	0
+File-Name:	CB_42031.dat	0	0
+File-Name:	CB_42010.dat	0	0
+File-Name:	CB_42011.dat	0	0
+File-Name:	CB_42012.dat	0	0
+File-Name:	CB_42013.dat	0	0
+File-Name:	CB_42014.dat	0	0
+File-Name:	CB_42015.dat	0	0
+File-Name:	CB_42016.dat	0	0
+File-Name:	CB_42017.dat	0	0
+File-Name:	CB_42018.dat	0	0
+File-Name:	CB_42019.dat	0	0
+File-Name:	CB_42020.dat	0	0
+File-Name:	CB_42021.dat	0	0
+File-Name:	CB_42022.dat	0	0
+File-Name:	CB_42023.dat	0	0
+File-Name:	CB_42024.dat	0	0
+File-Name:	CB_42025.dat	0	0
+File-Name:	CB_42100.dat	0	0
+File-Name:	CB_42101.dat	0	0
+File-Name:	CB_42102.dat	0	0
+File-Name:	CB_42103.dat	0	0
+File-Name:	CB_42104.dat	0	0
+File-Name:	CB_42105.dat	0	0
+File-Name:	CB_42106.dat	0	0
+File-Name:	CB_42107.dat	0	0
+File-Name:	CB_42108.dat	0	0
+File-Name:	CB_42109.dat	0	0
+File-Name:	CB_42110.dat	0	0
+File-Name:	CB_42111.dat	0	0
+File-Name:	CB_42112.dat	0	0
+File-Name:	CB_42113.dat	0	0
+File-Name:	CB_42114.dat	0	0
+File-Name:	CB_42115.dat	0	0
+File-Name:	CB_42116.dat	0	0
+File-Name:	CB_42117.dat	0	0
+File-Name:	CB_42118.dat	0	0
+File-Name:	CB_42119.dat	0	0
+File-Name:	CB_42500.dat	0	0
+File-Name:	CB_42501.dat	0	0
+File-Name:	CB_42502.dat	0	0
+File-Name:	CB_42503.dat	0	0
+File-Name:	CB_42504.dat	0	0
+File-Name:	CB_42505.dat	0	0
+File-Name:	CB_42506.dat	0	0
+File-Name:	CB_42507.dat	0	0
+File-Name:	CB_42508.dat	0	0
+File-Name:	CB_42509.dat	0	0
+File-Name:	CB_42510.dat	0	0
+File-Name:	CB_42511.dat	0	0
+File-Name:	CB_42512.dat	0	0
+File-Name:	CB_42513.dat	0	0
+File-Name:	CB_42514.dat	0	0
+File-Name:	CB_42515.dat	0	0
+File-Name:	CB_42516.dat	0	0
+File-Name:	CB_42517.dat	0	0
+File-Name:	CB_42518.dat	0	0
+File-Name:	CB_42519.dat	0	0
+File-Name:	CB_42520.dat	0	0
+File-Name:	CB_42521.dat	0	0
+File-Name:	CB_42522.dat	0	0
+File-Name:	CB_42523.dat	0	0
+File-Name:	CB_42524.dat	0	0
+File-Name:	CB_42525.dat	0	0
+File-Name:	CB_42526.dat	0	0
+File-Name:	CB_42527.dat	0	0
+File-Name:	CB_42528.dat	0	0
+File-Name:	CB_42529.dat	0	0
+#
+## END

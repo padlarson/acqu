@@ -1,0 +1,39 @@
+##-----------------------------------------------------------------------
+##--Author	JRM Annand   29th Apr 2003
+##--Update	JRM Annand... 1st Dec 2004
+##--Update	JRM Annand...17th May 2005
+##--Description
+##                *** Acqu++ <-> Root ***
+## Online/Offline Analysis of Sub-Atomic Physics Experimental Data 
+##
+## Parameter File: ARPA.dat
+## Master parameter file for Acqu-Root analysis. 
+## Expected to reside in directory $acqu/data/
+## To use invoke for example... AcquRoot ARPA.dat
+##-----------------------------------------------------------------------
+## Batch mode operation...redirect output directory for log files etc.
+BatchDir: /home/adlarson/logfiles/
+##
+## Tree Name # branches Process Type
+Name: RawEvent_AR_Save 3 Raw
+##        Branch Name		Buffer size
+## Branch Name Buffer size
+Branch: RawEvent_Hits 2097152
+Branch: RawEvent_Scalers 2097152
+Branch: Mk1_Header 2097152
+##
+## Directory to save any created ROOT files (include final / )
+Directory: /home/adlarson/data201208/acqucb/
+##
+## User-defined analysis class
+Analysis: TA2UserAnalysis
+##
+## Analysis setup file
+AnalysisSetup: AnalysisPA.dat
+##
+SplitScaler: 2 128 540
+##
+## Set up of data files
+
+
+ServerSetup: Thread4Server.dat
