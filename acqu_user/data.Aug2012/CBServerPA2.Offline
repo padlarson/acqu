@@ -1,0 +1,42 @@
+##-----------------------------------------------------------------------
+##--Author	JRM Annand   13th Jan 2004
+##--Update	JRM Annand... 1st Dec 2004
+#########################################################################
+#	Server setup file
+#########################################################################
+#
+## Number of Input streams (sources of data), Record length to write data
+## and switch 0/1 = no/yes to control data write
+##              Number streams	Record Len	Save Data
+Input-Streams:	1		32768		0
+#
+#########################################################################
+# Optional directory spec. If not specified File-Names must contain the full
+# directory path
+#
+File-Directory: /home/adlarson/data201208/raw/
+#
+##
+## Specify each input stream
+## From disk file, ACQU (Mk1) format, save any output to file (save=1)
+## Input data record length, Output data record length
+##
+##            	Source	Format	Save?	RecLen	Buffers	Swap	MarkID
+Stream-Spec:	File	Mk1	0	32768	32	0	400
+#########################################################################
+# Now the list of data files to analyse
+#		File Name	1st rec	Last rec
+##
+File-Name:	CB_41960.dat.xz	0	0
+#
+File-Name:	CB_41942.dat	0	0
+File-Name:	CB_41945.dat	0	0
+File-Name:	CB_41958.dat	0	0
+File-Name:	CB_42021.dat	0	0
+File-Name:	CB_42100.dat	0	0
+File-Name:	CB_42102.dat	0	0
+File-Name:	CB_42109.dat	0	0
+File-Name:	CB_42112.dat	0	0
+File-Name:	CB_42113.dat	0	0
+#
+## END
