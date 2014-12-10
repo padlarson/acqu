@@ -115,7 +115,6 @@ static const Map_t kRAHist[] = {
   {NULL,          -1}
 };
 
-ClassImp(TA2Analysis)
 
 //-----------------------------------------------------------------------------
 TA2Analysis::TA2Analysis( const char* name )
@@ -812,3 +811,5 @@ void TA2Analysis::InitTreeFileName( Char_t* fname )
   if( fTreeFileName ) delete[] fTreeFileName;
   fTreeFileName = BuildName( name );
 }
+
+ClassImp(TA2Analysis)

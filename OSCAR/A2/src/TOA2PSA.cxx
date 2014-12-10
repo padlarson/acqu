@@ -17,7 +17,6 @@
 #include "TOLoader.h"
 #include "TOA2BaseDetParticle.h"
 
-ClassImp(TOA2PSA)
 
 // init static class members
 const Int_t TOA2PSA::fgMaxSize = 438;
@@ -229,4 +228,4 @@ Bool_t TOA2PSA::IsPSANucleon(TOA2BaseDetParticle* p, Bool_t useExclZone)
     else
         return kFALSE;
 }
-
+ClassImp(TOA2PSA)

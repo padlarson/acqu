@@ -15,7 +15,6 @@
 
 #include "TCCalibPed.h"
 
-ClassImp(TCCalibPed)
 
 
 //______________________________________________________________________________
@@ -266,4 +265,4 @@ void TCCalibPed::ReadADC()
     Int_t n = 0;
     while ((e = (TCARElement*)next())) fADC[n++] = atoi(e->GetADC());
 } 
-
+ClassImp(TCCalibPed)

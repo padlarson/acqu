@@ -38,12 +38,14 @@ for Job in $Jobs
 do
     Prob=0
     Proc=`cat ${Job}`
+    ProcId=`echo $Proc | sed 's/\..*//'`
+    ErrFile=`ls -1 jobs/${JobName}/jobfiles/Acqu_*.e* | grep $ProcId`
     Job=`basename $Job | sed 's/.sub.done//'`
-    if [ -e jobs/${JobName}/jobfiles/${Proc}.ER ]
+    if [ -e $ErrFile ]
     then
-	if [ -s jobs/${JobName}/jobfiles/${Proc}.ER ]
+	if [ -s $ErrFile ]
 	then
-	    echo "$Job - Error detected in ${Proc}.ER"
+	    echo "$Job - Error detected in $ErrFile"
 	    Prob=1
 	elif [ -e $OutputDir/${JobName}/log/${Job}_AcquNode.log ]
 	then

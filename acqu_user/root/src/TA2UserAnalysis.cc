@@ -193,3 +193,4 @@ TA2DataManager* TA2UserAnalysis::CreateChild(const char* name, Int_t a)
   }
   return NULL;
 }
+

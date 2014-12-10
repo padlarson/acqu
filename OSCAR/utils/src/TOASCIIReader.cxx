@@ -15,7 +15,6 @@
 
 #include "TOASCIIReader.h"
 
-ClassImp(TOASCIIReader)
 
 //______________________________________________________________________________
 TOASCIIReader::TOASCIIReader(const Char_t* inFileName)
@@ -91,4 +90,4 @@ Int_t TOASCIIReader::CountLines()
 
     return ReadLines(kFALSE);
 }
-
+ClassImp(TOASCIIReader)

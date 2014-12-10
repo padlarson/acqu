@@ -57,7 +57,6 @@ Double_t GausOnBase(Double_t *x, Double_t *par) {
    return fitval;
 }
 
-ClassImp(TA2LinearPolEpics)
 
 //-----------------------------------------------------------------------------
 TA2LinearPolEpics::TA2LinearPolEpics( const char* name, TA2System* fAnalysis  )
@@ -1293,3 +1292,5 @@ void  TA2LinearPolEpics::enhFromParams(){
       fCurrentEnhTable_TC[fTaggerChannels-n]=fHistE->GetBinContent(n+1);
     }
 }
+
+ClassImp(TA2LinearPolEpics)

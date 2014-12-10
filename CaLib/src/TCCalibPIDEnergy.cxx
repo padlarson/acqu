@@ -15,7 +15,6 @@
 
 #include "TCCalibPIDEnergy.h"
 
-ClassImp(TCCalibPIDEnergy)
 
 
 //______________________________________________________________________________
@@ -422,4 +421,4 @@ void TCCalibPIDEnergy::Write()
         TCMySQLManager::GetManager()->WriteParameters("Data.PID.E1", fCalibration.Data(), fSet[i], fGain, fNelem);
     }
 }
-
+ClassImp(TCCalibPIDEnergy)

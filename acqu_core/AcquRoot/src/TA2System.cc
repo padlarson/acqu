@@ -28,7 +28,6 @@
 #include "TA2System.h"
 #include "ARFile_t.h"
 
-ClassImp(TA2System)
 
 //-----------------------------------------------------------------------------
 TA2System::TA2System( const Char_t* name, const Map_t* maplist,
@@ -349,3 +348,5 @@ const Char_t*  TA2System::CheckName(const Char_t* name )
   
   return a;
 }
+
+ClassImp(TA2System)

@@ -58,7 +58,6 @@ static const Map_t kWCKeys[] = {
   const Double_t targetLength = 100.;
   const Double_t targetDiameter = 21.5;
   
-ClassImp(TA2CylMwpc)
 //_________________________________________________________________________________________
 //  TA2CylMwpc
 //
@@ -1769,3 +1768,5 @@ void TA2CylMwpc::InitGeometry()
   c2->Modified();
 
 }
+
+ClassImp(TA2CylMwpc)

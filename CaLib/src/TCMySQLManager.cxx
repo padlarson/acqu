@@ -15,7 +15,6 @@
 
 #include "TCMySQLManager.h"
 
-ClassImp(TCMySQLManager)
 
 
 // init static class members
@@ -2554,4 +2553,4 @@ void TCMySQLManager::Import(const Char_t* filename, Bool_t runs, Bool_t calibrat
     // clean-up
     delete c;
 }
-
+ClassImp(TCMySQLManager)

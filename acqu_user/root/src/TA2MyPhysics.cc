@@ -16,7 +16,6 @@
 
 #include "TA2MyPhysics.h"
 
-ClassImp(TA2MyPhysics)
 
 
 //______________________________________________________________________________
@@ -44,7 +43,7 @@ TA2MyPhysics::TA2MyPhysics(const char* name, TA2Analysis* analysis)
     fEventCounter       = 0;
     fEventOffset        = 0;
     fSaveEvent          = 0;
-    fNScalerReads       = 0;
+    fScalerReadCounter  = 0;
     fUseBadScalerReads  = kFALSE;
 
     fTaggerPhotonNhits  = 0;                 
@@ -173,6 +172,7 @@ TA2MyPhysics::TA2MyPhysics(const char* name, TA2Analysis* analysis)
     
     fNBadScalerReads = 0;
     fBadScalerReads = 0;
+    fIsBadScalerSkip = kFALSE;
     fH_BadScR_SumScalers = 0;
     fH_BadScR_SumFPDScalers = 0;
 
@@ -233,33 +233,47 @@ void TA2MyPhysics::SetConfig(Char_t* line, Int_t key)
     {
         case EMP_CALIB_BADSCR:
         {
-            fUseBadScalerReads = kTRUE;
-
+            // declare sscanf helpers (max. 16 data names)
             Int_t list;
             Int_t first;
             Int_t last;
+            Char_t* d[16];
+            for (Int_t i = 0; i < 16; i++) d[i] = new Char_t[128];
 
-            // read CaLib BadScR parameters 
-            if (sscanf(line, "%d%d%d", &list, &first, &last) == 3)
+            // read config line
+            Int_t nfields = sscanf(line, "%i%i%i%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s", &list, &first, &last,
+                                   d[0], d[1], d[2], d[3], d[4], d[5], d[6], d[7], d[8], d[9], d[10], d[11], d[12], d[13], d[14], d[15]);
+
+            // check whether CaLib reader exists
+            if (fCaLibReader)
             {
-                // check if CaLib reader exists
-                if (fCaLibReader)
+                // set flags
+                fCaLibReader->SetBadScRlist((Bool_t) list);
+                fCaLibReader->SetBadScRfirst((Bool_t) first);
+                fCaLibReader->SetBadScRlast((Bool_t) last);
+
+                // read (from database) & configure bad scaler reads
+                if (fCaLibReader->ReadScalerReads(nfields-3, d))
                 {
-                    fCaLibReader->SetBadScRlist((Bool_t) list);
-                    fCaLibReader->SetBadScRfirst((Bool_t) first);
-                    fCaLibReader->SetBadScRlast((Bool_t) last);
-                    if (fCaLibReader->ReadScalerReads());
-                    {
-                        fNBadScalerReads = fCaLibReader->GetNBadScR();
-                        fBadScalerReads = fCaLibReader->GetBadScR();
-                    }
+                    // set members
+                    fNBadScalerReads = fCaLibReader->GetNBadScR();
+                    fBadScalerReads = fCaLibReader->GetBadScR();
+
+                    // activate bad scaler reads
+                    fUseBadScalerReads = kTRUE;
                 }
                 else
                 {
-                    Error("SetConfig", "Bad scaler read cannot be configured because CaLib was not configured!");
+                    Error("SetConfig", "Bad scaler read could not be configured!");
                 }
-            }                
-            else Error("SetConfig", "CaLib PID calibration could not be configured!");
+            }
+            else
+            {
+                Error("SetConfig", "Bad scaler read cannot be configured because CaLib was not configured!");
+            }
+
+            // clean up
+            for (Int_t i = 0; i < 16; i++) delete d[i];
             break;
         }
         case EMP_RUN_NUMBER:
@@ -776,7 +790,7 @@ void TA2MyPhysics::PostInit()
     printf("\n\n\n");
 
     // print scaler read list
-    if (fBadScalerReads)
+    if (fUseBadScalerReads && fBadScalerReads)
     {
         printf("  %d Bad scaler read(s): %s", fNBadScalerReads,
                                               TOSUtils::FormatArrayList(fNBadScalerReads, fBadScalerReads));
@@ -985,11 +999,14 @@ void TA2MyPhysics::Reconstruct()
     // check for scaler read event
     if (!fIsMC && gAR->IsScalerRead())
     {
+        // reset event skipping flag
+        fIsBadScalerSkip = kFALSE;
+
         // increment scaler reads counter
-        fNScalerReads++;
+        fScalerReadCounter++;
 
         // check whether previous scaler read (interval) was good in order to update scaler histos
-        if (fUseBadScalerReads && !IsBadScalerRead(fNScalerReads - 1))
+        if (fUseBadScalerReads && !IsBadScalerRead(fScalerReadCounter - 1))
         {
             // loop over scalers
             for (Int_t i = 0; i < gAR->GetMaxScaler(); i++)
@@ -1014,11 +1031,14 @@ void TA2MyPhysics::Reconstruct()
     // apply bad scaler read event skip
     if (!fIsMC && fUseBadScalerReads)
     {
+        // set the skip flag once for events before first scaler read
+        if (fIsBadScalerSkip == kFALSE && IsBadScalerRead(fScalerReadCounter)) fIsBadScalerSkip = kTRUE;
+        
         // check for bad scaler read in order to skip event
-        if (IsBadScalerRead(fNScalerReads))
+        if (fIsBadScalerSkip)
         {
             // display user info
-            if (fEventCounter == 0 || gAR->IsScalerRead()) Info("Reconstruct", "Skipping scaler read %d", fNScalerReads);
+            if (fEventCounter == 0 || gAR->IsScalerRead()) Info("Reconstruct", "Skipping scaler read %d", fScalerReadCounter);
 
             // increment event counter
             fEventCounter++;
@@ -1710,11 +1730,15 @@ Bool_t TA2MyPhysics::IsBadScalerRead(Int_t scr)
     // Return kTRUE if yes, otherwise or if no bad scaler reads list was
     // specified kFALSE;
 
-    // loop over bad scaler reads list
+    // loop over bad scaler reads list (should be sorted)
     for (Int_t i = 0; i < fNBadScalerReads; i++)
     {
         // check for bad scaler read
-        if (scr == fBadScalerReads[i]) return kTRUE;
+        if (fBadScalerReads[i] < scr) continue;
+        if (fBadScalerReads[i] == scr)
+            return kTRUE;
+        else
+            return kFALSE;
     }
 
     return kFALSE;
@@ -2751,3 +2775,4 @@ void TA2MyPhysics::TerminateAnalysis()
     fflush(NULL);
 }
 
+ClassImp(TA2MyPhysics)

@@ -15,7 +15,6 @@
 
 #include "TCCalibQuadEnergy.h"
 
-ClassImp(TCCalibQuadEnergy)
 
 
 //______________________________________________________________________________
@@ -457,4 +456,4 @@ void TCCalibQuadEnergy::Write()
     // save overview canvas
     SaveCanvas(fCanvasResult, "Overview");
 }
-
+ClassImp(TCCalibQuadEnergy)

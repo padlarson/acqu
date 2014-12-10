@@ -16,7 +16,6 @@
 
 #include "TA2AccessSQL.h"
 
-ClassImp(TA2AccessSQL)
 
 //______________________________________________________________________________
 TA2AccessSQL::TA2AccessSQL(const char* name, TA2Analysis* analysis)	: TA2Physics(name, analysis), 
@@ -489,3 +488,5 @@ void TA2AccessSQL::Reconstruct()
 {
   TA2Physics::Reconstruct();
 }
+
+ClassImp(TA2AccessSQL)

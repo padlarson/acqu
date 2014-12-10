@@ -15,7 +15,6 @@
 
 #include "TCCalibVetoEnergy.h"
 
-ClassImp(TCCalibVetoEnergy)
 
 
 //______________________________________________________________________________
@@ -303,4 +302,4 @@ void TCCalibVetoEnergy::Calculate(Int_t elem)
     if (unchanged) printf("    -> unchanged");
     printf("\n");
 }   
-
+ClassImp(TCCalibVetoEnergy)

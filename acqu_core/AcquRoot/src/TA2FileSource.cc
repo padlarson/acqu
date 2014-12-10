@@ -16,7 +16,6 @@
 #include "ARFile_t.h"
 #include "Semaphore_t.h"
 
-ClassImp(TA2FileSource)
 
 TA2FileSource::TA2FileSource( char* name, Int_t irecl,
 			      Int_t save, Int_t rsize, Int_t swap ) :
@@ -110,3 +109,5 @@ void TA2FileSource::GetFileInfo(Int_t i, std::string& filename, UInt_t& start, U
   start = fStartList[i];
   stop = fStopList[i];
 }
+
+ClassImp(TA2FileSource)

@@ -16,7 +16,6 @@
 #include "TOA2Trigger.h"
 #include "TOSUtils.h"
 
-ClassImp(TOA2Trigger)
 
 //______________________________________________________________________________
 TOA2Trigger::TOA2Trigger()
@@ -94,4 +93,4 @@ TOA2Trigger& TOA2Trigger::operator=(const TOA2Trigger& t)
 
     return *this;
 }
-
+ClassImp(TOA2Trigger)

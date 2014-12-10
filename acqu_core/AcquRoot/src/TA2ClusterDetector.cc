@@ -1,5 +1,5 @@
 //--Author	JRM Annand   30th Sep 2003  Read MC data
-//--Rev 	JRM Annand...15th Sep 2003  Generalise methods  
+//--Rev 	JRM Annand...15th Sep 2003  Generalise methods
 //--Rev 	JRM Annand....9th Mar 2004  New OR variables
 //--Rev 	JRM Annand....9th Mar 2005  protected instead of private vars
 //--Rev 	JRM Annand...13th Jul 2005  split offs, time OR
@@ -14,13 +14,13 @@
 //--Update	JRM Annand   17th Sep 2011  log energy weighting
 //--Description
 //                *** Acqu++ <-> Root ***
-// Online/Offline Analysis of Sub-Atomic Physics Experimental Data 
+// Online/Offline Analysis of Sub-Atomic Physics Experimental Data
 //
 // TA2ClusterDetector
 //
 // Decoding and calibration methods for EM calorimeters or similar systems
 // where a shower or showers of secondary particles fire a cluster or
-// clusters neighbouring calorimeter elements, 
+// clusters neighbouring calorimeter elements,
 // e.g. Crystal Ball NaI(Tl) array
 //
 
@@ -37,12 +37,12 @@ static const Map_t kClustDetKeys[] = {
   {NULL,          -1}
 };
 
-
-ClassImp(TA2ClusterDetector)
+#include <sstream>
+#include <TA2Analysis.h>
 
 //---------------------------------------------------------------------------
-TA2ClusterDetector::TA2ClusterDetector( const char* name, 
-					TA2System* apparatus )
+TA2ClusterDetector::TA2ClusterDetector( const char* name,
+          TA2System* apparatus )
   :TA2Detector(name, apparatus)
 {
   // Do not allocate any "new" memory here...Root will wipe
@@ -65,8 +65,16 @@ TA2ClusterDetector::TA2ClusterDetector( const char* name,
   fISplit = fIJSplit = NULL;
   fMaxSplitPerm = 0;
   fIsIterate = kFALSE;
+
+#ifdef WITH_A2DISPLAY
+  fDispClusterEnable = kFALSE; // config stuff missing...
+  // will be set by child class
+  fDispClusterHitsSingle = NULL;
+  fDispClusterHitsEnergy = NULL;
+#endif
   fIsPos = ETrue;          // override standard detector, must have position
 }
+
 
 //---------------------------------------------------------------------------
 TA2ClusterDetector::~TA2ClusterDetector()
@@ -130,7 +138,7 @@ void TA2ClusterDetector::SetConfig( char* line, int key )
       break;
     }
     if( sscanf( line, "%d%lf%lf",
-		&fClustSizeFactor, &fMinPosDiff, &fMaxPosDiff ) < 3 ){
+    &fClustSizeFactor, &fMinPosDiff, &fMaxPosDiff ) < 3 ){
       PrintError(line,"<Cluster-iterate parse>");
       break;
     }
@@ -141,7 +149,7 @@ void TA2ClusterDetector::SetConfig( char* line, int key )
     // Nearest neighbout input
     if( fNCluster < fNelement )
       fCluster[fNCluster] =
-	new HitCluster_t(line,fNCluster,fClustSizeFactor,fEWgt,fLEWgt);
+  new HitCluster_t(line,fNCluster,fClustSizeFactor,fEWgt,fLEWgt);
     fNCluster++;
     break;
   case EClustDetAllNeighbour:
@@ -159,7 +167,7 @@ void TA2ClusterDetector::SetConfig( char* line, int key )
     for(UInt_t i=2; i<fMaxCluster; i++) fMaxSplitPerm += i;
     fSplitAngle = new Double_t[fMaxSplitPerm];
     fISplit = new Int_t[fMaxSplitPerm];
-    fIJSplit = new Int_t[fMaxSplitPerm]; 
+    fIJSplit = new Int_t[fMaxSplitPerm];
     fIsSplit = new Bool_t[fMaxCluster];
     break;
   case EClustEnergyWeight:
@@ -262,23 +270,23 @@ void TA2ClusterDetector::ParseDisplay( char* line )
     }
     for( l=j; l<=k; l++ ){
       if( l >= fNCluster ){
-	PrintError(line,"<Cluster display - element outwith range>");
-	return;
+  PrintError(line,"<Cluster display - element outwith range>");
+  return;
       }
       sprintf( histline, "%s%d %d  %lf %lf",name,l,chan,low,high );
       switch( i ){
       case EClustDetEnergy:
-	Setup1D( histline, fCluster[l]->GetEnergyPtr() );
-	break;
+  Setup1D( histline, fCluster[l]->GetEnergyPtr() );
+  break;
       case EClustDetHits:
-	Setup1D( histline, fCluster[l]->GetHits(), EHistMultiX );
-	break;
+  Setup1D( histline, fCluster[l]->GetHits(), EHistMultiX );
+  break;
       case EClustDetTime:
-	Setup1D( histline, fCluster[l]->GetTimePtr() );
-	break;
+  Setup1D( histline, fCluster[l]->GetTimePtr() );
+  break;
       case EClustDetMulti:
-	Setup1D( histline, fCluster[l]->GetNhitsPtr() );
-	break;
+  Setup1D( histline, fCluster[l]->GetNhitsPtr() );
+  break;
       }
     }
     break;
@@ -292,3 +300,40 @@ void TA2ClusterDetector::ParseDisplay( char* line )
   return;
 }
 
+#ifdef WITH_A2DISPLAY
+//-----------------------------------------------------------------------------
+void TA2ClusterDetector::DisplayClusters() {
+  if(!fDispClusterEnable)
+    return;
+
+  for(UInt_t i=0;i<fNelement;i++) {
+    fDispClusterHitsSingle->SetElement(i,0);    
+    fDispClusterHitsEnergy->SetElement(i,0);       
+  }
+  
+  for(UInt_t i=0;i<fNhits;i++) {
+    fDispClusterHitsEnergy->SetElement(fHits[i],fEnergy[fHits[i]]);
+  }
+  
+  for(UInt_t i=0;i<fNCluster;i++) {
+    HitCluster_t* cl = fCluster[fClustHit[i]];
+    UInt_t* hits = cl->GetHits();
+    UInt_t nHits = cl->GetNhits();
+    for(UInt_t j=0;j<nHits;j++) {
+      Double_t val = fDispClusterHitsSingle->GetElement(hits[j]);
+      val += 1<<i;
+      if(j==0)
+        val += 0.1*(i+1);
+      fDispClusterHitsSingle->SetElement(hits[j],val);
+    }
+  }
+  std::stringstream ss;
+  ss << fDispClusterHitsSingle->GetName();
+  ss << " Event=" << gAN->GetNEvent();
+  ss << " Clusters=" << fNCluster;
+  fDispClusterHitsSingle->SetTitle(ss.str().c_str());
+  //usleep(5e5);
+}
+#endif
+
+ClassImp(TA2ClusterDetector)

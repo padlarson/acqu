@@ -16,7 +16,6 @@
 
 #include "TOA2BaseDetParticle.h"
 
-ClassImp(TOA2BaseDetParticle)
 
 //______________________________________________________________________________
 TOA2BaseDetParticle::TOA2BaseDetParticle()
@@ -484,4 +483,4 @@ TOA2BaseDetParticle& TOA2BaseDetParticle::operator=(const TOA2BaseDetParticle& p
 
     return *this;
 }
-
+ClassImp(TOA2BaseDetParticle)

@@ -51,7 +51,6 @@ static const Map_t kKnownAnalysis[] = {
 };
 
 
-ClassImp(TA2Control)
 
 //--------------------------------------------------------------------------
 TA2Control::TA2Control( const char* appClassName, int* argc, char** argv, 
@@ -263,3 +262,5 @@ void TA2Control::StartAnalyser()
     //    while( !gAR->IsFinished() ) sleep(1);
   }
 }
+
+ClassImp(TA2Control)

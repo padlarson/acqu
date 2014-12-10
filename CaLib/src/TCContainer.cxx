@@ -15,7 +15,6 @@
 
 #include "TCContainer.h"
 
-ClassImp(TCContainer)
 
 
 //______________________________________________________________________________
@@ -141,4 +140,4 @@ void TCContainer::ShowCalibrations()
     TCCalibration* c;
     while ((c = (TCCalibration*)next())) c->Print();
 }
-
+ClassImp(TCContainer)

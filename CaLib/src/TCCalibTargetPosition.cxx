@@ -15,7 +15,6 @@
 
 #include "TCCalibTargetPosition.h"
 
-ClassImp(TCCalibTargetPosition)
 
 
 //______________________________________________________________________________
@@ -269,4 +268,4 @@ void TCCalibTargetPosition::PrintValues()
     printf("target position: %12.8f\n", fNewVal[0]);
     printf("\n");
 }
-
+ClassImp(TCCalibTargetPosition)

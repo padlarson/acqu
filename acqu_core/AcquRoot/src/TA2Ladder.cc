@@ -59,7 +59,6 @@ static const Map_t kLaddKeys[]= {
 };
 
 
-ClassImp(TA2Ladder)
 
 //---------------------------------------------------------------------------
 TA2Ladder::TA2Ladder( const char* name, TA2System* apparatus )
@@ -509,3 +508,5 @@ void TA2Ladder::ReadDecoded( )
   fHitsRand[0] = EBufferEnd;
   return;
 }
+
+ClassImp(TA2Ladder)

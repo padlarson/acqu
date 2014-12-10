@@ -1,6 +1,5 @@
 #include "TA2GoAT.h"
 
-ClassImp(TA2GoAT)
 
 TA2GoAT::TA2GoAT(const char* Name, TA2Analysis* Analysis) : TA2AccessSQL(Name, Analysis),
                                                                     file(0),
@@ -1001,3 +1000,5 @@ void 	TA2GoAT::TriggerHW()
 	if (fADC[0] & 1<<13) Mult++;
  	
 }
+
+ClassImp(TA2GoAT)

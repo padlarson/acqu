@@ -15,7 +15,6 @@
 
 #include "TCCalibEnergy.h"
 
-ClassImp(TCCalibEnergy)
 
 
 //______________________________________________________________________________
@@ -245,4 +244,4 @@ void TCCalibEnergy::Calculate(Int_t elem)
         printf("Average difference to pi0 mass : %.3f MeV\n", fAvrDiff);
     }
 }   
-
+ClassImp(TCCalibEnergy)

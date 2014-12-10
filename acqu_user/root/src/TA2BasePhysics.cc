@@ -16,7 +16,6 @@ static const Map_t kTriggKeys[] =
   {NULL,            -1}
 };
 
-ClassImp(TA2BasePhysics)
 
 //-----------------------------------------------------------------------------
 
@@ -508,4 +507,4 @@ Bool_t TA2BasePhysics::TriggerDecode()
 }
 
 //-----------------------------------------------------------------------------
-
+ClassImp(TA2BasePhysics)

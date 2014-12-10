@@ -61,7 +61,9 @@
 #include <iomanip>
 #include <string>
 #include <fstream>
+#ifdef WITH_LIBLZMA
 #include <lzma.h>
+#endif
 #include <stdint.h>
 
 using namespace std;
@@ -108,8 +110,6 @@ static const Map_t ARProcessType[] = {
   {NULL,          -1}
 };
 
-
-ClassImp(TAcquRoot)
 
 void* A2RunThread( void* arg )
 {
@@ -1014,28 +1014,32 @@ void TAcquRoot::DataLoopDirectIO( )
            << endl
            << " Filename: " << filename 
            << endl;
+      if(start != 0) {
+        PrintError("","DirectIO mode does not support skipping data blocks.", 
+                   EErrFatal);
+      }
       if(filename.size()<4) {
         PrintError("","Unkown file extension, filename too short. Skipping.", 
-                   EErrNonFatal);
-        continue;
+                   EErrFatal);
       }
       Bool_t success = kFALSE;
       // check filename ending
       if(filename.compare(filename.size()-4, 4, ".dat") == 0) {
-        success = DataLoopDirectIOWorker(filename, start, stop);
+        success = DataLoopDirectIOWorker(filename, stop);
       }
+#ifdef WITH_LIBLZMA
       else if(filename.compare(filename.size()-7, 7, ".dat.xz") == 0) {
-        success = DataLoopDirectIOWorkerXZ(filename, start, stop);
+        success = DataLoopDirectIOWorkerXZ(filename, stop);
       }
+#endif
       else {
-        PrintError("","Unkown file extension, only .dat and .dat.xz supported. Skipping.", 
-                   EErrNonFatal);
-        continue;
+        PrintError("","Unkown file extension, only .dat and .dat.xz (if liblzma found) supported.", 
+                   EErrFatal);
       }
       
       if(!success) {
-        PrintError("","Something went wrong processing the file...see above", 
-                   EErrNonFatal);        
+        PrintError("","Something went wrong processing the file...", 
+                   EErrFatal);        
       }
       
       fprintf(fLogStream," End file %s, %d events sorted, last event #%d\n",
@@ -1051,8 +1055,8 @@ void TAcquRoot::DataLoopDirectIO( )
   
 }
 
-Bool_t TAcquRoot::DataLoopDirectIOWorkerXZ(const string& filename, 
-                                         UInt_t start, UInt_t stop) {
+#ifdef WITH_LIBLZMA
+Bool_t TAcquRoot::DataLoopDirectIOWorkerXZ(const string& filename, const UInt_t stop) {
   ifstream file(filename.c_str(), ios::in|ios::binary);
   if(!file.is_open()) {
     return kFALSE;
@@ -1083,9 +1087,14 @@ Bool_t TAcquRoot::DataLoopDirectIOWorkerXZ(const string& filename,
       strm->next_in = inbuf;
       
       if(!file.read((char*)inbuf, fRecLen)) {
-        PrintError("","File read error.", 
-                   EErrNonFatal); 
-        return false;
+        // since we're reading compressed data 
+	// with some arbitrary fRecLen, it might be
+	// that we reached the end of file
+	if(!file.eof()) {
+	  PrintError("","File read error.", 
+		     EErrNonFatal); 
+	  return false;
+	}
       }
       strm->avail_in = file.gcount();
     
@@ -1181,9 +1190,10 @@ Bool_t TAcquRoot::DataLoopDirectIOWorkerXZ(const string& filename,
   
   return kFALSE;
 }
+#endif
 
 Bool_t TAcquRoot::DataLoopDirectIOWorker(const string& filename, 
-                                         UInt_t start, UInt_t stop) {
+                                         const UInt_t stop) {
   ifstream file(filename.c_str(), ios::in|ios::binary);
   if(!file.is_open()) {
     PrintError("","Cannot open file.", 
@@ -1409,3 +1419,4 @@ void TAcquRoot::SetDataServer( TA2DataServer* dataserver )
   return;
 }
 
+ClassImp(TAcquRoot)

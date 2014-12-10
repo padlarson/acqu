@@ -19,16 +19,21 @@ if(ACQU_DAQ)
   message(STATUS "*** Building DAQ Part only (ACQU_DAQ=On)")
 endif()
 
+
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules/" ${CMAKE_MODULE_PATH})
 # require a fairly recent ROOT version
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
-if(${CMAKE_MAJOR_VERSION} EQUAL 2 AND ${CMAKE_MINOR_VERSION} EQUAL 6)
-  set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules26/")
-endif()
 find_package(ROOT "5.30" REQUIRED)
 
 # since all subprojects need ROOT, set that up here
 include_directories(${ROOT_INCLUDES})
 link_directories(${ROOT_LIBRARY_DIR})
+
+# a2display for optional fancy cluster display histograms
+find_package(a2display)
+if(A2DISPLAY_FOUND)
+  include_directories(${A2DISPLAY_INCLUDE_DIR})
+  add_definitions(-DWITH_A2DISPLAY)
+endif()
 
 # in these two variables, we collect over the subprojects
 # the include dirs and the libnames on which acqu_user
@@ -54,10 +59,13 @@ if(NOT ACQU_DAQ)
     link_directories($ENV{OSCAR}/lib)
     set(ACQU_USER_LIBS ${ACQU_USER_LIBS} OSCAR)
   else()
-    message("-- No external OSCAR found - building integrated minimal version")
     add_subdirectory(OSCAR)
   endif()
-  add_subdirectory(CaLib)
+  if(DEFINED ENV{CALIB})
+    message("-- Found external CaLib in " $ENV{CALIB})
+  else()
+    add_subdirectory(CaLib)
+  endif()
   add_subdirectory(Worker)
   add_subdirectory(acqu_user)
 endif()

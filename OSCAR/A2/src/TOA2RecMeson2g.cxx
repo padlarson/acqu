@@ -17,7 +17,6 @@
 #include "TOA2RecMeson2g.h"
 #include "TOA2DetParticle.h"
 
-ClassImp(TOA2RecMeson2g)
 
 //______________________________________________________________________________
 TOA2RecMeson2g::TOA2RecMeson2g(Int_t nPart, Double_t mass)
@@ -149,4 +148,4 @@ void TOA2RecMeson2g::Reset()
         fNeutronCand = 0;
     }
 }
-
+ClassImp(TOA2RecMeson2g)

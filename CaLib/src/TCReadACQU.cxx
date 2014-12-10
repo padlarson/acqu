@@ -15,7 +15,6 @@
 
 #include "TCReadACQU.h"
 
-ClassImp(TCReadACQU)
 
 
 //______________________________________________________________________________
@@ -100,4 +99,4 @@ void TCReadACQU::ReadFiles()
     // clean-up
     delete list;
 }
-
+ClassImp(TCReadACQU)

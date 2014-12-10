@@ -64,7 +64,6 @@ static const Map_t kCBKeys[] = {
   TPolyLine *contourPID[25], *contourCB[32], *contourCB_yz[13], *contourCB2_yz[13];
   TPolyLine *contourCB_xz[13], *contourCB2_xz[13];
 
-ClassImp(TA2CentralApparatus)
 //_________________________________________________________________________________________
 // TA2CentralApparatus
 //
@@ -2307,3 +2306,5 @@ void TA2CentralApparatus::InitGeometry()
   c3->Modified();
 
 }
+
+ClassImp(TA2CentralApparatus)

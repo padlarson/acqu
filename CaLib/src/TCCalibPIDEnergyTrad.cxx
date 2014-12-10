@@ -15,7 +15,6 @@
 
 #include "TCCalibPIDEnergyTrad.h"
 
-ClassImp(TCCalibPIDEnergyTrad)
 
 
 //______________________________________________________________________________
@@ -381,4 +380,4 @@ void TCCalibPIDEnergyTrad::Write()
     // save overview canvas
     SaveCanvas(fCanvasResult, "Overview");
 }
-
+ClassImp(TCCalibPIDEnergyTrad)

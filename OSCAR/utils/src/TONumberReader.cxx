@@ -22,7 +22,6 @@
 #include "TOArray2D.h"
 #include "TOSUtils.h"
 
-ClassImp(TONumberReader)
 
 //______________________________________________________________________________
 TONumberReader::TONumberReader(const Char_t* inFileName, Int_t inColumns) 
@@ -294,4 +293,4 @@ Double_t TONumberReader::GetRowAverageWeighted(Int_t r, Double_t* outErr)
 
     return val;
 }
-
+ClassImp(TONumberReader)

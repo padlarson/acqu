@@ -20,7 +20,6 @@
 #include "TOA2DetParticle.h"
 #include "TOGlobals.h"
 
-ClassImp(TOA2RecParticle)
 
 //______________________________________________________________________________
 TOA2RecParticle::TOA2RecParticle()
@@ -422,4 +421,4 @@ const TOA2RecParticle TOA2RecParticle::operator+(const TOA2RecParticle& p) const
 
      return TOA2RecParticle(*this) += p;
 }
-
+ClassImp(TOA2RecParticle)

@@ -15,7 +15,6 @@
 
 #include "TCReadARCalib.h"
 
-ClassImp(TCReadARCalib)
 
 
 //______________________________________________________________________________
@@ -136,4 +135,4 @@ void TCReadARCalib::ReadCalibFile(const Char_t* filename, Bool_t isTagger,
     // close the file
     infile.close();
 }
-
+ClassImp(TCReadARCalib)

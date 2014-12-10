@@ -178,8 +178,10 @@ public:
    void Start( );
    void DataLoop();
    void DataLoopDirectIO();   
-   Bool_t DataLoopDirectIOWorker(const std::string& filename, UInt_t start, UInt_t stop);
-   Bool_t DataLoopDirectIOWorkerXZ(const std::string& filename, UInt_t start, UInt_t stop);   
+   Bool_t DataLoopDirectIOWorker(const std::string& filename, const UInt_t stop);
+#ifdef WITH_LIBLZMA
+   Bool_t DataLoopDirectIOWorkerXZ(const std::string& filename, const UInt_t stop); 
+#endif
    void OfflineLoop();
    void Clear( );
    void Reset( );

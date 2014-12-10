@@ -15,7 +15,6 @@
 
 #include "TCCalibPIDPhi.h"
 
-ClassImp(TCCalibPIDPhi)
 
 
 //______________________________________________________________________________
@@ -324,4 +323,4 @@ void TCCalibPIDPhi::Write()
     // save overview picture
     SaveCanvas(fCanvasResult2, "Overview2");
 }
-
+ClassImp(TCCalibPIDPhi)

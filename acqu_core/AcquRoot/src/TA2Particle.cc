@@ -16,7 +16,6 @@
 
 R__EXTERN TA2Analysis*  gAN;
 
-ClassImp(TA2Particle)
 
 //-----------------------------------------------------------------------------
 
@@ -565,4 +564,4 @@ HitCluster_t* TA2Particle::FindCluster(const Char_t* pAppName, const Char_t* pDe
 }
 
 //-----------------------------------------------------------------------------
-
+ClassImp(TA2Particle)

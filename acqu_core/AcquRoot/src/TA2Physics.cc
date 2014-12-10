@@ -34,7 +34,6 @@ static const Map_t kPhysKeys[] = {
   {NULL,            -1}
 };
 
-ClassImp(TA2Physics)
 
 //-----------------------------------------------------------------------------
 TA2Physics::TA2Physics( const char* name, TA2Analysis* analysis )
@@ -151,4 +150,4 @@ void TA2Physics::LoadVariable( )
 void TA2Physics::Reconstruct()
 {
 }
-
+ClassImp(TA2Physics)

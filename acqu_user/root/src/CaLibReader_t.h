@@ -84,7 +84,7 @@ public:
                   const Char_t* calibration, Int_t run);
     virtual ~CaLibReader_t();
 
-    Bool_t ReadScalerReads();
+    Bool_t ReadScalerReads(Int_t ndata_in, Char_t** data_in);
 
     Bool_t ApplyTAGGcalib(TA2Detector* det);
     Bool_t ApplyCBcalib(TA2Detector* det);

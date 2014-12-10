@@ -20,7 +20,6 @@
 #include "TOMCParticle.h"
 #include "TOGlobals.h"
 
-ClassImp(TOMCParticle)
 
 //______________________________________________________________________________
 TOMCParticle::TOMCParticle(TParticlePDG* inPDG, Bool_t initDecay)
@@ -448,4 +447,4 @@ void TOMCParticle::PrintDecayChain(Char_t* outString, Int_t level)
     // print everything to stdout if initial outString was zero
     if (level == 0 && toStdout) printf("%s\n", outString);
 }
-
+ClassImp(TOMCParticle)

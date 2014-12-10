@@ -98,7 +98,6 @@
 #include "TVME_V965.h"
 #include "TVME_VITEC.h"
 
-ClassImp(TDAQexperiment)
 
 // recognised setup keywords
 enum { EExpModule, EExpControl, EExpIRQCtrl, EExpStartCtrl, EExpDescription,
@@ -1046,3 +1045,5 @@ void TDAQexperiment::PostReset( )
   }
   // anything else here
 }
+
+ClassImp(TDAQexperiment)

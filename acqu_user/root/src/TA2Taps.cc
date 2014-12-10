@@ -63,7 +63,6 @@ static Map_t kValidTapsDetectors[] = {
   {NULL,                -1}
 };
 
-ClassImp(TA2Taps)
 
 //-----------------------------------------------------------------------------
 
@@ -698,6 +697,12 @@ void TA2Taps::SetConfig(char* line, int key)
         sscanf(line, "%s", fTAPS_dEvE_Proton_CutName);
         fTAPS_dEvE_CutFile = new TFile(fTAPS_dEvE_Cuts, "READ");
         CutPtr = (TCutG*)fTAPS_dEvE_CutFile->Get(fTAPS_dEvE_Proton_CutName);
+        // check if the cut was found, otherwise exit to prevent later segfaults
+        if(!CutPtr){
+          fTAPS_dEvE_CutFile->Close();
+          printf("ERROR: TAPS dEvE cut '%s' not found!\n", fTAPS_dEvE_Proton_CutName);
+          PrintError(line, "<TAPS dEvE Proton cut: no cut with specified cutname found>", EErrFatal);
+        }
         fTAPS_dEvE_ProtonCut = CutPtr;
         fTAPS_dEvE_CutFile->Close();
       }
@@ -719,6 +724,12 @@ void TA2Taps::SetConfig(char* line, int key)
         sscanf(line, "%s", fTAPS_dEvE_ChPion_CutName);
         fTAPS_dEvE_CutFile = new TFile(fTAPS_dEvE_Cuts, "READ");
         CutPtr = (TCutG*)fTAPS_dEvE_CutFile->Get(fTAPS_dEvE_ChPion_CutName);
+        // check if the cut was found, otherwise exit to prevent later segfaults
+        if(!CutPtr){
+          fTAPS_dEvE_CutFile->Close();
+          printf("ERROR: TAPS dEvE cut '%s' not found!\n", fTAPS_dEvE_ChPion_CutName);
+          PrintError(line, "<TAPS dEvE Pion cut: no cut with specified cutname found>", EErrFatal);
+        }
         fTAPS_dEvE_ChPionCut = CutPtr;
         fTAPS_dEvE_CutFile->Close();
       }
@@ -741,6 +752,12 @@ void TA2Taps::SetConfig(char* line, int key)
         sscanf(line, "%s", fTAPS_dEvE_Electron_CutName);
         fTAPS_dEvE_CutFile = new TFile(fTAPS_dEvE_Cuts, "READ");
         CutPtr = (TCutG*)fTAPS_dEvE_CutFile->Get(fTAPS_dEvE_Electron_CutName);
+        // check if the cut was found, otherwise exit to prevent later segfaults
+        if(!CutPtr){
+          fTAPS_dEvE_CutFile->Close();
+          printf("ERROR: TAPS dEvE cut '%s' not found!\n", fTAPS_dEvE_Electron_CutName);
+          PrintError(line, "<TAPS dEvE Electron cut: no cut with specified cutname found>", EErrFatal);
+        }
         fTAPS_dEvE_ElectronCut = CutPtr;
         fTAPS_dEvE_CutFile->Close();
       }
@@ -780,6 +797,12 @@ void TA2Taps::SetConfig(char* line, int key)
         sscanf(line, "%s", fTAPS_TOF_Nucleon_CutName);
         fTAPS_TOF_CutFile = new TFile(fTAPS_TOF_Cuts, "READ");
         CutPtr = (TCutG*)fTAPS_TOF_CutFile->Get(fTAPS_TOF_Nucleon_CutName);
+        // check if the cut was found, otherwise exit to prevent later segfaults
+        if(!CutPtr){
+          fTAPS_TOF_CutFile->Close();
+          printf("ERROR: TAPS TOF cut '%s' not found!\n", fTAPS_TOF_Nucleon_CutName);
+          PrintError(line, "<TAPS TOF Nucleon cut: no cut with specified cutname found>", EErrFatal);
+        }
         fTAPS_TOF_NucleonCut = CutPtr;
         fTAPS_TOF_CutFile->Close();
       }
@@ -854,4 +877,4 @@ error:
 }
 
 //-----------------------Thank you for reading ---------------------------
-
+ClassImp(TA2Taps)

@@ -15,7 +15,6 @@
 
 #include "TCCalib.h"
 
-ClassImp(TCCalib)
 
 
 //______________________________________________________________________________
@@ -317,4 +316,4 @@ void TCCalib::SaveCanvas(TCanvas* c, const Char_t* name)
         c->SaveAs(tmp);
     }
 }
-
+ClassImp(TCCalib)

@@ -44,7 +44,6 @@
 #include "TA2TAPSMk2Format.h"
 #include "ARFile_t.h"
 
-ClassImp(TA2DataServer)
 
 // Command-line key words which determine what to read in
 // constants for command-line maps below
@@ -682,4 +681,4 @@ void TA2DataServer::MergeBuffers(UInt_t buffType)
     *fOutBuff++ = EEndEvent;
   }
 }
-
+ClassImp(TA2DataServer)

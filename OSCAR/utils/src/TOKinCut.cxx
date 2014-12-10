@@ -16,7 +16,6 @@
 #include "TOKinCut.h"
 #include "TOA2BaseDetParticle.h"
 
-ClassImp(TOKinCut)
 
 //______________________________________________________________________________
 TOKinCut::TOKinCut(const TOKinCut& orig)
@@ -111,4 +110,4 @@ void TOKinCut::PrintToString(Char_t* outString)
 
     sprintf(outString, "%s from %.2f to %.2f", name, fMin, fMax);
 }
-
+ClassImp(TOKinCut)

@@ -15,7 +15,6 @@
 
 #include "TCCalibTime.h"
 
-ClassImp(TCCalibTime)
 
 
 //______________________________________________________________________________
@@ -311,4 +310,4 @@ void TCCalibTime::Calculate(Int_t elem)
         printf("Average difference to 0 : %.3f ns\n", fAvrDiff);
     }
 }
-
+ClassImp(TCCalibTime)

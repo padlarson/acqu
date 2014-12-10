@@ -17,7 +17,6 @@
 #include "TOA2DetParticle.h"
 #include "TOSUtils.h"
 
-ClassImp(TOA2DetParticle)
 
 //______________________________________________________________________________
 TOA2DetParticle::TOA2DetParticle(const TOA2DetParticle& orig)
@@ -192,4 +191,4 @@ void TOA2DetParticle::Print(Option_t* option) const
     printf("Error in phi           : %f\n", fErrorPhi*TMath::RadToDeg());
     printf("Error in energy        : %f\n", fErrorEnergy);
 }
-
+ClassImp(TOA2DetParticle)

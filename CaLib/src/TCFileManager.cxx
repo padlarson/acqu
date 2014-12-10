@@ -15,7 +15,6 @@
 
 #include "TCFileManager.h"
 
-ClassImp(TCFileManager)
 
 
 //______________________________________________________________________________
@@ -184,4 +183,4 @@ TH1* TCFileManager::GetHistogram(const Char_t* name)
 
     return hOut;
 }
-
+ClassImp(TCFileManager)

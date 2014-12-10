@@ -153,6 +153,7 @@ private:
     // ------------------------------- Bad scaler reads ------------------------------ 
     Int_t fNBadScalerReads;                                 // number of bad scaler reads
     Int_t* fBadScalerReads;                                 // list of bad scaler reads
+    Bool_t fIsBadScalerSkip;                                // flag for skipping events
     TH1* fH_BadScR_SumScalers;                              // sum scalers w/o bad scaler reads
     TH1* fH_BadScR_SumFPDScalers;                           // FPD sum scalers w/o bad scaler reads
 
@@ -218,7 +219,7 @@ protected:
     Long64_t fEventCounter;                                 // event counter
     Long64_t fEventOffset;                                  // event offset when analyzing multiple files
     Int_t fSaveEvent;                                       // if 1 : save current event in reduced AcquRoot ROOT file
-    Int_t fNScalerReads;                                    // number of processed scaler reads
+    Int_t fScalerReadCounter;                               // number of processed scaler reads
     Bool_t fUseBadScalerReads;                              // key to activate bad scaler reads
 
     // ----------------------------------- Tagger ----------------------------------- 

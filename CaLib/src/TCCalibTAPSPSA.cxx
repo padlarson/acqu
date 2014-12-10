@@ -15,7 +15,6 @@
 
 #include "TCCalibTAPSPSA.h"
 
-ClassImp(TCCalibTAPSPSA)
 
 
 //______________________________________________________________________________
@@ -386,4 +385,4 @@ void TCCalibTAPSPSA::Write()
     
     Info("Write", "%d PSA graphs were written to '%s'", nSave, f.GetName());
 }
-
+ClassImp(TCCalibTAPSPSA)

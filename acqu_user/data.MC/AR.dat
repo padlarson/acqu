@@ -51,7 +51,7 @@ Branch:   emwpc         1024
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #ROOT file(s) (GEANT4 output) to be analysed. Add more lines for more files
 #
-TreeFile: ~/a2Geant4/A2/out/acquMC/Pi0_g4_out_260.root
+TreeFile: scratch/geant.root
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

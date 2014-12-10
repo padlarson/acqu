@@ -1,14 +1,13 @@
-// SVN Info: $Id: MyHitClusterTAPS_t.h 337 2008-11-26 12:28:11Z werthm $
-
 /*************************************************************************
- * Author: Dominik Werthmueller, 2008
+ * Author: Dominik Werthmueller, 2008-2011
  *************************************************************************/
 
 //////////////////////////////////////////////////////////////////////////
 //                                                                      //
 // MyHitClusterTAPS_t                                                   //
 //                                                                      //
-// My customized cluster reconstruction class for TAPS.                 //
+// Cluster reconstruction class for TAPS.                               //
+// Based on HitCluster_t by JRM Annand.                                 //
 //                                                                      //
 //////////////////////////////////////////////////////////////////////////
 
@@ -23,18 +22,11 @@
 class MyHitClusterTAPS_t : public HitCluster_t
 {
 
-private:
-    TRandom* fRandGen;                              // RG for random hit positions: activated if non-zero!
-
-    void SetRandomPosition(TVector3* in, TVector3* out);
-
 public:
-    MyHitClusterTAPS_t(Char_t* line, UInt_t index, Int_t sizefactor = 1, TRandom* rg = 0);
-    virtual ~MyHitClusterTAPS_t();
+    MyHitClusterTAPS_t(Char_t* line, UInt_t index);
+    virtual ~MyHitClusterTAPS_t() { }
     
     void ClusterDetermine(TA2ClusterDetector* cl);
-    void MoreNeighbours(TA2ClusterDetector* cl, UInt_t det_i, 
-                                TVector3* det_pos, Double_t* det_energy);
 };
 
 #endif
