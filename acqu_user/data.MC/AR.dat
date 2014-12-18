@@ -51,7 +51,8 @@ Branch:   emwpc         1024
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #ROOT file(s) (GEANT4 output) to be analysed. Add more lines for more files
 #
-TreeFile: scratch/geant.root
+#TreeFile: /home/adlarson/MC/Geant/GEANT_etap_pi0pi0eta2g.root
+TreeFile: /home/adlarson/MC/Geant/GEANT_sim_pi0eta_4g_01_mkin.root
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -61,7 +62,7 @@ BatchDir: ./
 #
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #Directory to save any created ROOT files (include final '/')
-Directory: ./
+Directory: /home/adlarson/MC/acqucb/
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -295,6 +295,8 @@ void    TA2GoAT::Reconstruct()
 	// Fill standard data check histograms
 	DataCheckHistograms();
 
+    DataCheckHistogramsAdlarson();
+
 	// Output scaler info on scaler read events
 	if((gAR->IsScalerRead()) && (gAR->GetProcessType() != EMCProcess))
 	{
@@ -617,6 +619,26 @@ void	TA2GoAT::DefineHistograms()
 	Check_VetoHits 		= new TH2F("Check_VetoHits", 	"Veto Hits by event number", 	10000,  0,  10000000, 438, 0, 438);	
 	Check_VetoADCHits 	= new TH2F("Check_VetoADCHits", "Veto ADC Hits by event number",10000,  0,  10000000, 438, 0, 438);
 	Check_VetoTDCHits 	= new TH2F("Check_VetoTDCHits", "Veto TDC Hits by event number",10000,  0,  10000000, 438, 0, 438);
+
+
+    // PA define histograms
+    // NaI
+    IMgg_vs_CBnr        = new TH2F("IMgg_vs_CB", "IM(gg) vs CB det nr", 1000, 0, 1000, 720, 0, 720);
+    IMgg_vs_Eg          = new TH2F("IMgg_vs_Eg", "IM(gg) vs Eg", 1000, 0, 1000, 1000, 0, 1000);
+    Eg_vs_CBnr          = new TH2F("Eg_vs_CB", "Eg vs CB det nr", 1000, 0, 1000, 720, 0, 720);
+    Th_vs_CBnr          = new TH2F("Th_vs_CBnr", "Theta versus det nr", 720, 0, 180, 720, 0, 720);
+    IMgg_etapi0         = new TH1F("IMgg_etapi0", "IMgg for eta and pi0, p eta pi0", 1000, 0, 1000);
+    IMetapi0cand        = new TH1F("IMetapi0cand", "IM(4g) candidate p eta pi0", 200, 200, 1200);
+    MM4g                = new TH1F("MM4g", "Missing mass calc for 4g",200, 0, 2000);
+
+    // TAPS
+    TAPSn               = new TH1F("TAPSn", "Nr of neutrals TAPS", 10, 0, 10);
+    IMgg_vs_TAPS1n      = new TH2F("IMgg_vs_TAPS1n", "IM(gg) vs TAPS det nr", 1000, 0, 1000, 500, 0, 500);
+    EdEprTAPS           = new TH2F("EdEprTAPS", "EdE proton candidate", 100, 0, 1000, 50, 0, 10);
+    EdEnTAPS            = new TH2F("EdEnTAPS", "EdE gamma candidate", 100, 0, 1000, 50, 0, 10);
+
+
+
 	
 }
 
@@ -681,9 +703,26 @@ void	TA2GoAT::WriteHistograms()
 	Check_VetoADCHits->Write();
 	
 	Check_VetoTDCHits->GetXaxis()->SetRangeUser(0,eventNumber);
-	Check_VetoTDCHits->Write();		
+    Check_VetoTDCHits->Write();
+
+
+    file->cd();
+    file->mkdir("AdlarsonChecks");
+    file->cd("AdlarsonChecks");
+
+    IMgg_vs_CBnr->Write();
+    Eg_vs_CBnr->Write();
+    IMgg_vs_Eg->Write();
+    IMgg_etapi0->Write();
+    IMetapi0cand->Write();
+    MM4g->Write();
+    TAPSn->Write();
+    EdEprTAPS->Write();
+    EdEnTAPS->Write();
+
 
 	file->cd();
+
 }
 
 void 	TA2GoAT::DataCheckHistograms()
@@ -849,6 +888,154 @@ void 	TA2GoAT::DataCheckHistograms()
 	}
 			
 }
+
+
+
+
+void 	TA2GoAT::DataCheckHistogramsAdlarson()
+{
+    if( fCB->GetNParticle() == 4 )
+    {
+
+        Int_t j = Reconstruct4g();
+        if( j != 10 )
+        {
+            TA2Particle part1 = fCB->GetParticles(perm4g[j][0]);
+            TA2Particle part2 = fCB->GetParticles(perm4g[j][1]);
+            TA2Particle part3 = fCB->GetParticles(perm4g[j][2]);
+            TA2Particle part4 = fCB->GetParticles(perm4g[j][3]);
+
+            TLorentzVector p4_12 = part1.GetP4() + part2.GetP4();
+            TLorentzVector p4_34 = part3.GetP4() + part4.GetP4();
+
+            for( Int_t j = 0; j < nTagged; j++ )
+            {
+                TLorentzVector beam(0.,0., photonbeam_E[j], photonbeam_E[j]);
+                TLorentzVector target(0.,0.,0.,938.272);
+
+                MM4g->Fill((beam + target - p4_12 - p4_34).M());
+
+            }
+
+
+            IMetapi0cand->Fill((p4_12+p4_34).M());
+
+            IMgg_vs_CBnr->Fill( p4_12.M() , part1.GetCentralIndex() );
+            IMgg_vs_CBnr->Fill( p4_12.M() , part2.GetCentralIndex() );
+            IMgg_vs_CBnr->Fill( p4_34.M() , part3.GetCentralIndex() );
+            IMgg_vs_CBnr->Fill( p4_34.M() , part4.GetCentralIndex() );
+
+            IMgg_vs_Eg->Fill( p4_12.M(), part1.GetE());
+            IMgg_vs_Eg->Fill( p4_12.M(), part2.GetE());
+            IMgg_vs_Eg->Fill( p4_34.M(), part3.GetE());
+            IMgg_vs_Eg->Fill( p4_34.M(), part4.GetE());
+
+            Eg_vs_CBnr->Fill( part1.GetE() , part1.GetCentralIndex() );
+            Eg_vs_CBnr->Fill( part2.GetE() , part2.GetCentralIndex() );
+            Eg_vs_CBnr->Fill( part3.GetE() , part3.GetCentralIndex() );
+            Eg_vs_CBnr->Fill( part4.GetE() , part4.GetCentralIndex() );
+
+            IMgg_etapi0->Fill(p4_12.M());
+            IMgg_etapi0->Fill(p4_34.M());
+
+            if( fTAPS )
+                EdEprTAPS->Fill(part1.GetT(),part1.GetVetoEnergy());
+
+
+        }
+    }
+
+/*    if( fTAPS->GetNParticle() == 2  && fCB->GetNParticle() == 3  )
+    {
+//        Int_t nTaps = 0;
+
+          TA2Particle part1 = fTAPS->GetParticles(1);
+          TA2Particle part2 = fTAPS->GetParticles(2);
+          if(part1.GetVetoEnergy() > part2.GetVetoEnergy() )
+          {
+            EdEprTAPS->Fill(part1.GetT(),part1.GetVetoEnergy());
+            EdEnTAPS->Fill(part2.GetT(),part2.GetVetoEnergy());
+          }
+          else
+          {
+            EdEprTAPS->Fill(part2.GetT(),part2.GetVetoEnergy());
+            EdEnTAPS->Fill(part1.GetT(),part1.GetVetoEnergy());
+          }
+
+
+
+//        TAPSn->Fill(nTaps);
+    }
+*/
+
+}
+
+
+Int_t   TA2GoAT::Reconstruct4g()
+{
+    Double_t        Chi_Sq, Chi_Sq_etapi, Chi_Sq_2pi;
+    Double_t        ChiSq_min = 10000;
+    Int_t           best_comb = 10;
+
+    for(int i = 0; i < 6; i++)
+    {
+        // Run through all possible permutations which can form pi0 and eta.
+        // Select the best combination via chi2 test.
+        // Check that the best combination better fits the etapi0 hypothesis than 2pi0
+        // If good candidate best comb i is returned. If failed candidate i = 10
+
+        TA2Particle part1 = fCB->GetParticles(perm4g[i][0]);
+        TA2Particle part2 = fCB->GetParticles(perm4g[i][1]);
+        TA2Particle part3 = fCB->GetParticles(perm4g[i][2]);
+        TA2Particle part4 = fCB->GetParticles(perm4g[i][3]);
+
+        TLorentzVector p4_12 = part1.GetP4() + part2.GetP4();
+        TLorentzVector p4_34 = part3.GetP4() + part4.GetP4();
+
+
+        Chi_Sq = TMath::Abs(p4_12.M() - 135.0)/20 + TMath::Abs(p4_34.M() - 548.0)/40;
+        if( Chi_Sq < ChiSq_min )
+        {
+            best_comb = i;
+            ChiSq_min = Chi_Sq;
+        }
+
+    }
+
+    if( best_comb != 10)
+    {
+        TA2Particle part1 = fCB->GetParticles(perm4g[best_comb][0]);
+        TA2Particle part2 = fCB->GetParticles(perm4g[best_comb][1]);
+        TA2Particle part3 = fCB->GetParticles(perm4g[best_comb][2]);
+        TA2Particle part4 = fCB->GetParticles(perm4g[best_comb][3]);
+
+        TLorentzVector p4_12 = part1.GetP4() + part2.GetP4();
+        TLorentzVector p4_34 = part3.GetP4() + part4.GetP4();
+
+
+        Chi_Sq_etapi    = TMath::Abs(p4_12.M() - 135.0)/20 + TMath::Abs(p4_34.M() - 548.0)/40;
+        Chi_Sq_2pi      = TMath::Abs(p4_12.M() - 135.0)/20 + TMath::Abs(p4_34.M() - 135.0)/20;
+
+        if( Chi_Sq_2pi < Chi_Sq_etapi )
+            best_comb = 10;
+
+    }
+
+    return best_comb;
+}
+
+Int_t		TA2GoAT::perm4g[6][4]=
+{
+    {0,1,2,3},
+    {2,3,0,1},
+
+    {0,2,1,3},
+    {1,3,0,2},
+
+    {0,3,1,2},
+    {1,2,0,3}
+};
+
 
 void    TA2GoAT::Finish()
 {

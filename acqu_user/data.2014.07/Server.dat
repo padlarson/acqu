@@ -14,7 +14,7 @@ Input-Streams:	1		327680		0
 ##############################################################################
 # Optional directory spec. 
 # If not specified File-Names must contain the full directory path
-File-Directory:	scratch/
+File-Directory:	/home/adlarson/data2014.07/raw/
 #
 ##############################################################################
 # Now the list of data files to analyse normal mode
@@ -24,6 +24,6 @@ Stream-Spec:	File	Mk2	0	327680	32	0	400
 #
 ##############################################################################
 # Specify files
-File-Name:     	CBTaggTAPS_5711.dat.xz 0 0
+File-Name:     	CBTaggTAPS_6004.dat.xz 0 0
 #
 ## END

@@ -143,6 +143,24 @@ private:
 		TH2*		Check_VetoADCHits;
 		TH2*		Check_VetoTDCHits;
 
+        // PA hist
+        TH2*        IMgg_vs_CBnr;
+        TH2*        Eg_vs_CBnr;
+        TH1*        Th_vs_CBnr;
+        TH2*        IMgg_vs_Eg;
+        TH1*        IMgg_etapi0;
+        TH1*        IMetapi0cand;
+        TH1*        MM4g;
+
+        TH1*        TAPSn;
+        TH2*        IMgg_vs_TAPS1n;
+        TH2*        EdEprTAPS;
+        TH2*        EdEnTAPS;
+
+        static  Int_t   perm4g[6][4];
+        Int_t       Reconstruct4g();
+
+
 
 	protected:    	
 
@@ -152,6 +170,7 @@ private:
     	void DefineHistograms();	// Define histograms
     	void WriteHistograms();
 		void DataCheckHistograms(); // Routine to fill data check histograms
+        void DataCheckHistogramsAdlarson(); // Routine to fill data check histograms Adlarson
     
 	public:
 	TA2GoAT(const char*, TA2Analysis*);
