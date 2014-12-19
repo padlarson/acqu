@@ -62,6 +62,8 @@ protected:
     TTimer* fTimer;             // slow-motion timer
     Bool_t fTimerRunning;       // timer running state
 
+    Double_t fConvergenceFactor; // used in gain/offset calculation
+
     virtual void Init() = 0;
     virtual void Fit(Int_t elem) = 0;
     virtual void Calculate(Int_t elem) = 0;
@@ -91,7 +93,7 @@ public:
           fMainHisto(0), fFitHisto(0), fFitFunc(0),
           fOverviewHisto(0),
           fCanvasFit(0), fCanvasResult(0), 
-          fTimer(0), fTimerRunning(kFALSE) { }
+          fTimer(0), fTimerRunning(kFALSE), fConvergenceFactor(1) { }
     virtual ~TCCalib();
     
     virtual void Write();

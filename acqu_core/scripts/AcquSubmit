@@ -136,10 +136,10 @@ do
 	jobgo=`echo $jobcount | gawk -v maxq=$maxq '{if ($1>=maxq){print"wait"}else{print"go"}}'`
 
 	while [ "$jobgo" = "wait" ]; do
-	    jobcount=`qstat -u ${USER} | gawk '{if(($10=="Q")||($10=="H")||($10=="R")) print $0}' | wc -l`
 	    echo "There are aleady $jobcount jobs queued. Waiting until it drops below $maxq. Trying again in $waittime"
-	    jobgo=`echo $jobcount | gawk -v maxq=$maxq '{if ($1>=maxq){print"wait"}else{print"go"}}'`
 	    sleep $waittime
+	    jobcount=`qstat -u ${USER} | gawk '{if(($10=="Q")||($10=="H")||($10=="R")) print $0}' | wc -l`
+	    jobgo=`echo $jobcount | gawk -v maxq=$maxq '{if ($1>=maxq){print"wait"}else{print"go"}}'`
 	done
 
 	#OK to go

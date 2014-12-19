@@ -87,6 +87,16 @@ void TCCalib::Start(const Char_t* calibration, Int_t nSet, Int_t* set)
         Info("Start", "Calibrating set %d (Run %d to %d)", fSet[i], first_run, last_run);
     }
 
+    
+    // Read the convergence factor
+    Char_t tmp[256];
+    sprintf(tmp, "%s.ConvergenceFactor", GetName());
+    if (!TCReadConfig::GetReader()->GetConfigDouble(tmp)) {
+	    fConvergenceFactor = 1;
+    }
+    else fConvergenceFactor = TCReadConfig::GetReader()->GetConfigDouble(tmp);
+    Info("Init", "Using a Convergence Factor of %f", fConvergenceFactor);
+    
     // style options
     gStyle->SetPalette(1);
     gStyle->SetFrameBorderMode(0);

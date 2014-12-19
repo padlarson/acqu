@@ -4,15 +4,61 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <iostream>
 #include <vector>
 #include <sys/types.h>
 #include <unistd.h>
-#include <cstring>
+#include <string.h>
+#include <getopt.h>
+#include <errno.h>
+#include <ctype.h>
 
 #define CORES 16
 
 TProcessor* Proc[CORES];
 TThread* Work[CORES];
+
+/* specify the expected options */
+static struct option long_options[] = {
+	{"help", no_argument, 0, 'h'},
+	{"offline", no_argument, 0, 'o'},
+	{"thread", required_argument, 0, 't'},
+	{0, 0, 0, 0}
+};
+
+
+/* print a short help message and exit */
+void print_help()
+{
+	std::cout << "To use the Woker run it this way: Worker [options] config-file" << std::endl
+		<< "Options which can be used:" << std::endl
+		<< " --help, -h     display this help and exit" << std::endl
+		<< " --thread, -t   specify how many threads should be used," << std::endl
+		<< "                number as argument needed" << std::endl
+		<< " --offline, -o  run in offline mode" << std::endl;
+
+	exit(EXIT_SUCCESS);
+}
+
+
+/* method checks if the given string is an unsigned decimal */
+static unsigned int is_udec(char* const str)
+{
+	char *p = &str[0];
+
+	while (*p)
+		if (!isdigit(*p++))
+			return 0;
+
+	return str[0];
+}
+
+/* method checks if a given string is a decimal using is_udec() */
+static unsigned int is_decimal(char* const str)
+{
+	return (is_udec(&str[(str[0] == '-') || (str[0] == '+')]));
+}
+
 
 //-----------------------------------------------------------------------------
 
@@ -21,7 +67,6 @@ void StartThread(Int_t Number)
   Proc[Number]->Run();
 }
 
-//-----------------------------------------------------------------------------
 
 Int_t Negotiate(Int_t pid, Int_t nThreads)
 {
@@ -86,7 +131,7 @@ Int_t Negotiate(Int_t pid, Int_t nThreads)
 
 int main(int argc, char **argv)
 {
-  Int_t CountRd0 = 0;
+  Int_t CountSim = 0;
   Int_t CountDat = 0;
   Int_t Count;
   Int_t Process;
@@ -100,11 +145,10 @@ int main(int argc, char **argv)
   Char_t Server[256];
   Char_t Buffer[2][256];
   Char_t Line[1024];
-  Char_t NameRd0[1024][256];
+  Char_t NameSim[1024][256];
   Char_t NameDat[1024][256];
   Char_t ConfigText[524288];
   Char_t ServerText[524288];
-  Char_t* Slash;
   Int_t Records[1024][2];
   Int_t Number[2];
   FILE* ConfigFile;
@@ -112,20 +156,79 @@ int main(int argc, char **argv)
   FILE* ThreadConfig;
   FILE* ThreadServer;
 
-  //Handle command-line option (dat/rd0 processing) or setup file
-  for(int i=1; i<argc; i++)
-    if(strncmp("--", argv[i], 1))
-      strcpy(Config, argv[i]);
-    else
-    {
-      if(!strcmp("--offline", argv[i])) Offline = true;
-      if(!strcmp("-o", argv[i])) Offline = true;
-      if(!strcmp("--threads", argv[i])) sscanf(argv[i+1], "%d", &nThreads);
-      if(!strcmp("-t", argv[i])) sscanf(argv[i+1], "%d", &nThreads);
-    }
+	// variables used for getopt
+	opterr = 0;  // use own error messages instead of getopt buildin ones
+	int opt;
+	int option_index;
+	// used to check for correct file argument
+	bool file = false;
 
-  //check if nThreads is low enough, otherwise set it to the maximum CORES
-  if(nThreads > CORES) nThreads = CORES;
+	/**
+	 * Handle command-line options
+	 *
+	 * POSIX: if the first letter of the optstring is a colon, a colon is returned if an argument is missing, otherwise a questionmark
+	 * With only a minus at the beginning, which is used to detect strings as parameters (files) in GNUs getopt implementation with the 'letter' ^A ('\1'), a questionmark is returned. But it _has_ to be at the beginning, otherwise strings are not detected. It seems to work also with a colon after the minus. That's why the string starts with "-:"
+	 */
+	while ((opt = getopt_long(argc, argv, "-:ht:c:o", long_options, &option_index)) != -1) {
+		switch (opt) {
+			case 'o':
+				Offline = true;
+				break;
+			case 't':
+			case 'c':  // flag -c for backward compatibility
+				if (!is_decimal(optarg)) {
+					fprintf(stderr, "ERROR: parameter value for thread flag '%s' is not an integer!\n", optarg);
+					exit(EXIT_FAILURE);
+				}
+				nThreads = atoi(optarg);
+				if (!nThreads) {
+					printf("WARNING: Given number of threads is zero, use 4 instead\n");
+					nThreads = 4;
+				}
+				if (nThreads < 0) {
+					printf("WARNING: Given number of threads is negative, use absolute value\n");
+					nThreads *= -1;
+				}
+				if (nThreads > CORES)  // check if nThreads is low enough, otherwise set it to the maximum CORES
+					nThreads = CORES;
+				break;
+			case 'h':
+				print_help();
+				break;
+			case '\1':
+				if (file) {
+					fprintf(stderr, "Invalid parameters: only one file allowed as an argument\n");
+					exit(EXIT_FAILURE);
+				}
+				// for path-less config filename, append 'data' directory
+				if (!strrchr(optarg, '/')) {
+					sprintf(Buffer[0], "data/%s", optarg);
+					strcpy(Config, Buffer[0]);
+				} else
+					strcpy(Config, optarg);
+				ConfigFile = fopen(Config, "r");
+				if (!ConfigFile) {
+					fprintf(stderr, "Error opening file %s: %s\n", Config, strerror(errno));
+					exit(EXIT_FAILURE);
+				}
+				printf("Use config file: %s\n", optarg);
+				file = true;
+				break;
+			case ':':
+				// option argument is missing
+				fprintf(stderr, "%s: option '-%c' requires an argument\n", argv[0], optopt);
+				exit(EXIT_FAILURE);
+			case '?':
+			default:
+				fprintf(stderr, "%s: option '-%c' is invalied\nUsage: %s file [-hto]\n", argv[0], optopt, argv[0]);
+				exit(EXIT_FAILURE);
+		}
+	}
+
+	if (!file) {
+		fprintf(stderr, "ERROR: no config file as parameter given\n");
+		return EXIT_FAILURE;
+	}
 
   //Get current system pid of this Worker process
   pid = getpid();
@@ -135,37 +238,27 @@ int main(int argc, char **argv)
   //Print useless startup information
   printf("\n*** Worker - parallel AcquRoot processing ***\n\n");
   if(Offline)
-    printf("Using offline mode (processing .rd0 files)\n");
+    printf("Using offline mode (processing simulated files)\n");
   else
-    printf("Using Dataserver mode (processing .dat files)\n");
+    printf("Using Dataserver mode (processing data files)\n");
   printf("Using maximum %d threads\n", nThreads);
   printf("Using AcquRoot configuration from file %s\n", Config);
 
-  //For path-less config filename, append 'data' directory
-  Slash = strrchr(Config, '/');
-  if(!Slash)
-  {
-    sprintf(Buffer[0], "data/%s", Config);
-    strcpy(Config, Buffer[0]);
-  }
-
-  //Open config file and search for a) .rd0 file names and b) server configuration file name
-  ConfigFile = fopen(Config, "r");
+  // Use config file and search for a) simulation file names and b) server configuration file name
   while(!feof(ConfigFile))
   {
     if(!fgets(Line, sizeof(Line), ConfigFile)) break;
     Buffer[0][0] = '\0';
     sscanf(Line, "%s %s", Buffer[0], Buffer[1]);
-    //If current line contains a .rd0 file name information...
+    //If current line contains a simulation file name...
     if(!strcmp(Buffer[0], "TreeFile:"))
     {
       //...copy filename to processing list...
-      strcpy(NameRd0[CountRd0], Buffer[1]);
-      CountRd0++;
+      strcpy(NameSim[CountSim++], Buffer[1]);
     }
     else if(!strcmp(Buffer[0], "ServerSetup:"))
     {
-      //..otherwise pick up server configuration file...
+      //...otherwise pick up server configuration file...
       strcpy(Server, Buffer[1]);
     }
     else
@@ -179,16 +272,18 @@ int main(int argc, char **argv)
   if(!Offline)
   {
     //For path-less server filename, append 'data' directory
-    Slash = strrchr(Server, '/');
-    if(!Slash)
-    {
+    if (!strrchr(Server, '/')) {
       sprintf(Buffer[0], "data/%s", Server);
       strcpy(Server, Buffer[0]);
     }
 
     //Open server file and search for .dat file names
     ServerFile = fopen(Server, "r");
-    while(ServerFile && !feof(ServerFile))
+    if (!ServerFile) {
+		fprintf(stderr, "Error opening server file %s: %s\n", Server, strerror(errno));
+		exit(EXIT_FAILURE);
+	}
+    while(!feof(ServerFile))
     {
       if(!fgets(Line, sizeof(Line), ServerFile)) break;
       Buffer[0][0] = '\0';
@@ -225,7 +320,7 @@ int main(int argc, char **argv)
     unlink(Buffer[0]);
   }
 
-  if(Offline) Count = CountRd0; else Count = CountDat;
+  if(Offline) Count = CountSim; else Count = CountDat;
 
   Process = 0;
   while(Process < Count)
@@ -242,7 +337,7 @@ int main(int argc, char **argv)
         ThreadConfig = fopen(Buffer[0], "w");
         fprintf(ThreadConfig, "%s", ConfigText);
         if(Offline)
-          fprintf(ThreadConfig, "\nTreeFile: %s\n", NameRd0[Process]);
+          fprintf(ThreadConfig, "\nTreeFile: %s\n", NameSim[Process]);
         else
         {
           sprintf(Buffer[1], "Thread%XServer.dat", Number);
@@ -265,7 +360,7 @@ int main(int argc, char **argv)
         Work[Number]->Run();
         //Print some process informations
         if(Offline)
-          printf("Processing file %s (offline mode) on thread %2d\n", NameRd0[Process], Number);
+          printf("Processing file %s (offline mode) on thread %2d\n", NameSim[Process], Number);
         else
           printf("Processing file %s (Dataserver mode) on thread %2d\n", NameDat[Process], Number);
         //Some delay to prevent starting all processes at the same time)

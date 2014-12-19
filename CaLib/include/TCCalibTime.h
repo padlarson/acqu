@@ -31,7 +31,6 @@ private:
     Double_t* fTimeGain;                // TDC gain array
     Double_t fMean;                     // mean time position
     TLine* fLine;                       // indicator line
-    Double_t fConvergenceFactor;        // Used in offset calculation, to make convergence slower but more reliable 
     
     virtual void Init();
     virtual void Fit(Int_t elem);
