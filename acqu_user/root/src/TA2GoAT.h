@@ -144,6 +144,7 @@ private:
 		TH2*		Check_VetoTDCHits;
 
         // PA hist
+        TH1*        BeamE;
         TH2*        IMgg_vs_CBnr;
         TH2*        Eg_vs_CBnr;
         TH1*        Th_vs_CBnr;

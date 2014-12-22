@@ -623,6 +623,7 @@ void	TA2GoAT::DefineHistograms()
 
     // PA define histograms
     // NaI
+    BeamE               = new TH1F("BeamE", "Beam energy", 300, 1400, 1700);
     IMgg_vs_CBnr        = new TH2F("IMgg_vs_CB", "IM(gg) vs CB det nr", 1000, 0, 1000, 720, 0, 720);
     IMgg_vs_Eg          = new TH2F("IMgg_vs_Eg", "IM(gg) vs Eg", 1000, 0, 1000, 1000, 0, 1000);
     Eg_vs_CBnr          = new TH2F("Eg_vs_CB", "Eg vs CB det nr", 1000, 0, 1000, 720, 0, 720);
@@ -709,6 +710,7 @@ void	TA2GoAT::WriteHistograms()
     file->cd();
     file->mkdir("AdlarsonChecks");
     file->cd("AdlarsonChecks");
+    BeamE->Write();
 
     IMgg_vs_CBnr->Write();
     Eg_vs_CBnr->Write();
@@ -894,6 +896,8 @@ void 	TA2GoAT::DataCheckHistograms()
 
 void 	TA2GoAT::DataCheckHistogramsAdlarson()
 {
+//    BeamE->Fill(photonbeam_E[0]);
+
     if( fCB->GetNParticle() == 4 )
     {
 

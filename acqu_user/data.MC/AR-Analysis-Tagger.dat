@@ -7,7 +7,8 @@
 #Set-up of magnetic field and MAMI electron beam energy (needed for correct
 #calculation of emitted photon energy).
 #         NMR field    MAMI beam energy
-Magnet:  1.05715      883.13
+Magnet:  1.423         1604.0	
+#Magnet:  1.05715      883.13
 #Magnet:   0.5381       450.0
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #
