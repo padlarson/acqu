@@ -33,7 +33,7 @@ class	TA2GoAT	: public TA2AccessSQL
 {
 private:
 		TFile*		file;				// outFile
-		TTree*		treeRawEvent;		// Raw particle information (filled each event)
+        TTree*		treeRawParticle;	// Raw particle information (filled each event)
 		TTree*		treeTagger;			// Tagger information (filled each event)
 		TTree*		treeLinPol;			// Tagger information (filled each event)		
 		TTree* 		treeTrigger;		// Trigger information (filled each event)
@@ -46,32 +46,27 @@ private:
 
     	//Particles    
     	Int_t		nParticles;		
-    	Double_t*	Ek;
-    	Double_t* 	Theta;
-    	Double_t*	Phi;
+        Double_t*	clusterEnergy;
+        Double_t* 	theta;
+        Double_t*	phi;
     	Double_t*	time;
     	UChar_t*    clusterSize;
-		Int_t*		centralCrys;
+        Int_t*		centralCrystal;
 		Int_t*		centralVeto;
 
     	//Apparatus
-    	UChar_t*	Apparatus;
+        UChar_t*	apparatus;
 
     	//Charged detector energies
-    	Double_t*	d_E;
-    	Double_t*	WC0_E;
-    	Double_t*	WC1_E;
-
-		//Wire Chamber vertex reconstruction
-    	Double_t* 	WC_Vertex_X;
-    	Double_t* 	WC_Vertex_Y;
-    	Double_t* 	WC_Vertex_Z;
+        Double_t*	vetoEnergy;
+        Double_t*	MWPC0Energy;
+        Double_t*	MWPC1Energy;
     
     	//Tagger
     	Int_t		nTagged;
-    	Double_t*	photonbeam_E;
-    	Int_t*		tagged_ch;
-    	Double_t*	tagged_t;
+        Double_t*	taggedEnergy;
+        Int_t*		taggedChannel;
+        Double_t*	taggedTime;
     	
     	//LinPol
     	Int_t 		plane;
@@ -79,38 +74,38 @@ private:
     	Double_t	edgeSetting;
              
     	//Hits
-    	Int_t		nNaI_Hits;
-    	Int_t*		NaI_Hits;
-     	Int_t*		NaI_Cluster;
-   	Int_t		nPID_Hits;
-    	Int_t*		PID_Hits;
-    	Int_t		nWC_Hits;
-    	Int_t*		WC_Hits;
-    	Int_t		nBaF2_PbWO4_Hits;
-    	Int_t*		BaF2_PbWO4_Hits;
-     	Int_t*		BaF2_PbWO4_Cluster;
-   	Int_t		nVeto_Hits;
-    	Int_t*		Veto_Hits;
+        Int_t		nNaIHits;
+        Int_t*		NaIHits;
+        Int_t*		NaICluster;
+        Int_t		nPIDHits;
+        Int_t*		PIDHits;
+        Int_t		nMWPCHits;
+        Int_t*		MWPCHits;
+        Int_t		nBaF2PbWO4Hits;
+        Int_t*		BaF2PbWO4Hits;
+        Int_t*		BaF2PbWO4Cluster;
+        Int_t		nVetoHits;
+        Int_t*		VetoHits;
     
     	//Trigger 
-    	Double_t 	ESum;	// or Detector Energies
-    	Int_t 		Mult; 	
+        Double_t 	energySum;	// or Detector Energies
+        Int_t 		multiplicity;
     	Int_t 		nTriggerPattern;
-		Int_t* 		TriggerPattern;	
+        Int_t* 		triggerPattern;
 
-		Int_t  	 	nHelBits;
-		Bool_t  	Helicity;
-		Bool_t  	HelInver;
-		Int_t  	 	HelADC;
+        Int_t  	 	nHelicityBits;
+        Bool_t  	helicity;
+        Bool_t  	helicityInverted;
+        Int_t  	 	helicityADC;
 
-    	Char_t  	HelBits[8][8];
-    	Bool_t  	HelInh[8];
-    	Bool_t  	HelBeam[8];
+        Char_t  	helicityBits[8][8];
+        Bool_t  	helicityInhibit[8];
+        Bool_t  	helicityBeam[8];
 
-    	Int_t 		nError; 	
-    	Int_t* 		ErrModID; 	
-    	Int_t* 		ErrModIndex; 	
-    	Int_t* 		ErrCode; 	
+        Int_t 		nErrors;
+        Int_t* 		errorModuleID;
+        Int_t* 		errorModuleIndex;
+        Int_t* 		errorCode;
     
     	//Scalers
     	Int_t		eventNumber;

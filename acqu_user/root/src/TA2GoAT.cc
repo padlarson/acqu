@@ -3,58 +3,55 @@
 
 TA2GoAT::TA2GoAT(const char* Name, TA2Analysis* Analysis) : TA2AccessSQL(Name, Analysis),
                                                                     file(0),
-                                                                    treeRawEvent(0),
+                                                                    treeRawParticle(0),
                                                                     treeTagger(0),
                                                                     treeLinPol(0),
                                                                     treeTrigger(0),
                                                                     treeDetectorHits(0),
                                                                     treeScaler(0),
                                                                     nParticles(0),
-                                                                    Ek(0),
-																	Theta(0),
-																	Phi(0),
+                                                                    clusterEnergy(0),
+                                                                    theta(0),
+                                                                    phi(0),
                                                                     time(0),
                                                                     clusterSize(0),
-                                                                    centralCrys(0),
+                                                                    centralCrystal(0),
                                                                     centralVeto(0),
-                                                                    Apparatus(0),
-                                                                    d_E(0),
-                                                                    WC0_E(0),
-                                                                    WC1_E(0),
-                                                                    WC_Vertex_X(0),
-                                                                    WC_Vertex_Y(0),
-                                                                    WC_Vertex_Z(0),
+                                                                    apparatus(0),
+                                                                    vetoEnergy(0),
+                                                                    MWPC0Energy(0),
+                                                                    MWPC1Energy(0),
                                                                     nTagged(0),
-                                                                    photonbeam_E(0),
-                                                                    tagged_ch(0),
-                                                                    tagged_t(0),
+                                                                    taggedEnergy(0),
+                                                                    taggedChannel(0),
+                                                                    taggedTime(0),
                                                                     plane(0),
                                                                     edge(0),
                                                                     edgeSetting(0),
-                                                                    nNaI_Hits(0),
-                                                                    NaI_Hits(0),
-                                                                    NaI_Cluster(0),
-                                                                    nPID_Hits(0),
-                                                                    PID_Hits(0),
-                                                                    nWC_Hits(0),
-																	WC_Hits(0),
-																	nBaF2_PbWO4_Hits(0),
-																	BaF2_PbWO4_Hits(0),
-																	BaF2_PbWO4_Cluster(0),
-                                                                    nVeto_Hits(0),
-                                                                    Veto_Hits(0),
-                                                                    ESum(0),
-                                                                    Mult(0),
+                                                                    nNaIHits(0),
+                                                                    NaIHits(0),
+                                                                    NaICluster(0),
+                                                                    nPIDHits(0),
+                                                                    PIDHits(0),
+                                                                    nMWPCHits(0),
+                                                                    MWPCHits(0),
+                                                                    nBaF2PbWO4Hits(0),
+                                                                    BaF2PbWO4Hits(0),
+                                                                    BaF2PbWO4Cluster(0),
+                                                                    nVetoHits(0),
+                                                                    VetoHits(0),
+                                                                    energySum(0),
+                                                                    multiplicity(0),
                                                                     nTriggerPattern(0),
-																	TriggerPattern(0),
-                                                                    nHelBits(0),
-                                                                    Helicity(0),
-                                                                    HelInver(0),
-                                                                    HelADC(0),
-                                                                    nError(0),
-                                                                    ErrModID(0),
-                                                                    ErrModIndex(0),
-                                                                    ErrCode(0),
+                                                                    triggerPattern(0),
+                                                                    nHelicityBits(0),
+                                                                    helicity(0),
+                                                                    helicityInverted(0),
+                                                                    helicityADC(0),
+                                                                    nErrors(0),
+                                                                    errorModuleID(0),
+                                                                    errorModuleIndex(0),
+                                                                    errorCode(0),
                                                                     eventNumber(0),
                                                                     eventID(0)														
 {
@@ -68,12 +65,12 @@ TA2GoAT::TA2GoAT(const char* Name, TA2Analysis* Analysis) : TA2AccessSQL(Name, A
 
 TA2GoAT::~TA2GoAT()
 {
-	if(treeRawEvent)
-		delete treeRawEvent;
+    if(treeRawParticle)
+        delete treeRawParticle;
 	if(treeTagger)
 		delete treeTagger;
 	if(treeLinPol)
-		delete treeLinPol;		
+        delete treeLinPol;
 	if(treeTrigger)
 		delete treeTrigger;
 	if(treeDetectorHits)
@@ -89,22 +86,22 @@ void    TA2GoAT::LoadVariable()
 	// Including histogram output for testing purposes (quick check of variables)
    	TA2AccessSQL::LoadVariable();
 
-	TA2DataManager::LoadVariable("nParticles", 	&nParticles,EISingleX);
-	TA2DataManager::LoadVariable("Ek", 			Ek,			EDMultiX);
-	TA2DataManager::LoadVariable("Theta", 		Theta,		EDMultiX);   
-	TA2DataManager::LoadVariable("Phi", 		Phi,		EDMultiX);     	 	
-	TA2DataManager::LoadVariable("time", 		time,		EDMultiX);
+    TA2DataManager::LoadVariable("nParticles", 	  &nParticles,   EISingleX);
+    TA2DataManager::LoadVariable("clusterEnergy", clusterEnergy, EDMultiX);
+    TA2DataManager::LoadVariable("theta", 		  theta,         EDMultiX);
+    TA2DataManager::LoadVariable("phi", 		  phi,           EDMultiX);
+    TA2DataManager::LoadVariable("time", 		  time,          EDMultiX);
 
-	TA2DataManager::LoadVariable("nTagged", 	&nTagged,	EISingleX);
-	TA2DataManager::LoadVariable("photonbeamE",     photonbeam_E,   EDMultiX);
-	TA2DataManager::LoadVariable("taggedCh", 	tagged_ch,	EIMultiX);
-	TA2DataManager::LoadVariable("taggedT", 	tagged_t,	EDMultiX);    
+    TA2DataManager::LoadVariable("nTagged", 	  &nTagged,	     EISingleX);
+    TA2DataManager::LoadVariable("taggedEnergy",  taggedEnergy,  EDMultiX);
+    TA2DataManager::LoadVariable("taggedChannel", taggedChannel, EIMultiX);
+    TA2DataManager::LoadVariable("taggedTime", 	  taggedTime,    EDMultiX);
 
-	TA2DataManager::LoadVariable("dE", 			d_E,		EDMultiX);
-	TA2DataManager::LoadVariable("WC0E", 		WC0_E,		EDMultiX);   
-	TA2DataManager::LoadVariable("WC1E", 		WC1_E,		EDMultiX);
+    TA2DataManager::LoadVariable("vetoEnergy",    vetoEnergy,    EDMultiX);
+    TA2DataManager::LoadVariable("MWPC0Energy",   MWPC0Energy,   EDMultiX);
+    TA2DataManager::LoadVariable("MWPC1Energy",   MWPC1Energy,   EDMultiX);
 
-	TA2DataManager::LoadVariable("ESum",		&ESum, 		EDSingleX);
+    TA2DataManager::LoadVariable("energySum",     &energySum,    EDSingleX);
 
     return;
     
@@ -133,19 +130,19 @@ void    TA2GoAT::SetConfig(Char_t* line, Int_t key)
 			fileName[strlen(fileName)-1]='\0';
         return;
     	case EG_BEAM_HELICITY:
-    	    	nHelBits = sscanf(line, "%i%s%s%s%s%s%s%s%s", &HelADC, HelBits[0], HelBits[1], HelBits[2], HelBits[3], HelBits[4], HelBits[5], HelBits[6], HelBits[7]);
-    	    	nHelBits--;
-    	    	if(nHelBits < 2) Error("SetConfig", "Not enough information to construct beam helicity!");
+                nHelicityBits = sscanf(line, "%i%s%s%s%s%s%s%s%s", &helicityADC, helicityBits[0], helicityBits[1], helicityBits[2], helicityBits[3], helicityBits[4], helicityBits[5], helicityBits[6], helicityBits[7]);
+                nHelicityBits--;
+                if(nHelicityBits < 2) Error("SetConfig", "Not enough information to construct beam helicity!");
     	    	else
     	    	{
 			printf("Helicity");
-			for(int i=0; i<nHelBits; i++)
+            for(int i=0; i<nHelicityBits; i++)
 			{
-    				HelInh[i] = false;
-    				if(!strcmp(HelBits[i],"I") || !strcmp(HelBits[i],"i")) HelInh[i] = true;
-    				else if(!strcmp(HelBits[i],"L") || !strcmp(HelBits[i],"l")) HelBeam[i] = false;
-    				else if(!strcmp(HelBits[i],"H") || !strcmp(HelBits[i],"h")) HelBeam[i] = true;
-				printf(" - %s %i %i",HelBits[i],HelInh[i],HelBeam[i]);
+                    helicityInhibit[i] = false;
+                    if(!strcmp(helicityBits[i],"I") || !strcmp(helicityBits[i],"i")) helicityInhibit[i] = true;
+                    else if(!strcmp(helicityBits[i],"L") || !strcmp(helicityBits[i],"l")) helicityBeam[i] = false;
+                    else if(!strcmp(helicityBits[i],"H") || !strcmp(helicityBits[i],"h")) helicityBeam[i] = true;
+                printf(" - %s %i %i",helicityBits[i], helicityInhibit[i], helicityBeam[i]);
 			}
 			printf("\n");
     	    	}
@@ -157,40 +154,36 @@ void    TA2GoAT::SetConfig(Char_t* line, Int_t key)
 
 void    TA2GoAT::PostInit()
 {
-   	Ek		= new Double_t[TA2GoAT_MAX_PARTICLE];
-   	Theta		= new Double_t[TA2GoAT_MAX_PARTICLE];
-   	Phi		= new Double_t[TA2GoAT_MAX_PARTICLE];
-   	time		= new Double_t[TA2GoAT_MAX_PARTICLE];
-   	clusterSize = new UChar_t[TA2GoAT_MAX_PARTICLE];
-   	centralCrys  = new Int_t[TA2GoAT_MAX_PARTICLE];
-	centralVeto = new Int_t[TA2GoAT_MAX_PARTICLE];
+    clusterEnergy    = new Double_t[TA2GoAT_MAX_PARTICLE];
+    theta            = new Double_t[TA2GoAT_MAX_PARTICLE];
+    phi              = new Double_t[TA2GoAT_MAX_PARTICLE];
+    time             = new Double_t[TA2GoAT_MAX_PARTICLE];
+    clusterSize      = new UChar_t[TA2GoAT_MAX_PARTICLE];
+    centralCrystal   = new Int_t[TA2GoAT_MAX_PARTICLE];
+    centralVeto      = new Int_t[TA2GoAT_MAX_PARTICLE];
 	
-   	photonbeam_E= new Double_t[TA2GoAT_MAX_TAGGER];
-   	tagged_ch	= new Int_t[TA2GoAT_MAX_TAGGER];
-   	tagged_t	= new Double_t[TA2GoAT_MAX_TAGGER];
+    taggedEnergy     = new Double_t[TA2GoAT_MAX_TAGGER];
+    taggedChannel    = new Int_t[TA2GoAT_MAX_TAGGER];
+    taggedTime       = new Double_t[TA2GoAT_MAX_TAGGER];
     
-   	Apparatus	= new UChar_t[TA2GoAT_MAX_PARTICLE];
-   	d_E			= new Double_t[TA2GoAT_MAX_PARTICLE];
-   	WC0_E		= new Double_t[TA2GoAT_MAX_PARTICLE];
-   	WC1_E		= new Double_t[TA2GoAT_MAX_PARTICLE];
+    apparatus        = new UChar_t[TA2GoAT_MAX_PARTICLE];
+    vetoEnergy       = new Double_t[TA2GoAT_MAX_PARTICLE];
+    MWPC0Energy      = new Double_t[TA2GoAT_MAX_PARTICLE];
+    MWPC1Energy      = new Double_t[TA2GoAT_MAX_PARTICLE];
+        
+    NaIHits	         = new Int_t[TA2GoAT_MAX_HITS];
+    NaICluster       = new Int_t[TA2GoAT_MAX_HITS];
+    PIDHits	         = new Int_t[TA2GoAT_MAX_HITS];
+    MWPCHits		 = new Int_t[TA2GoAT_MAX_HITS];
+    BaF2PbWO4Hits	 = new Int_t[TA2GoAT_MAX_HITS];
+    BaF2PbWO4Cluster = new Int_t[TA2GoAT_MAX_HITS];
+    VetoHits         = new Int_t[TA2GoAT_MAX_HITS];
     
-   	WC_Vertex_X 	= new Double_t[TA2GoAT_MAX_PARTICLE];
-   	WC_Vertex_Y 	= new Double_t[TA2GoAT_MAX_PARTICLE];
-   	WC_Vertex_Z 	= new Double_t[TA2GoAT_MAX_PARTICLE];
-    
-   	NaI_Hits	= new Int_t[TA2GoAT_MAX_HITS];  
-    	NaI_Cluster	= new Int_t[TA2GoAT_MAX_HITS];  
-  	PID_Hits	= new Int_t[TA2GoAT_MAX_HITS];
-   	WC_Hits		= new Int_t[TA2GoAT_MAX_HITS];
-   	BaF2_PbWO4_Hits	= new Int_t[TA2GoAT_MAX_HITS];
-   	BaF2_PbWO4_Cluster	= new Int_t[TA2GoAT_MAX_HITS];  
-   	Veto_Hits	= new Int_t[TA2GoAT_MAX_HITS];
-    
-   	TriggerPattern = new Int_t[32];
+    triggerPattern   = new Int_t[32];
 
-        ErrModID 	= new Int_t[TA2GoAT_MAX_ERROR];
-   	ErrModIndex 	= new Int_t[TA2GoAT_MAX_ERROR];
-   	ErrCode 	= new Int_t[TA2GoAT_MAX_ERROR];
+    errorModuleID 	 = new Int_t[TA2GoAT_MAX_ERROR];
+    errorModuleIndex = new Int_t[TA2GoAT_MAX_ERROR];
+    errorCode        = new Int_t[TA2GoAT_MAX_ERROR];
 
 	// Default SQL-physics initialisation
         TA2AccessSQL::PostInit();
@@ -214,76 +207,73 @@ void    TA2GoAT::PostInit()
 	fullName.Prepend(outputFolder);
    	printf("Root file saved to %s\n", fullName.Data());  
 
-   	file		= new TFile(fullName.Data(),"RECREATE");
-	treeRawEvent	= new TTree("treeRawEvent", "treeRawEvent");
-	treeTagger	= new TTree("treeTagger","treeTagger");
-	treeTrigger	= new TTree("treeTrigger","treeTrigger");
-	treeDetectorHits = new TTree("treeDetectorHits", "treeDetectorHits");
+    file		     = new TFile(fullName.Data(),"RECREATE");
+    treeRawParticle = new TTree("rawParticle", "rawParticle");
+    treeTagger       = new TTree("tagger",       "tagger");
+    treeTrigger	     = new TTree("trigger",      "trigger");
+    treeDetectorHits = new TTree("detectorHits", "detectorHits");
 	
-	treeRawEvent->Branch("nParticles",&nParticles,"nParticles/I");
-	treeRawEvent->Branch("Ek",  Ek,  "Ek[nParticles]/D");	
-	treeRawEvent->Branch("Theta",  Theta,  "Theta[nParticles]/D");	
-	treeRawEvent->Branch("Phi",  Phi,  "Phi[nParticles]/D");	
-	treeRawEvent->Branch("time", time, "time[nParticles]/D");
-	treeRawEvent->Branch("clusterSize", clusterSize, "clusterSize[nParticles]/b");
-	treeRawEvent->Branch("centralCrys", centralCrys, "centralCrys[nParticles]/I");
-	treeRawEvent->Branch("centralVeto", centralVeto, "centralVeto[nParticles]/I");
-	treeRawEvent->Branch("Apparatus", Apparatus, "Apparatus[nParticles]/b");
-	treeRawEvent->Branch("d_E", d_E, "d_E[nParticles]/D");	
-	treeRawEvent->Branch("WC0_E", WC0_E, "WC0_E[nParticles]/D");	
-	treeRawEvent->Branch("WC1_E", WC1_E, "WC1_E[nParticles]/D");
-	treeRawEvent->Branch("WC_Vertex_X", WC_Vertex_X, "WC_Vertex_X[nParticles]/D");	
-	treeRawEvent->Branch("WC_Vertex_Y", WC_Vertex_Y, "WC_Vertex_Y[nParticles]/D");	
-	treeRawEvent->Branch("WC_Vertex_Z", WC_Vertex_Z, "WC_Vertex_Z[nParticles]/D");
+    treeRawParticle->Branch("nParticles", &nParticles, "nParticles/I");
+    treeRawParticle->Branch("clusterEnergy", clusterEnergy, "clusterEnergy[nParticles]/D");
+    treeRawParticle->Branch("theta", theta, "theta[nParticles]/D");
+    treeRawParticle->Branch("phi", phi, "phi[nParticles]/D");
+    treeRawParticle->Branch("time", time, "time[nParticles]/D");
+    treeRawParticle->Branch("clusterSize", clusterSize, "clusterSize[nParticles]/b");
+    treeRawParticle->Branch("centralCrystal", centralCrystal, "centralCrystal[nParticles]/I");
+    treeRawParticle->Branch("centralVeto", centralVeto, "centralVeto[nParticles]/I");
+    treeRawParticle->Branch("apparatus", apparatus, "apparatus[nParticles]/b");
+    treeRawParticle->Branch("vetoEnergy", vetoEnergy, "vetoEnergy[nParticles]/D");
+    treeRawParticle->Branch("MWPC0Energy", MWPC0Energy, "MWPC0Energy[nParticles]/D");
+    treeRawParticle->Branch("MWPC1Energy", MWPC1Energy, "MWPC1Energy[nParticles]/D");
 	
 	treeTagger->Branch("nTagged", &nTagged,"nTagged/I");
-	treeTagger->Branch("photonbeam_E", photonbeam_E, "photonbeam_E[nTagged]/D");
-	treeTagger->Branch("tagged_ch", tagged_ch, "tagged_ch[nTagged]/I");
-	treeTagger->Branch("tagged_t", tagged_t, "tagged_t[nTagged]/D");
+    treeTagger->Branch("taggedEnergy", taggedEnergy, "taggedEnergy[nTagged]/D");
+    treeTagger->Branch("taggedChannel", taggedChannel, "taggedChannel[nTagged]/I");
+    treeTagger->Branch("taggedTime", taggedTime, "taggedTime[nTagged]/D");
 
-	treeTrigger->Branch("ESum", &ESum, "ESum/D");
-	treeTrigger->Branch("Mult", &Mult, "Mult/I");
-	if(nHelBits > 1) treeTrigger->Branch("Helicity", &Helicity, "Helicity/O");
-	treeTrigger->Branch("nError", &nError, "nError/I");
-	treeTrigger->Branch("ErrModID", ErrModID, "ErrModID[nError]/I");
-	treeTrigger->Branch("ErrModIndex", ErrModIndex, "ErrModIndex[nError]/I");
-	treeTrigger->Branch("ErrCode", ErrCode, "ErrCode[nError]/I");
+    treeTrigger->Branch("energySum", &energySum, "energySum/D");
+    treeTrigger->Branch("multiplicity", &multiplicity, "multiplicity/I");
+    if(nHelicityBits > 1) treeTrigger->Branch("helicity", &helicity, "helicity/O");
+    treeTrigger->Branch("nErrors", &nErrors, "nErrors/I");
+    treeTrigger->Branch("errorModuleID", errorModuleID, "errorModuleID[nErrors]/I");
+    treeTrigger->Branch("errorModuleIndex", errorModuleIndex, "errorModuleIndex[nErrors]/I");
+    treeTrigger->Branch("errorCode", errorCode, "errorCode[nErrors]/I");
 	treeTrigger->Branch("nTriggerPattern", &nTriggerPattern, "nTriggerPattern/I");
-	treeTrigger->Branch("TriggerPattern", TriggerPattern, "TriggerPattern[nTriggerPattern]/I");
+    treeTrigger->Branch("triggerPattern", triggerPattern, "triggerPattern[nTriggerPattern]/I");
 	
-	treeDetectorHits->Branch("nNaI_Hits", &nNaI_Hits, "nNaI_Hits/I");
-	treeDetectorHits->Branch("NaI_Hits", NaI_Hits, "NaI_Hits[nNaI_Hits]/I");
-	treeDetectorHits->Branch("NaI_Cluster", NaI_Cluster, "NaI_Cluster[nNaI_Hits]/I");
-	treeDetectorHits->Branch("nPID_Hits", &nPID_Hits, "nPID_Hits/I");
-	treeDetectorHits->Branch("PID_Hits", PID_Hits, "PID_Hits[nPID_Hits]/I");
-	treeDetectorHits->Branch("nWC_Hits", &nWC_Hits, "nWC_Hits/I");
-	treeDetectorHits->Branch("WC_Hits", WC_Hits, "WC_Hits[nWC_Hits]/I");	
-	treeDetectorHits->Branch("nBaF2_PbWO4_Hits", &nBaF2_PbWO4_Hits, "nBaF2_PbWO4_Hits/I");
-	treeDetectorHits->Branch("BaF2_PbWO4_Hits", BaF2_PbWO4_Hits, "BaF2_PbWO4_Hits[nBaF2_PbWO4_Hits]/I");
-	treeDetectorHits->Branch("BaF2_PbWO4_Cluster", BaF2_PbWO4_Cluster, "BaF2_PbWO4_Cluster[nBaF2_PbWO4_Hits]/I");
-	treeDetectorHits->Branch("nVeto_Hits", &nVeto_Hits, "nVeto_Hits/I");
-	treeDetectorHits->Branch("Veto_Hits", Veto_Hits, "Veto_Hits[nVeto_Hits]/I");
+    treeDetectorHits->Branch("nNaIHits", &nNaIHits, "nNaIHits/I");
+    treeDetectorHits->Branch("NaIHits", NaIHits, "NaIHits[nNaIHits]/I");
+    treeDetectorHits->Branch("NaICluster", NaICluster, "NaICluster[nNaIHits]/I");
+    treeDetectorHits->Branch("nPIDHits", &nPIDHits, "nPIDHits/I");
+    treeDetectorHits->Branch("PIDHits", PIDHits, "PIDHits[nPIDHits]/I");
+    treeDetectorHits->Branch("nMWPCHits", &nMWPCHits, "nMWPCHits/I");
+    treeDetectorHits->Branch("MWPCHits", MWPCHits, "MWPCHits[nMWPCHits]/I");
+    treeDetectorHits->Branch("nBaF2PbWO4Hits", &nBaF2PbWO4Hits, "nBaF2PbWO4Hits/I");
+    treeDetectorHits->Branch("BaF2PbWO4Hits", BaF2PbWO4Hits, "BaF2PbWO4Hits[nBaF2PbWO4Hits]/I");
+    treeDetectorHits->Branch("BaF2PbWO4Cluster", BaF2PbWO4Cluster, "BaF2PbWO4Cluster[nBaF2PbWO4Hits]/I");
+    treeDetectorHits->Branch("nVetoHits", &nVetoHits, "nVetoHits/I");
+    treeDetectorHits->Branch("VetoHits", VetoHits, "VetoHits[nVetoHits]/I");
 
 	// Store Scalers for non-MC process
 	if (gAR->GetProcessType() != EMCProcess) 
 	{
-		treeScaler = new TTree("treeScaler", "treeScaler");	
+		treeScaler = new TTree("scaler", "scaler");	
 		treeScaler->Branch("eventNumber", &eventNumber, "eventNumber/I");
 		treeScaler->Branch("eventID", &eventID, "eventID/I");
 		printf("GetMaxScaler: %d\n", GetMaxScaler());
 	        Char_t str[256];
-		sprintf(str, "Scaler[%d]/i", GetMaxScaler());
-		treeScaler->Branch("Scaler", fScaler, str);
+        sprintf(str, "scalers[%d]/i", GetMaxScaler());
+        treeScaler->Branch("scalers", fScaler, str);
 
 		// Store Lin Pol if class is active
 		if(fLinPol)
 		{
-			treeLinPol = new TTree("treeLinPol", "treeLinPol");		
+			treeLinPol = new TTree("linPol", "linPol");		
 			treeLinPol->Branch("plane", &plane, "plane/I");
 			treeLinPol->Branch("edge", &edge, "edge/D");
 			treeLinPol->Branch("edgeSetting", &edgeSetting, "edgeSetting/D");
-			treeLinPol->Branch("polTable", fLinPol->GetPolTable_TC(), "polTable[352]/D");
-			treeLinPol->Branch("enhTable", fLinPol->GetEnhTable_TC(), "enhTable[352]/D");
+            treeLinPol->Branch("polarizationTable", fLinPol->GetPolTable_TC(), "polarizationTable[352]/D");
+            treeLinPol->Branch("enhancementTable", fLinPol->GetEnhTable_TC(), "enhancementTable[352]/D");
 		}
 	}
 
@@ -335,9 +325,9 @@ void    TA2GoAT::Reconstruct()
         		nTagged	= fLadder->GetNhits();
         		for(int i=0; i<nTagged; i++)
         		{
-        			tagged_ch[i]	= fLadder->GetHits(i);
-        			tagged_t[i]	= (fLadder->GetTimeOR())[i];
-        			photonbeam_E[i] = electron_E - ChToE[tagged_ch[i]];
+                    taggedChannel[i]	= fLadder->GetHits(i);
+                    taggedTime[i]	= (fLadder->GetTimeOR())[i];
+                    taggedEnergy[i] = electron_E - ChToE[taggedChannel[i]];
 	        	}
 		}
 		
@@ -348,9 +338,9 @@ void    TA2GoAT::Reconstruct()
         		{
         			for(UInt_t i=0; i<fLadder->GetNhitsM(m); i++)
         			{
-        				tagged_ch[nTagged+i] 	= (fLadder->GetHitsM(m))[i];
-        				tagged_t[nTagged+i]	= (fLadder->GetTimeORM(m))[i];
-        				photonbeam_E[nTagged+i] = electron_E - ChToE[tagged_ch[nTagged+i]];
+                        taggedChannel[nTagged+i] 	= (fLadder->GetHitsM(m))[i];
+                        taggedTime[nTagged+i]	= (fLadder->GetTimeORM(m))[i];
+                        taggedEnergy[nTagged+i] = electron_E - ChToE[taggedChannel[nTagged+i]];
         			}
         			nTagged	+= fLadder->GetNhitsM(m);
 	        	}
@@ -371,40 +361,31 @@ void    TA2GoAT::Reconstruct()
 			part.SetMass(0.0);
 
 			// Reset a bunch of inconsistant "no-value" markers
-			if(TMath::Abs(part.GetT()) >= TA2GoAT_NULL) Ek[i] = 0.0;
-			else Ek[i] = part.GetT();
+            if(TMath::Abs(part.GetT()) >= TA2GoAT_NULL) clusterEnergy[i] = 0.0;
+            else clusterEnergy[i] = part.GetT();
 
 			if(TMath::Abs(part.GetTime()) >= TA2GoAT_NULL) time[i] = 0.0;
 			else time[i] = part.GetTime();
 			
-			if(TMath::Abs(part.GetVetoEnergy()) >= TA2GoAT_NULL) d_E[i] = 0.0;
-			else d_E[i]	= part.GetVetoEnergy();
+            if(TMath::Abs(part.GetVetoEnergy()) >= TA2GoAT_NULL) vetoEnergy[i] = 0.0;
+            else vetoEnergy[i]	= part.GetVetoEnergy();
 			
-			if(TMath::Abs(part.GetEnergyMwpc0()) >= TA2GoAT_NULL) WC0_E[i] = 0.0;
-			else WC0_E[i] = part.GetEnergyMwpc0();
+            if(TMath::Abs(part.GetEnergyMwpc0()) >= TA2GoAT_NULL) MWPC0Energy[i] = 0.0;
+            else MWPC0Energy[i] = part.GetEnergyMwpc0();
 			
-			if(TMath::Abs(part.GetEnergyMwpc1()) >= TA2GoAT_NULL) WC1_E[i] = 0.0;
-			else WC1_E[i] = part.GetEnergyMwpc1();
-			
-			if(TMath::Abs(part.GetPsVertex().X()) >= TA2GoAT_NULL) WC_Vertex_X[i] = 0.0;
-			else WC_Vertex_X[i]  = part.GetPsVertex().X();			
-
-			if(TMath::Abs(part.GetPsVertex().Y()) >= TA2GoAT_NULL) WC_Vertex_Y[i] = 0.0;
-			else WC_Vertex_Y[i]  = part.GetPsVertex().Y();	
-			
-			if(TMath::Abs(part.GetPsVertex().Z()) >= TA2GoAT_NULL) WC_Vertex_Z[i] = 0.0;
-			else WC_Vertex_Z[i]  = part.GetPsVertex().Z();				
-			
-			if(part.GetCentralIndex() == ENullHit) centralCrys[i] = -1;
-			else centralCrys[i] = part.GetCentralIndex();
+            if(TMath::Abs(part.GetEnergyMwpc1()) >= TA2GoAT_NULL) MWPC1Energy[i] = 0.0;
+            else MWPC1Energy[i] = part.GetEnergyMwpc1();
+						
+            if(part.GetCentralIndex() == ENullHit) centralCrystal[i] = -1;
+            else centralCrystal[i] = part.GetCentralIndex();
 						
 			if(part.GetVetoIndex() == ENullHit) centralVeto[i] = -1;
 			else centralVeto[i]	= part.GetVetoIndex();		
 			
 			// Store other values which don't have this "no-value" option
-			Apparatus[i]	= (UChar_t)EAppCB;
-			Theta[i]		= part.GetThetaDg();
-			Phi[i]			= part.GetPhiDg();			
+            apparatus[i]	= (UChar_t)EAppCB;
+            theta[i]		= part.GetThetaDg();
+            phi[i]			= part.GetPhiDg();
 			clusterSize[i]  = (UChar_t)part.GetClusterSize();
 
 		}
@@ -421,32 +402,29 @@ void    TA2GoAT::Reconstruct()
 			part.SetMass(0.0);				
 
 			// Reset a bunch of inconsistant "no-value" markers
-			if(TMath::Abs(part.GetT()) >= TA2GoAT_NULL) Ek[nParticles+i] = 0.0;
-			else Ek[nParticles+i] = part.GetT();
+            if(TMath::Abs(part.GetT()) >= TA2GoAT_NULL) clusterEnergy[nParticles+i] = 0.0;
+            else clusterEnergy[nParticles+i] = part.GetT();
 
 			if(TMath::Abs(part.GetTime()) >= TA2GoAT_NULL) time[nParticles+i] = 0.0;
 			else time[nParticles+i] = part.GetTime();
 			
-			if(TMath::Abs(part.GetVetoEnergy()) >= TA2GoAT_NULL) d_E[nParticles+i] = 0.0;
-			else d_E[nParticles+i]	= part.GetVetoEnergy();
+            if(TMath::Abs(part.GetVetoEnergy()) >= TA2GoAT_NULL) vetoEnergy[nParticles+i] = 0.0;
+            else vetoEnergy[nParticles+i]	= part.GetVetoEnergy();
 		
-			if(part.GetCentralIndex() == ENullHit) centralCrys[nParticles+i] = -1;
-			else centralCrys[nParticles+i]	= part.GetCentralIndex();
+            if(part.GetCentralIndex() == ENullHit) centralCrystal[nParticles+i] = -1;
+            else centralCrystal[nParticles+i]	= part.GetCentralIndex();
 			
 			if(part.GetVetoIndex() == ENullHit) centralVeto[nParticles+i] = -1;
 			else centralVeto[nParticles+i]	= part.GetVetoIndex();		
 			
 			// Set WC values to NULL
-			WC0_E[nParticles+i] = 0.0;
-			WC1_E[nParticles+i] = 0.0;
-			WC_Vertex_X[nParticles+i] = 0.0;
-			WC_Vertex_Y[nParticles+i] = 0.0;
-			WC_Vertex_Z[nParticles+i] = 0.0;	
+            MWPC0Energy[nParticles+i] = 0.0;
+            MWPC1Energy[nParticles+i] = 0.0;
 			
 			// Store other values which don't have this "no-value" option
-			Apparatus[nParticles+i]		= (UChar_t)EAppTAPS;
-			Theta[nParticles+i]			= part.GetThetaDg();
-			Phi[nParticles+i]			= part.GetPhiDg();			
+            apparatus[nParticles+i]		= (UChar_t)EAppTAPS;
+            theta[nParticles+i]			= part.GetThetaDg();
+            phi[nParticles+i]			= part.GetPhiDg();
 			time[nParticles+i]			= part.GetTime();	
 			clusterSize[nParticles+i]  	= (UChar_t)part.GetClusterSize();
 
@@ -462,7 +440,7 @@ void    TA2GoAT::Reconstruct()
 	// Get Detector Hits
 	if(fNaI)
 	{
-	        for(int i=0; i<720; i++)
+        for(int i=0; i<720; i++)
 		{
 		        clindex[i] = -1;
 		}
@@ -477,26 +455,26 @@ void    TA2GoAT::Reconstruct()
 			}
 		}
 			
-		nNaI_Hits = fNaI->GetNhits();
-		for(int i=0; i<nNaI_Hits; i++)   
+        nNaIHits = fNaI->GetNhits();
+        for(int i=0; i<nNaIHits; i++)
 		{
-                        NaI_Hits[i] = fNaI->GetHits(i);
-			NaI_Cluster[i] = clindex[NaI_Hits[i]];
+            NaIHits[i] = fNaI->GetHits(i);
+            NaICluster[i] = clindex[NaIHits[i]];
 		}
 	}
 
 	if(fPID)
 	{
-		nPID_Hits = fPID->GetNhits();
-		for(int i=0; i<nPID_Hits; i++)   
-			{ PID_Hits[i] = fPID->GetHits(i); }
+        nPIDHits = fPID->GetNhits();
+        for(int i=0; i<nPIDHits; i++)
+        { PIDHits[i] = fPID->GetHits(i); }
 	}
 
 	if(fMWPC)
 	{
-		nWC_Hits = fMWPC->GetNhits();
-		for(int i=0; i<nWC_Hits; i++)    
-			{ WC_Hits[i] = fMWPC->GetHits(i); }
+        nMWPCHits = fMWPC->GetNhits();
+        for(int i=0; i<nMWPCHits; i++)
+        { MWPCHits[i] = fMWPC->GetHits(i); }
 	}
 
 	if(fBaF2PWO)
@@ -516,56 +494,56 @@ void    TA2GoAT::Reconstruct()
 			}
 		}
 			
-		nBaF2_PbWO4_Hits = fBaF2PWO->GetNhits();
-		for(int i=0; i<nBaF2_PbWO4_Hits; i++)
+        nBaF2PbWO4Hits = fBaF2PWO->GetNhits();
+        for(int i=0; i<nBaF2PbWO4Hits; i++)
 		{
-                        BaF2_PbWO4_Hits[i] = fBaF2PWO->GetHits(i);
-			BaF2_PbWO4_Cluster[i] = clindex[BaF2_PbWO4_Hits[i]];
+            BaF2PbWO4Hits[i] = fBaF2PWO->GetHits(i);
+            BaF2PbWO4Cluster[i] = clindex[BaF2PbWO4Hits[i]];
 		}
 	}
 
 	if(fVeto)
 	{
-		nVeto_Hits = fVeto->GetNhits();
-		for(int i=0; i<nVeto_Hits; i++) 
-			{ Veto_Hits[i] = fVeto->GetHits(i);}
+        nVetoHits = fVeto->GetNhits();
+        for(int i=0; i<nVetoHits; i++)
+            { VetoHits[i] = fVeto->GetHits(i);}
 	}
 	
 	// Get Trigger information
 	TriggerReconstruction();
 
-	nError = gAR->GetHardError();
+    nErrors = gAR->GetHardError();
 	ReadErrorMk2_t *ErrorBlock = gAR->GetHardwareError();
 	ReadErrorMk2_t *Error;
-	for(int i=0; i<nError; i++)
+    for(int i=0; i<nErrors; i++)
 	{
 		Error = ErrorBlock + i;
-		ErrModID[i] = Error->fModID;
-		ErrModIndex[i] = Error->fModIndex;
-		ErrCode[i] = Error->fErrCode;
+        errorModuleID[i] = Error->fModID;
+        errorModuleIndex[i] = Error->fModIndex;
+        errorCode[i] = Error->fErrCode;
 	}
 
-	if(nHelBits > 1)
+    if(nHelicityBits > 1)
 	{
-		Bool_t HelBit;
-		Helicity = true;
-		HelInver = true;
-		for(int i=0; i<nHelBits; i++)
+        Bool_t helicityBit;
+        helicity = true;
+        helicityInverted = true;
+        for(int i=0; i<nHelicityBits; i++)
 		{
-			HelBit = (fADC[HelADC] & 1<<i);
-			if(HelInh[i] && HelBit)
+            helicityBit = (fADC[helicityADC] & 1<<i);
+            if(helicityInhibit[i] && helicityBit)
 			{
-				ErrCode[nError] = 9;
-				nError++;
+                errorCode[nErrors] = 9;
+                nErrors++;
 				break;
 			}
-			else if(HelInh[i]) continue;
-			Helicity = (Helicity && (HelBeam[i] == HelBit));
-			HelInver = (HelInver && (HelBeam[i] != HelBit));
-			if(Helicity == HelInver)
+            else if(helicityInhibit[i]) continue;
+            helicity = (helicity && (helicityBeam[i] == helicityBit));
+            helicityInverted = (helicityInverted && (helicityBeam[i] != helicityBit));
+            if(helicity == helicityInverted)
 			{
-				ErrCode[nError] = 10;
-				nError++;
+                errorCode[nErrors] = 10;
+                nErrors++;
 				break;
 			}
 		}
@@ -578,29 +556,26 @@ void    TA2GoAT::Reconstruct()
 		{
 			if(eventIDcheck != fMulti[400]->GetHit(i))
 			{
-				ErrCode[nError] = 11;
-				nError++;
+                errorCode[nErrors] = 11;
+                nErrors++;
 				break;
 			}
 		}
 	}
 
 	//Apply EndBuffer
-    	Ek[nParticles] 		= EBufferEnd;
-    	Theta[nParticles]	= EBufferEnd;
-    	Phi[nParticles]		= EBufferEnd;
-    	time[nParticles] 	= EBufferEnd;
-    	WC0_E[nParticles] 	= EBufferEnd;
-    	WC1_E[nParticles] 	= EBufferEnd;
-    	WC_Vertex_X[nParticles] = EBufferEnd;  
-    	WC_Vertex_Y[nParticles] = EBufferEnd;    
-	WC_Vertex_Z[nParticles] = EBufferEnd;    
-	d_E[nParticles] 	= EBufferEnd;    
-    tagged_ch[nTagged] 	= EBufferEnd;
-    tagged_t[nTagged] 	= EBufferEnd;	
+    clusterEnergy[nParticles] = EBufferEnd;
+    theta[nParticles]         = EBufferEnd;
+    phi[nParticles]           = EBufferEnd;
+    time[nParticles]          = EBufferEnd;
+    MWPC0Energy[nParticles]   = EBufferEnd;
+    MWPC1Energy[nParticles]   = EBufferEnd;
+    vetoEnergy[nParticles] 	  = EBufferEnd;
+    taggedChannel[nTagged] 	  = EBufferEnd;
+    taggedTime[nTagged] 	  = EBufferEnd;
 	
 	//Fill Trees
-	if(treeRawEvent) 		treeRawEvent->Fill();
+    if(treeRawParticle) 	treeRawParticle->Fill();
 	if(treeTagger)			treeTagger->Fill();
 	if(treeTrigger)  		treeTrigger->Fill();
 	if(treeDetectorHits)	treeDetectorHits->Fill();
@@ -883,10 +858,10 @@ void    TA2GoAT::Finish()
 	
 	file->cd();
 	
-	if(treeRawEvent) 
+    if(treeRawParticle)
 	{
-		treeRawEvent->Write();	// Write	
-		delete treeRawEvent; 	// Close and delete in memory
+        treeRawParticle->Write();	// Write
+        delete treeRawParticle; 	// Close and delete in memory
 	}
 	if(treeTagger) 
 	{
@@ -930,7 +905,7 @@ void    TA2GoAT::ParseMisc(char* line)
 
 void 	TA2GoAT::TriggerReconstruction()
 {
-	if (fNaI) ESum = fNaI->GetTotalEnergy();
+    if (fNaI) energySum = fNaI->GetTotalEnergy();
 	if(gAR->GetProcessType() == EMCProcess) TriggerMC();
 	else TriggerHW();
 
@@ -944,7 +919,7 @@ void 	TA2GoAT::TriggerMC()
 	// Also need some flag for new and old 
 	// Set some basic discriminator thresh for now
 	Double_t DiscTh = 5.0; 
-	Mult = 0;
+    multiplicity = 0;
 		
 	if(fNaI) 
 	{
@@ -955,7 +930,7 @@ void 	TA2GoAT::TriggerMC()
 			{
 				if ((fNaI->GetEnergyAll(i*16 + j)) >= DiscTh) flag = kTRUE;
 			}
-			if (flag == kTRUE) Mult++;
+            if (flag == kTRUE) multiplicity++;
 		}
 	}
 		
@@ -966,14 +941,14 @@ void 	TA2GoAT::TriggerMC()
 			// really add some check of how many crystals are used, skip PbWO4s
 				if ((fBaF2PWO->GetEnergyAll(i*71 + j)) >= DiscTh) flag = kTRUE;
 			}
-			if (flag == kTRUE) Mult++; 		
+            if (flag == kTRUE) multiplicity++;
 		}
 	}
 		
 	// True Hardware multiplicities store only M2, M3, M4+
 	//  Reduce MC multiplicity to reflect this limitation
-	if (Mult == 1) Mult = 0;	
-	if (Mult > 4) Mult = 4;
+    if (multiplicity == 1) multiplicity = 0;
+    if (multiplicity > 4) multiplicity = 4;
 }
 	
 void 	TA2GoAT::TriggerHW() 
@@ -983,21 +958,21 @@ void 	TA2GoAT::TriggerHW()
 	{
 		if (fADC[0] & 1<<i) 
 		{ 
-			TriggerPattern[nTriggerPattern] = i; 
+            triggerPattern[nTriggerPattern] = i;
 			nTriggerPattern++;
 		}
 		if (fADC[1] & 1<<i) 
 		{ 
-			TriggerPattern[nTriggerPattern] = i+16;
+            triggerPattern[nTriggerPattern] = i+16;
 			nTriggerPattern++;
 		}
 	}
 	
-	Mult = 0;
+    multiplicity = 0;
 	
-	if (fADC[0] & 1<<11) Mult+=2;
-	if (fADC[0] & 1<<12) Mult++;
-	if (fADC[0] & 1<<13) Mult++;
+    if (fADC[0] & 1<<11) multiplicity+=2;
+    if (fADC[0] & 1<<12) multiplicity++;
+    if (fADC[0] & 1<<13) multiplicity++;
  	
 }
 
