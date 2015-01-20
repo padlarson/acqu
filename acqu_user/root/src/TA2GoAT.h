@@ -33,7 +33,7 @@ class	TA2GoAT	: public TA2AccessSQL
 {
 private:
 		TFile*		file;				// outFile
-        TTree*		treeRawParticle;	// Raw particle information (filled each event)
+        TTree*		treeTracks;	        // Raw particle information (filled each event)
 		TTree*		treeTagger;			// Tagger information (filled each event)
 		TTree*		treeLinPol;			// Tagger information (filled each event)		
 		TTree* 		treeTrigger;		// Trigger information (filled each event)

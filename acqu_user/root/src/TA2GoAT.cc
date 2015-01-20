@@ -3,7 +3,7 @@
 
 TA2GoAT::TA2GoAT(const char* Name, TA2Analysis* Analysis) : TA2AccessSQL(Name, Analysis),
                                                                     file(0),
-                                                                    treeRawParticle(0),
+                                                                    treeTracks(0),
                                                                     treeTagger(0),
                                                                     treeLinPol(0),
                                                                     treeTrigger(0),
@@ -65,8 +65,8 @@ TA2GoAT::TA2GoAT(const char* Name, TA2Analysis* Analysis) : TA2AccessSQL(Name, A
 
 TA2GoAT::~TA2GoAT()
 {
-    if(treeRawParticle)
-        delete treeRawParticle;
+    if(treeTracks)
+        delete treeTracks;
 	if(treeTagger)
 		delete treeTagger;
 	if(treeLinPol)
@@ -208,23 +208,23 @@ void    TA2GoAT::PostInit()
    	printf("Root file saved to %s\n", fullName.Data());  
 
     file		     = new TFile(fullName.Data(),"RECREATE");
-    treeRawParticle = new TTree("rawParticle", "rawParticle");
+    treeTracks       = new TTree("tracks",       "tracks");
     treeTagger       = new TTree("tagger",       "tagger");
     treeTrigger	     = new TTree("trigger",      "trigger");
     treeDetectorHits = new TTree("detectorHits", "detectorHits");
 	
-    treeRawParticle->Branch("nParticles", &nParticles, "nParticles/I");
-    treeRawParticle->Branch("clusterEnergy", clusterEnergy, "clusterEnergy[nParticles]/D");
-    treeRawParticle->Branch("theta", theta, "theta[nParticles]/D");
-    treeRawParticle->Branch("phi", phi, "phi[nParticles]/D");
-    treeRawParticle->Branch("time", time, "time[nParticles]/D");
-    treeRawParticle->Branch("clusterSize", clusterSize, "clusterSize[nParticles]/b");
-    treeRawParticle->Branch("centralCrystal", centralCrystal, "centralCrystal[nParticles]/I");
-    treeRawParticle->Branch("centralVeto", centralVeto, "centralVeto[nParticles]/I");
-    treeRawParticle->Branch("apparatus", apparatus, "apparatus[nParticles]/b");
-    treeRawParticle->Branch("vetoEnergy", vetoEnergy, "vetoEnergy[nParticles]/D");
-    treeRawParticle->Branch("MWPC0Energy", MWPC0Energy, "MWPC0Energy[nParticles]/D");
-    treeRawParticle->Branch("MWPC1Energy", MWPC1Energy, "MWPC1Energy[nParticles]/D");
+    treeTracks->Branch("nTracks", &nParticles, "nTracks/I");
+    treeTracks->Branch("clusterEnergy", clusterEnergy, "clusterEnergy[nTracks]/D");
+    treeTracks->Branch("theta", theta, "theta[nTracks]/D");
+    treeTracks->Branch("phi", phi, "phi[nTracks]/D");
+    treeTracks->Branch("time", time, "time[nTracks]/D");
+    treeTracks->Branch("clusterSize", clusterSize, "clusterSize[nTracks]/b");
+    treeTracks->Branch("centralCrystal", centralCrystal, "centralCrystal[nTracks]/I");
+    treeTracks->Branch("centralVeto", centralVeto, "centralVeto[nTracks]/I");
+    treeTracks->Branch("apparatus", apparatus, "apparatus[nTracks]/b");
+    treeTracks->Branch("vetoEnergy", vetoEnergy, "vetoEnergy[nTracks]/D");
+    treeTracks->Branch("MWPC0Energy", MWPC0Energy, "MWPC0Energy[nTracks]/D");
+    treeTracks->Branch("MWPC1Energy", MWPC1Energy, "MWPC1Energy[nTracks]/D");
 	
 	treeTagger->Branch("nTagged", &nTagged,"nTagged/I");
     treeTagger->Branch("taggedEnergy", taggedEnergy, "taggedEnergy[nTagged]/D");
@@ -575,7 +575,7 @@ void    TA2GoAT::Reconstruct()
     taggedTime[nTagged] 	  = EBufferEnd;
 	
 	//Fill Trees
-    if(treeRawParticle) 	treeRawParticle->Fill();
+    if(treeTracks) 	treeTracks->Fill();
 	if(treeTagger)			treeTagger->Fill();
 	if(treeTrigger)  		treeTrigger->Fill();
 	if(treeDetectorHits)	treeDetectorHits->Fill();
@@ -599,7 +599,7 @@ void	TA2GoAT::DefineHistograms()
 	Check_TAPSdE_E		= new TH2F("Check_TAPSdE_E", "dE_E (all TAPS clusters compared to Veto hits)", 	400, 0, 400, 100, 0, 10);
 	Check_TAPSPhiCorr 	= new TH2F("Check_TAPSPhiCorr","TAPS-Veto phi correlation (all TAPS clusters compared to Veto hits)", 438,  0,  438, 180, -180, 180);
 
-	Check_TAPSdE_E_1Veto	= new TH2F("Check_TAPSdE_E_1PID", "dE_E (all TAPS clusters compared to single Veto hits)", 	400, 0, 400, 100, 0, 10);
+	Check_TAPSdE_E_1Veto	= new TH2F("Check_TAPSdE_E_1Veto", "dE_E (all TAPS clusters compared to single Veto hits)", 	400, 0, 400, 100, 0, 10);
 	Check_TAPSPhiCorr_1Veto = new TH2F("Check_TAPSPhiCorr_1Veto","TAPS-Veto phi correlation (all TAPS clusters compared to single Veto hits)", 438,  0,  438, 180, -180, 180);
 
 	Check_CBHits 		= new TH2F("Check_CBHits", 		"CB Hits by event number", 		10000,  0,  10000000, 720, 0, 720);	
@@ -858,10 +858,10 @@ void    TA2GoAT::Finish()
 	
 	file->cd();
 	
-    if(treeRawParticle)
+    if(treeTracks)
 	{
-        treeRawParticle->Write();	// Write
-        delete treeRawParticle; 	// Close and delete in memory
+        treeTracks->Write();	// Write
+        delete treeTracks; 	// Close and delete in memory
 	}
 	if(treeTagger) 
 	{
