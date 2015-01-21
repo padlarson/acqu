@@ -237,7 +237,16 @@ inline void TA2CalArray::ReadDecoded()
     if(j==-1) continue;                                  //Check spurious index
 
     E = Energy[i] * fEnergyScale;                        //G3/4 output in GeV
-    if(fUseSigmaEnergy) E+=fRandom->Gaus(0.0, GetSigmaEnergyGeV(E));
+
+    // Patrik Adlarson mod 150221 changed smearing to Dominik values (fig 3.11 Thesis)
+//    if(fUseSigmaEnergy) E+=fRandom->Gaus(0.0, GetSigmaEnergyGeV(E));
+
+    if(fUseSigmaEnergy)
+    {
+        Double_t en = Energy[i] * fEnergyScale;
+        E+=fRandom->Gaus(0.0, 0.015 * TMath::Power( en , 0.62));
+    }
+    // End Patrik Adlarson mod
     E*=1000.0;                                           //G3/4 output in MeV
     fEnergyAll[j] = E;
     Lo = fElement[j]->GetEnergyLowThr();

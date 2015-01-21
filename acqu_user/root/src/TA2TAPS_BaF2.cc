@@ -310,8 +310,14 @@ inline void TA2TAPS_BaF2::ReadDecoded()
     if(!j) break;
     //Use following line for cbsim since 2006-06-22!
     j--; //For reasons Stefan won't tell...
-    E = energy[i] * fEnergyScale;                                   //G3/4 output in GeV
-    if(fUseEnergyResolution) E+=pRandoms->Gaus(0.0, GetEnergyResolutionGeV(E));
+
+    // Patrik mod 150121
+//    E = energy[i] * fEnergyScale;                                   //G3/4 output in GeV
+//    if(fUseEnergyResolution) E+=pRandoms->Gaus(0.0, GetEnergyResolutionGeV(E));
+    Double_t en = energy[i] * fEnergyScale;                                   //G3/4 output in GeV
+    if(fUseEnergyResolution) en+=pRandoms->Gaus(0.0, 0.022 * TMath::Power(en, 1.1));
+
+    // End Patrik mod
     E*=1000.0;                                                      //G3/4 output in MeV
     EnergyAll[j] = E;
     GammaToF = (Z_c[j] * TMath::Cos(theta_c[j]))/30.0;
