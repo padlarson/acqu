@@ -6,11 +6,11 @@
 #include "TTree.h"
 #include "TA2AccessSQL.h"
 
-#define TA2GoAT_MAX_TAGGER	1024
-#define TA2GoAT_MAX_PARTICLE	128
-#define TA2GoAT_MAX_HITS	860  
-#define TA2GoAT_MAX_ERROR	300
-#define TA2GoAT_NULL 1e6
+#define TA2GoAT_MAX_TAGGER	 4096
+#define TA2GoAT_MAX_PARTICLE 128
+#define TA2GoAT_MAX_HITS	 860
+#define TA2GoAT_MAX_ERROR	 256
+#define TA2GoAT_NULL         1e6
 
 enum {
     EG_OUTPUT_FOLDER = 30250,
@@ -50,12 +50,12 @@ private:
         Double_t* 	theta;
         Double_t*	phi;
     	Double_t*	time;
-    	UChar_t*    clusterSize;
+        Int_t*      clusterSize;
         Int_t*		centralCrystal;
 		Int_t*		centralVeto;
 
     	//Apparatus
-        UChar_t*	apparatus;
+        Int_t*	    apparatus;
 
     	//Charged detector energies
         Double_t*	vetoEnergy;

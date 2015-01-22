@@ -136,7 +136,7 @@ void    TA2GoAT::SetConfig(Char_t* line, Int_t key)
     	    	else
     	    	{
 			printf("Helicity");
-            for(int i=0; i<nHelicityBits; i++)
+            for(Int_t i=0; i<nHelicityBits; i++)
 			{
                     helicityInhibit[i] = false;
                     if(!strcmp(helicityBits[i],"I") || !strcmp(helicityBits[i],"i")) helicityInhibit[i] = true;
@@ -158,7 +158,7 @@ void    TA2GoAT::PostInit()
     theta            = new Double_t[TA2GoAT_MAX_PARTICLE];
     phi              = new Double_t[TA2GoAT_MAX_PARTICLE];
     time             = new Double_t[TA2GoAT_MAX_PARTICLE];
-    clusterSize      = new UChar_t[TA2GoAT_MAX_PARTICLE];
+    clusterSize      = new Int_t[TA2GoAT_MAX_PARTICLE];
     centralCrystal   = new Int_t[TA2GoAT_MAX_PARTICLE];
     centralVeto      = new Int_t[TA2GoAT_MAX_PARTICLE];
 	
@@ -166,7 +166,7 @@ void    TA2GoAT::PostInit()
     taggedChannel    = new Int_t[TA2GoAT_MAX_TAGGER];
     taggedTime       = new Double_t[TA2GoAT_MAX_TAGGER];
     
-    apparatus        = new UChar_t[TA2GoAT_MAX_PARTICLE];
+    apparatus        = new Int_t[TA2GoAT_MAX_PARTICLE];
     vetoEnergy       = new Double_t[TA2GoAT_MAX_PARTICLE];
     MWPC0Energy      = new Double_t[TA2GoAT_MAX_PARTICLE];
     MWPC1Energy      = new Double_t[TA2GoAT_MAX_PARTICLE];
@@ -218,10 +218,10 @@ void    TA2GoAT::PostInit()
     treeTracks->Branch("theta", theta, "theta[nTracks]/D");
     treeTracks->Branch("phi", phi, "phi[nTracks]/D");
     treeTracks->Branch("time", time, "time[nTracks]/D");
-    treeTracks->Branch("clusterSize", clusterSize, "clusterSize[nTracks]/b");
+    treeTracks->Branch("clusterSize", clusterSize, "clusterSize[nTracks]/I");
     treeTracks->Branch("centralCrystal", centralCrystal, "centralCrystal[nTracks]/I");
     treeTracks->Branch("centralVeto", centralVeto, "centralVeto[nTracks]/I");
-    treeTracks->Branch("apparatus", apparatus, "apparatus[nTracks]/b");
+    treeTracks->Branch("apparatus", apparatus, "apparatus[nTracks]/I");
     treeTracks->Branch("vetoEnergy", vetoEnergy, "vetoEnergy[nTracks]/D");
     treeTracks->Branch("MWPC0Energy", MWPC0Energy, "MWPC0Energy[nTracks]/D");
     treeTracks->Branch("MWPC1Energy", MWPC1Energy, "MWPC1Energy[nTracks]/D");
@@ -323,7 +323,7 @@ void    TA2GoAT::Reconstruct()
 		{
         		// Collect Tagger Hits without Multihits
         		nTagged	= fLadder->GetNhits();
-        		for(int i=0; i<nTagged; i++)
+                for(Int_t i=0; i<nTagged; i++)
         		{
                     taggedChannel[i]	= fLadder->GetHits(i);
                     taggedTime[i]	= (fLadder->GetTimeOR())[i];
@@ -353,7 +353,7 @@ void    TA2GoAT::Reconstruct()
 	{
 	// Collect CB Hits
     	nParticles	= fCB->GetNParticle();      
-		for(int i=0; i<nParticles; i++)
+        for(Int_t i=0; i<nParticles; i++)
 		{
 			TA2Particle part = fCB->GetParticles(i);
 			
@@ -383,10 +383,10 @@ void    TA2GoAT::Reconstruct()
 			else centralVeto[i]	= part.GetVetoIndex();		
 			
 			// Store other values which don't have this "no-value" option
-            apparatus[i]	= (UChar_t)EAppCB;
+            apparatus[i]	= (Int_t)EAppCB;
             theta[i]		= part.GetThetaDg();
             phi[i]			= part.GetPhiDg();
-			clusterSize[i]  = (UChar_t)part.GetClusterSize();
+            clusterSize[i]  = part.GetClusterSize();
 
 		}
 	}
@@ -394,7 +394,7 @@ void    TA2GoAT::Reconstruct()
 	if(fTAPS)
 	{
 		// Collect TAPS Hits
-		for(int i=0; i<fTAPS->GetNParticle(); i++)
+        for(Int_t i=0; i<fTAPS->GetNParticle(); i++)
 		{
 			TA2Particle part = fTAPS->GetParticles(i);
 			
@@ -422,11 +422,11 @@ void    TA2GoAT::Reconstruct()
             MWPC1Energy[nParticles+i] = 0.0;
 			
 			// Store other values which don't have this "no-value" option
-            apparatus[nParticles+i]		= (UChar_t)EAppTAPS;
+            apparatus[nParticles+i]		= (Int_t)EAppTAPS;
             theta[nParticles+i]			= part.GetThetaDg();
             phi[nParticles+i]			= part.GetPhiDg();
 			time[nParticles+i]			= part.GetTime();	
-			clusterSize[nParticles+i]  	= (UChar_t)part.GetClusterSize();
+            clusterSize[nParticles+i]  	= part.GetClusterSize();
 
 		}
 		nParticles += fTAPS->GetNParticle(); // update number of particles
@@ -440,23 +440,23 @@ void    TA2GoAT::Reconstruct()
 	// Get Detector Hits
 	if(fNaI)
 	{
-        for(int i=0; i<720; i++)
+        for(Int_t i=0; i<720; i++)
 		{
 		        clindex[i] = -1;
 		}
                 clhits = fNaI->GetClustHit();
-		for(uint i=0; i<fNaI->GetNCluster(); i++)
+        for(UInt_t i=0; i<fNaI->GetNCluster(); i++)
 		{
 		        cl = fNaI->GetCluster(clhits[i]);
 			hits = cl->GetHits();
-			for(uint j=0; j<(cl->GetNhits()); j++)
+            for(UInt_t j=0; j<(cl->GetNhits()); j++)
 			{
 			        clindex[hits[j]] = i;
 			}
 		}
 			
         nNaIHits = fNaI->GetNhits();
-        for(int i=0; i<nNaIHits; i++)
+        for(Int_t i=0; i<nNaIHits; i++)
 		{
             NaIHits[i] = fNaI->GetHits(i);
             NaICluster[i] = clindex[NaIHits[i]];
@@ -466,36 +466,36 @@ void    TA2GoAT::Reconstruct()
 	if(fPID)
 	{
         nPIDHits = fPID->GetNhits();
-        for(int i=0; i<nPIDHits; i++)
+        for(Int_t i=0; i<nPIDHits; i++)
         { PIDHits[i] = fPID->GetHits(i); }
 	}
 
 	if(fMWPC)
 	{
         nMWPCHits = fMWPC->GetNhits();
-        for(int i=0; i<nMWPCHits; i++)
+        for(Int_t i=0; i<nMWPCHits; i++)
         { MWPCHits[i] = fMWPC->GetHits(i); }
 	}
 
 	if(fBaF2PWO)
 	{
-	        for(int i=0; i<720; i++)
+            for(Int_t i=0; i<720; i++)
 		{
 		        clindex[i] = -1;
 		}
                 clhits = fBaF2PWO->GetClustHit();
-		for(uint i=0; i<fBaF2PWO->GetNCluster(); i++)
+        for(UInt_t i=0; i<fBaF2PWO->GetNCluster(); i++)
 		{
 		        cl = fBaF2PWO->GetCluster(clhits[i]);
 			hits = cl->GetHits();
-			for(uint j=0; j<(cl->GetNhits()); j++)
+            for(UInt_t j=0; j<(cl->GetNhits()); j++)
 			{
 			        clindex[hits[j]] = i;
 			}
 		}
 			
         nBaF2PbWO4Hits = fBaF2PWO->GetNhits();
-        for(int i=0; i<nBaF2PbWO4Hits; i++)
+        for(Int_t i=0; i<nBaF2PbWO4Hits; i++)
 		{
             BaF2PbWO4Hits[i] = fBaF2PWO->GetHits(i);
             BaF2PbWO4Cluster[i] = clindex[BaF2PbWO4Hits[i]];
@@ -505,7 +505,7 @@ void    TA2GoAT::Reconstruct()
 	if(fVeto)
 	{
         nVetoHits = fVeto->GetNhits();
-        for(int i=0; i<nVetoHits; i++)
+        for(Int_t i=0; i<nVetoHits; i++)
             { VetoHits[i] = fVeto->GetHits(i);}
 	}
 	
@@ -515,7 +515,7 @@ void    TA2GoAT::Reconstruct()
     nErrors = gAR->GetHardError();
 	ReadErrorMk2_t *ErrorBlock = gAR->GetHardwareError();
 	ReadErrorMk2_t *Error;
-    for(int i=0; i<nErrors; i++)
+    for(Int_t i=0; i<nErrors; i++)
 	{
 		Error = ErrorBlock + i;
         errorModuleID[i] = Error->fModID;
@@ -528,7 +528,7 @@ void    TA2GoAT::Reconstruct()
         Bool_t helicityBit;
         helicity = true;
         helicityInverted = true;
-        for(int i=0; i<nHelicityBits; i++)
+        for(Int_t i=0; i<nHelicityBits; i++)
 		{
             helicityBit = (fADC[helicityADC] & 1<<i);
             if(helicityInhibit[i] && helicityBit)
@@ -551,8 +551,8 @@ void    TA2GoAT::Reconstruct()
 
         if(fMulti[400])
 	{
-		int eventIDcheck = fMulti[400]->GetHit(0);
-		for(int i=1; i<23; i++)
+        Int_t eventIDcheck = fMulti[400]->GetHit(0);
+        for(Int_t i=1; i<23; i++)
 		{
 			if(eventIDcheck != fMulti[400]->GetHit(i))
 			{
@@ -693,7 +693,7 @@ void 	TA2GoAT::DataCheckHistograms()
 	{
 		// Find the charged particle (if possible) and fill dE_E for this
 		// Fill the charged particle phi against the PID hit
-		for(int i=0; i<fCB->GetNParticle(); i++)
+        for(Int_t i=0; i<fCB->GetNParticle(); i++)
 		{
 			TA2Particle part = fCB->GetParticles(i);
 
@@ -755,7 +755,7 @@ void 	TA2GoAT::DataCheckHistograms()
 	{
 		// Find the charged particle (if possible) and fill dE_E for this
 		// Fill the charged particle phi against the Veto hit
-		for(int i=0; i<fTAPS->GetNParticle(); i++)
+        for(Int_t i=0; i<fTAPS->GetNParticle(); i++)
 		{
 			TA2Particle part = fTAPS->GetParticles(i);
 
@@ -954,7 +954,7 @@ void 	TA2GoAT::TriggerMC()
 void 	TA2GoAT::TriggerHW() 
 {
 	nTriggerPattern = 0;
-	for (int i= 0; i < 16; i++)
+    for (Int_t i= 0; i < 16; i++)
 	{
 		if (fADC[0] & 1<<i) 
 		{ 
