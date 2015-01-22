@@ -893,10 +893,9 @@ void 	TA2GoAT::DataCheckHistograms()
 
 
 
-
 void 	TA2GoAT::DataCheckHistogramsAdlarson()
 {
-//    BeamE->Fill(photonbeam_E[0]);
+  //  BeamE->Fill(photonbeam_E[0]);
 
     if( fCB->GetNParticle() == 4 )
     {
@@ -914,12 +913,12 @@ void 	TA2GoAT::DataCheckHistogramsAdlarson()
 
             for( Int_t j = 0; j < nTagged; j++ )
             {
-                TLorentzVector beam(0.,0., photonbeam_E[j], photonbeam_E[j]);
-                TLorentzVector target(0.,0.,0.,938.272);
+    //            TLorentzVector beam(0.,0., photonbeam_E[j], photonbeam_E[j]);
+    //            TLorentzVector target(0.,0.,0.,938.272);
 
-                double_t MisM;
-                MisM = (beam + target - p4_12 - p4_34).M();
-                MM4g->Fill( MisM );
+//                double_t MisM;
+  //              MisM = (beam + target - p4_12 - p4_34).M();
+    //            MM4g->Fill( MisM );
 
             }
 
