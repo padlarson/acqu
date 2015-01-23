@@ -14,7 +14,8 @@ Max-TAPSCluster: 16		  5
 Energy-Scale: 1.05
 #
 # Energy resolution using the form A*(E^B): A, B,   Use to smear MC data (0/1 = off/on) 
-Energy-Resolution: 0.027 0.75 1
+# Dominik Werthmueller values used, see thesis fig 3.11
+Energy-Resolution: 0.022 1.1 1
 #
 # Time resolution, apply gaus. smear (sigma in ns), Use to smear MC data (0/1 = off/on)
 Time-Resolution: 2.87 0

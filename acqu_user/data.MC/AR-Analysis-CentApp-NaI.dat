@@ -12,10 +12,12 @@ Max-Cluster:	16			15.0
 # Some MC controls
 #
 # Apply an energy scale
-Energy-Scale: 1.05
+Energy-Scale: 1.04
 #
 # Energy resolution using the form A*(E^B): A, B,   Use to smear MC data (0/1 = off/on) 
-Energy-Resolution: 0.027 0.75 1
+# Dominik Werthmueller smearing see fig 3.11 in his thesis
+Energy-Resolution: 0.015 0.62 1 
+#
 #
 # Time resolution, apply gaus. smear (sigma in ns), Use to smear MC data (0/1 = off/on)
 Time-Resolution: 2.87 0
