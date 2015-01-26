@@ -8,7 +8,8 @@ TA2GoAT::TA2GoAT(const char* Name, TA2Analysis* Analysis) : TA2AccessSQL(Name, A
                                                                     treeLinPol(0),
                                                                     treeTrigger(0),
                                                                     treeDetectorHits(0),
-                                                                    treeScaler(0),
+                                                                    treeScalers(0),
+                                                                    treeSetupParameters(0),
                                                                     nParticles(0),
                                                                     clusterEnergy(0),
                                                                     theta(0),
@@ -25,6 +26,7 @@ TA2GoAT::TA2GoAT(const char* Name, TA2Analysis* Analysis) : TA2AccessSQL(Name, A
                                                                     taggedEnergy(0),
                                                                     taggedChannel(0),
                                                                     taggedTime(0),
+                                                                    saveTaggedEnergy(0),
                                                                     plane(0),
                                                                     edge(0),
                                                                     edgeSetting(0),
@@ -35,9 +37,9 @@ TA2GoAT::TA2GoAT(const char* Name, TA2Analysis* Analysis) : TA2AccessSQL(Name, A
                                                                     PIDHits(0),
                                                                     nMWPCHits(0),
                                                                     MWPCHits(0),
-                                                                    nBaF2PbWO4Hits(0),
-                                                                    BaF2PbWO4Hits(0),
-                                                                    BaF2PbWO4Cluster(0),
+                                                                    nBaF2Hits(0),
+                                                                    BaF2Hits(0),
+                                                                    BaF2Cluster(0),
                                                                     nVetoHits(0),
                                                                     VetoHits(0),
                                                                     energySum(0),
@@ -75,8 +77,10 @@ TA2GoAT::~TA2GoAT()
 		delete treeTrigger;
 	if(treeDetectorHits)
 		delete treeDetectorHits;
-	if(treeScaler)
-		delete treeScaler;
+    if(treeScalers)
+        delete treeScalers;
+    if(treeSetupParameters)
+        delete treeSetupParameters;
     if(file)
 		delete file;
 }
@@ -146,8 +150,11 @@ void    TA2GoAT::SetConfig(Char_t* line, Int_t key)
 			}
 			printf("\n");
     	    	}
-	return;
-    	default:
+        return;
+        case EG_TAGGED_ENERGY:
+            sscanf(line, "%i", &saveTaggedEnergy);
+        return;
+        default:
         	TA2AccessSQL::SetConfig(line, key);
     	}
 }
@@ -175,8 +182,8 @@ void    TA2GoAT::PostInit()
     NaICluster       = new Int_t[TA2GoAT_MAX_HITS];
     PIDHits	         = new Int_t[TA2GoAT_MAX_HITS];
     MWPCHits		 = new Int_t[TA2GoAT_MAX_HITS];
-    BaF2PbWO4Hits	 = new Int_t[TA2GoAT_MAX_HITS];
-    BaF2PbWO4Cluster = new Int_t[TA2GoAT_MAX_HITS];
+    BaF2Hits	 = new Int_t[TA2GoAT_MAX_HITS];
+    BaF2Cluster = new Int_t[TA2GoAT_MAX_HITS];
     VetoHits         = new Int_t[TA2GoAT_MAX_HITS];
     
     triggerPattern   = new Int_t[32];
@@ -207,12 +214,13 @@ void    TA2GoAT::PostInit()
 	fullName.Prepend(outputFolder);
    	printf("Root file saved to %s\n", fullName.Data());  
 
-    file		     = new TFile(fullName.Data(),"RECREATE");
-    treeTracks       = new TTree("tracks",       "tracks");
-    treeTagger       = new TTree("tagger",       "tagger");
-    treeTrigger	     = new TTree("trigger",      "trigger");
-    treeDetectorHits = new TTree("detectorHits", "detectorHits");
-	
+    file		        = new TFile(fullName.Data(),     "RECREATE");
+    treeTracks          = new TTree("tracks",            "tracks");
+    treeTagger          = new TTree("tagger",            "tagger");
+    treeTrigger	        = new TTree("trigger",           "trigger");
+    treeDetectorHits    = new TTree("detectorHits",      "detectorHits");
+    treeSetupParameters = new TTree("setupParameters",   "setupParameters");
+
     treeTracks->Branch("nTracks", &nParticles, "nTracks/I");
     treeTracks->Branch("clusterEnergy", clusterEnergy, "clusterEnergy[nTracks]/D");
     treeTracks->Branch("theta", theta, "theta[nTracks]/D");
@@ -227,9 +235,13 @@ void    TA2GoAT::PostInit()
     treeTracks->Branch("MWPC1Energy", MWPC1Energy, "MWPC1Energy[nTracks]/D");
 	
 	treeTagger->Branch("nTagged", &nTagged,"nTagged/I");
-    treeTagger->Branch("taggedEnergy", taggedEnergy, "taggedEnergy[nTagged]/D");
     treeTagger->Branch("taggedChannel", taggedChannel, "taggedChannel[nTagged]/I");
     treeTagger->Branch("taggedTime", taggedTime, "taggedTime[nTagged]/D");
+    if(saveTaggedEnergy)
+    {
+        treeTagger->Branch("taggedEnergy", taggedEnergy, "taggedEnergy[nTagged]/D");
+        printf("User requested tagged photon energies be exported to the tagger tree\n");
+    }
 
     treeTrigger->Branch("energySum", &energySum, "energySum/D");
     treeTrigger->Branch("multiplicity", &multiplicity, "multiplicity/I");
@@ -248,22 +260,22 @@ void    TA2GoAT::PostInit()
     treeDetectorHits->Branch("PIDHits", PIDHits, "PIDHits[nPIDHits]/I");
     treeDetectorHits->Branch("nMWPCHits", &nMWPCHits, "nMWPCHits/I");
     treeDetectorHits->Branch("MWPCHits", MWPCHits, "MWPCHits[nMWPCHits]/I");
-    treeDetectorHits->Branch("nBaF2PbWO4Hits", &nBaF2PbWO4Hits, "nBaF2PbWO4Hits/I");
-    treeDetectorHits->Branch("BaF2PbWO4Hits", BaF2PbWO4Hits, "BaF2PbWO4Hits[nBaF2PbWO4Hits]/I");
-    treeDetectorHits->Branch("BaF2PbWO4Cluster", BaF2PbWO4Cluster, "BaF2PbWO4Cluster[nBaF2PbWO4Hits]/I");
+    treeDetectorHits->Branch("nBaF2Hits", &nBaF2Hits, "nBaF2Hits/I");
+    treeDetectorHits->Branch("BaF2Hits", BaF2Hits, "BaF2Hits[nBaF2Hits]/I");
+    treeDetectorHits->Branch("BaF2Cluster", BaF2Cluster, "BaF2Cluster[nBaF2Hits]/I");
     treeDetectorHits->Branch("nVetoHits", &nVetoHits, "nVetoHits/I");
     treeDetectorHits->Branch("VetoHits", VetoHits, "VetoHits[nVetoHits]/I");
 
 	// Store Scalers for non-MC process
 	if (gAR->GetProcessType() != EMCProcess) 
 	{
-		treeScaler = new TTree("scaler", "scaler");	
-		treeScaler->Branch("eventNumber", &eventNumber, "eventNumber/I");
-		treeScaler->Branch("eventID", &eventID, "eventID/I");
+        treeScalers = new TTree("scalers", "scalers");
+        treeScalers->Branch("eventNumber", &eventNumber, "eventNumber/I");
+        treeScalers->Branch("eventID", &eventID, "eventID/I");
 		printf("GetMaxScaler: %d\n", GetMaxScaler());
 	        Char_t str[256];
         sprintf(str, "scalers[%d]/i", GetMaxScaler());
-        treeScaler->Branch("scalers", fScaler, str);
+        treeScalers->Branch("scalers", fScaler, str);
 
 		// Store Lin Pol if class is active
 		if(fLinPol)
@@ -277,7 +289,192 @@ void    TA2GoAT::PostInit()
 		}
 	}
 
-	// Define Histograms which will be saved to root tree
+    // Adding Tagger information to parameters tree
+
+    Int_t nTagger = fLadder->GetNelem();
+    Double_t TaggerGlobalOffset = fLadder->GetTimeOffset();
+    const Double_t* ChToE = fLadder->GetECalibration();
+    Double_t BeamE = fTagger->GetBeamEnergy();
+
+    Double_t* TaggerTDCLoThr = new Double_t[nTagger];
+    Double_t* TaggerTDCHiThr = new Double_t[nTagger];
+    Double_t* TaggerTDCOffset = new Double_t[nTagger];
+    Double_t* TaggerElectronEnergy = new Double_t[nTagger];
+    Double_t* TaggerPhotonEnergy = new Double_t[nTagger];
+    for(Int_t i=0; i<fLadder->GetNelem(); i++)
+    {
+        TaggerTDCLoThr[i] = fLadder->GetElement(i)->GetTimeLowThr();
+        TaggerTDCHiThr[i] = fLadder->GetElement(i)->GetTimeHighThr();
+        TaggerTDCOffset[i] = fLadder->GetElement(i)->GetT0();
+        TaggerElectronEnergy[i] = ChToE[i];
+        TaggerPhotonEnergy[i] = BeamE - ChToE[i];
+    }
+    Double_t *TaggerEnergyWidth;
+    if(fLadder->IsOverlap()) TaggerEnergyWidth = fLadder->GetEOverlap();
+
+    treeSetupParameters->Branch("nTagger", &nTagger, "nTagger/I");
+    treeSetupParameters->Branch("TaggerGlobalOffset", &TaggerGlobalOffset, "TaggerGlobalOffset/D");
+    treeSetupParameters->Branch("TaggerTDCLoThr", TaggerTDCLoThr, "TaggerTDCLoThr[nTagger]/D");
+    treeSetupParameters->Branch("TaggerTDCHiThr", TaggerTDCHiThr, "TaggerTDCHiThr[nTagger]/D");
+    treeSetupParameters->Branch("TaggerTDCOffset", TaggerTDCOffset, "TaggerTDCOffset[nTagger]/D");
+    treeSetupParameters->Branch("TaggerElectronEnergy", TaggerElectronEnergy, "TaggerElectronEnergy[nTagger]/D");
+    treeSetupParameters->Branch("TaggerPhotonEnergy", TaggerPhotonEnergy, "TaggerPhotonEnergy[nTagger]/D");
+    if(fLadder->IsOverlap()) treeSetupParameters->Branch("TaggerEnergyWidth", TaggerEnergyWidth, "TaggerEnergyWidth[nTagger]/D");
+
+    // Adding NaI information to parameters tree
+
+    Int_t nNaI = fNaI->GetNelem();
+    Double_t NaIGlobalOffset = fNaI->GetTimeOffset();
+    Double_t NaIGlobalScale = fNaI->GetEnergyScale();
+    Int_t NaIMaxClusters = (Int_t)fNaI->GetMaxCluster();
+    Double_t NaIClusterThr = fNaI->GetClusterThreshold();
+
+    Double_t* NaIADCLoThr = new Double_t[nNaI];
+    Double_t* NaIADCHiThr = new Double_t[nNaI];
+    Double_t* NaIADCGain = new Double_t[nNaI];
+    Double_t* NaITDCLoThr = new Double_t[nNaI];
+    Double_t* NaITDCHiThr = new Double_t[nNaI];
+    Double_t* NaITDCOffset = new Double_t[nNaI];
+    for(Int_t i=0; i<fNaI->GetNelem(); i++)
+    {
+        NaIADCLoThr[i] = fNaI->GetElement(i)->GetEnergyLowThr();
+        NaIADCHiThr[i] = fNaI->GetElement(i)->GetEnergyHighThr();
+        NaIADCGain[i] = fNaI->GetElement(i)->GetA1();
+        NaITDCLoThr[i] = fNaI->GetElement(i)->GetTimeLowThr();
+        NaITDCHiThr[i] = fNaI->GetElement(i)->GetTimeHighThr();
+        NaITDCOffset[i] = fNaI->GetElement(i)->GetT0();
+    }
+
+    treeSetupParameters->Branch("nNaI", &nNaI, "nNaI/I");
+    treeSetupParameters->Branch("NaIGlobalOffset", &NaIGlobalOffset, "NaIGlobalOffset/D");
+    treeSetupParameters->Branch("NaIGlobalScale", &NaIGlobalScale, "NaIGlobalScale/D");
+    treeSetupParameters->Branch("NaIMaxClusters", &NaIMaxClusters, "NaIMaxClusters/I");
+    treeSetupParameters->Branch("NaIClusterThr", &NaIClusterThr, "NaIClusterThr/D");
+    treeSetupParameters->Branch("NaIADCLoThr", NaIADCLoThr, "NaIADCLoThr[nNaI]/D");
+    treeSetupParameters->Branch("NaIADCHiThr", NaIADCHiThr, "NaIADCHiThr[nNaI]/D");
+    treeSetupParameters->Branch("NaIADCGain", NaIADCGain, "NaIADCGain[nNaI]/D");
+    treeSetupParameters->Branch("NaITDCLoThr", NaITDCLoThr, "NaITDCLoThr[nNaI]/D");
+    treeSetupParameters->Branch("NaITDCHiThr", NaITDCHiThr, "NaITDCHiThr[nNaI]/D");
+    treeSetupParameters->Branch("NaITDCOffset", NaITDCOffset, "NaITDCOffset[nNaI]/D");
+
+    // Adding PID information to parameters tree
+
+    Int_t nPID = fPID->GetNelem();
+    Double_t PIDGlobalOffset = fPID->GetTimeOffset();
+
+    Double_t* PIDADCLoThr = new Double_t[nPID];
+    Double_t* PIDADCHiThr = new Double_t[nPID];
+    Double_t* PIDADCPedestal = new Double_t[nPID];
+    Double_t* PIDADCGain = new Double_t[nPID];
+    Double_t* PIDTDCLoThr = new Double_t[nPID];
+    Double_t* PIDTDCHiThr = new Double_t[nPID];
+    Double_t* PIDTDCOffset = new Double_t[nPID];
+    Double_t* PIDPhi = new Double_t[nPID];
+    for(Int_t i=0; i<fPID->GetNelem(); i++)
+    {
+        PIDADCLoThr[i] = fPID->GetElement(i)->GetEnergyLowThr();
+        PIDADCHiThr[i] = fPID->GetElement(i)->GetEnergyHighThr();
+        PIDADCPedestal[i] = fPID->GetElement(i)->GetA0();
+        PIDADCGain[i] = fPID->GetElement(i)->GetA1();
+        PIDTDCLoThr[i] = fPID->GetElement(i)->GetTimeLowThr();
+        PIDTDCHiThr[i] = fPID->GetElement(i)->GetTimeHighThr();
+        PIDTDCOffset[i] = fPID->GetElement(i)->GetT0();
+        PIDPhi[i] = fPID->GetPosition(i)->Z();
+    }
+
+    treeSetupParameters->Branch("nPID", &nPID, "nPID/I");
+    treeSetupParameters->Branch("PIDGlobalOffset", &PIDGlobalOffset, "PIDGlobalOffset/D");
+    treeSetupParameters->Branch("PIDADCLoThr", PIDADCLoThr, "PIDADCLoThr[nPID]/D");
+    treeSetupParameters->Branch("PIDADCHiThr", PIDADCHiThr, "PIDADCHiThr[nPID]/D");
+    treeSetupParameters->Branch("PIDADCPedestal", PIDADCPedestal, "PIDADCPedestal[nPID]/D");
+    treeSetupParameters->Branch("PIDADCGain", PIDADCGain, "PIDADCGain[nPID]/D");
+    treeSetupParameters->Branch("PIDTDCLoThr", PIDTDCLoThr, "PIDTDCLoThr[nPID]/D");
+    treeSetupParameters->Branch("PIDTDCHiThr", PIDTDCHiThr, "PIDTDCHiThr[nPID]/D");
+    treeSetupParameters->Branch("PIDTDCOffset", PIDTDCOffset, "PIDTDCOffset[nPID]/D");
+    treeSetupParameters->Branch("PIDPhi", PIDPhi, "PIDPhi[nPID]/D");
+
+    // Adding BaF2 information to parameters tree
+
+    Int_t nBaF2 = fBaF2PWO->GetNelem();
+    Double_t BaF2GlobalOffset = fBaF2PWO->GetTimeOffset();
+    Double_t BaF2GlobalScale = fBaF2PWO->GetEnergyScale();
+    Double_t BaF2Distance = fBaF2PWO->GetPosition(0)->Z();
+    Int_t BaF2MaxClusters = (Int_t)fBaF2PWO->GetMaxCluster();
+    Double_t BaF2ClusterThr = fBaF2PWO->GetClusterThreshold();
+
+    Double_t* BaF2ADCLoThr = new Double_t[nBaF2];
+    Double_t* BaF2ADCHiThr = new Double_t[nBaF2];
+    Double_t* BaF2ADCPedestal = new Double_t[nBaF2];
+    Double_t* BaF2ADCGain = new Double_t[nBaF2];
+    Double_t* BaF2TDCLoThr = new Double_t[nBaF2];
+    Double_t* BaF2TDCHiThr = new Double_t[nBaF2];
+    Double_t* BaF2TDCOffset = new Double_t[nBaF2];
+    Double_t* BaF2TDCGain = new Double_t[nBaF2];
+    for(Int_t i=0; i<fBaF2PWO->GetNelem(); i++)
+    {
+        BaF2ADCLoThr[i] = fBaF2PWO->GetElement(i)->GetEnergyLowThr();
+        BaF2ADCHiThr[i] = fBaF2PWO->GetElement(i)->GetEnergyHighThr();
+        BaF2ADCPedestal[i] = fBaF2PWO->GetElement(i)->GetA0();
+        BaF2ADCGain[i] = fBaF2PWO->GetElement(i)->GetA1();
+        BaF2TDCLoThr[i] = fBaF2PWO->GetElement(i)->GetTimeLowThr();
+        BaF2TDCHiThr[i] = fBaF2PWO->GetElement(i)->GetTimeHighThr();
+        BaF2TDCOffset[i] = fBaF2PWO->GetElement(i)->GetT0();
+        BaF2TDCGain[i] = fBaF2PWO->GetElement(i)->GetT1();
+    }
+
+    treeSetupParameters->Branch("nBaF2", &nBaF2, "nBaF2/I");
+    treeSetupParameters->Branch("BaF2GlobalOffset", &BaF2GlobalOffset, "BaF2GlobalOffset/D");
+    treeSetupParameters->Branch("BaF2GlobalScale", &BaF2GlobalScale, "BaF2GlobalScale/D");
+    treeSetupParameters->Branch("BaF2Distance", &BaF2Distance, "BaF2Distance/D");
+    treeSetupParameters->Branch("BaF2MaxClusters", &BaF2MaxClusters, "BaF2MaxClusters/I");
+    treeSetupParameters->Branch("BaF2ClusterThr", &BaF2ClusterThr, "BaF2ClusterThr/D");
+    treeSetupParameters->Branch("BaF2ADCLoThr", BaF2ADCLoThr, "BaF2ADCLoThr[nBaF2]/D");
+    treeSetupParameters->Branch("BaF2ADCHiThr", BaF2ADCHiThr, "BaF2ADCHiThr[nBaF2]/D");
+    treeSetupParameters->Branch("BaF2ADCPedestal", BaF2ADCPedestal, "BaF2ADCPedestal[nBaF2]/D");
+    treeSetupParameters->Branch("BaF2ADCGain", BaF2ADCGain, "BaF2ADCGain[nBaF2]/D");
+    treeSetupParameters->Branch("BaF2TDCLoThr", BaF2TDCLoThr, "BaF2TDCLoThr[nBaF2]/D");
+    treeSetupParameters->Branch("BaF2TDCHiThr", BaF2TDCHiThr, "BaF2TDCHiThr[nBaF2]/D");
+    treeSetupParameters->Branch("BaF2TDCOffset", BaF2TDCOffset, "BaF2TDCOffset[nBaF2]/D");
+    treeSetupParameters->Branch("BaF2TDCGain", BaF2TDCGain, "BaF2TDCGain[nBaF2]/D");
+
+    // Adding Veto information to parameters tree
+
+    Int_t nVeto = fVeto->GetNelem();
+    Double_t VetoGlobalOffset = fVeto->GetTimeOffset();
+    Double_t VetoDistance = fVeto->GetPosition(0)->Z();
+
+    Double_t* VetoADCLoThr = new Double_t[nVeto];
+    Double_t* VetoADCHiThr = new Double_t[nVeto];
+    Double_t* VetoADCPedestal = new Double_t[nVeto];
+    Double_t* VetoADCGain = new Double_t[nVeto];
+    Double_t* VetoTDCLoThr = new Double_t[nVeto];
+    Double_t* VetoTDCHiThr = new Double_t[nVeto];
+    Double_t* VetoTDCOffset = new Double_t[nVeto];
+    for(Int_t i=0; i<fVeto->GetNelem(); i++)
+    {
+        VetoADCLoThr[i] = fVeto->GetElement(i)->GetEnergyLowThr();
+        VetoADCHiThr[i] = fVeto->GetElement(i)->GetEnergyHighThr();
+        VetoADCPedestal[i] = fVeto->GetElement(i)->GetA0();
+        VetoADCGain[i] = fVeto->GetElement(i)->GetA1();
+        VetoTDCLoThr[i] = fVeto->GetElement(i)->GetTimeLowThr();
+        VetoTDCHiThr[i] = fVeto->GetElement(i)->GetTimeHighThr();
+        VetoTDCOffset[i] = fVeto->GetElement(i)->GetT0();
+    }
+
+    treeSetupParameters->Branch("nVeto", &nVeto, "nVeto/I");
+    treeSetupParameters->Branch("VetoGlobalOffset", &VetoGlobalOffset, "VetoGlobalOffset/D");
+    treeSetupParameters->Branch("VetoDistance", &VetoDistance, "VetoDistance/D");
+    treeSetupParameters->Branch("VetoADCLoThr", VetoADCLoThr, "VetoADCLoThr[nVeto]/D");
+    treeSetupParameters->Branch("VetoADCHiThr", VetoADCHiThr, "VetoADCHiThr[nVeto]/D");
+    treeSetupParameters->Branch("VetoADCPedestal", VetoADCPedestal, "VetoADCPedestal[nVeto]/D");
+    treeSetupParameters->Branch("VetoADCGain", VetoADCGain, "VetoADCGain[nVeto]/D");
+    treeSetupParameters->Branch("VetoTDCLoThr", VetoTDCLoThr, "VetoTDCLoThr[nVeto]/D");
+    treeSetupParameters->Branch("VetoTDCHiThr", VetoTDCHiThr, "VetoTDCHiThr[nVeto]/D");
+    treeSetupParameters->Branch("VetoTDCOffset", VetoTDCOffset, "VetoTDCOffset[nVeto]/D");
+
+    treeSetupParameters->Fill();
+
+    // Define Histograms which will be saved to root tree
 	DefineHistograms();
 
 	gROOT->cd();
@@ -299,7 +496,7 @@ void    TA2GoAT::Reconstruct()
 	if((gAR->IsScalerRead()) && (gAR->GetProcessType() != EMCProcess))
 	{
 		eventID	= gAN->GetNDAQEvent();
-		if(treeScaler) treeScaler->Fill();		
+        if(treeScalers) treeScalers->Fill();
 		
 		if(fLinPol)
 		{
@@ -494,11 +691,11 @@ void    TA2GoAT::Reconstruct()
 			}
 		}
 			
-        nBaF2PbWO4Hits = fBaF2PWO->GetNhits();
-        for(Int_t i=0; i<nBaF2PbWO4Hits; i++)
+        nBaF2Hits = fBaF2PWO->GetNhits();
+        for(Int_t i=0; i<nBaF2Hits; i++)
 		{
-            BaF2PbWO4Hits[i] = fBaF2PWO->GetHits(i);
-            BaF2PbWO4Cluster[i] = clindex[BaF2PbWO4Hits[i]];
+            BaF2Hits[i] = fBaF2PWO->GetHits(i);
+            BaF2Cluster[i] = clindex[BaF2Hits[i]];
 		}
 	}
 
@@ -883,11 +1080,16 @@ void    TA2GoAT::Finish()
 		treeDetectorHits->Write();// Write	
 		delete treeDetectorHits;  // Close and delete in memory
 	}		
-	if(treeScaler)
+    if(treeScalers)
 	{
-		treeScaler->Write();	// Write	
-		delete treeScaler; 	// Close and delete in memory
-    	}
+        treeScalers->Write();	// Write
+        delete treeScalers; 	// Close and delete in memory
+    }
+    if(treeSetupParameters)
+    {
+        treeSetupParameters->Write();	// Write
+        delete treeSetupParameters; 	// Close and delete in memory
+    }
 
 	WriteHistograms();
 	
