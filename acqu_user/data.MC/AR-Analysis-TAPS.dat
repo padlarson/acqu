@@ -6,8 +6,8 @@
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #Detector systems in TAPS apparatus
 # No Cherenkov
-Detector: VETO          TA2TAPS_Veto		AR-Analysis-TAPS-Veto.dat
-Detector: BaF2PWO          TA2TAPS_BaF2		AR-Analysis-TAPS-BaF2.dat
+Detector: Veto          TA2TAPS_Veto		AR-Analysis-TAPS-Veto.dat
+Detector: BaF2          TA2TAPS_BaF2		AR-Analysis-TAPS-BaF2.dat
 # With Cherenkov
 #Detector: Veto          TA2TAPS_Veto		AR-Analysis-TAPS-VetoCh.dat
 #Detector: BaF2          TA2TAPS_BaF2		AR-Analysis-TAPS-BaF2Ch.dat
@@ -34,9 +34,9 @@ TAPS_SimpleReconstruct: 0
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #DeltaE vs. E between Veto and BaF2-Clusters configuration. When a cut is set
 #active, the appendant TCut with name specified below must exist in ROOT file.
-#TAPS_dEvE_Active:  0
+TAPS_dEvE_Active:  1
 TAPS_dEvE_Cuts:  data/cuts/TAPS_DeltaE-E.root
-TAPS_dEvE_Proton:   0
+TAPS_dEvE_Proton:   1
 TAPS_dEvE_ChPion:   0
 TAPS_dEvE_Electron: 0
 TAPS_dEvE_Proton_CutName:    p
@@ -73,7 +73,7 @@ TAPSDoFlightTimeCorrection:  1
 #Important: Calibrate Veto & BaF2 first & check whether your cut-window is
 #set correctly.
 #                     Enable   Min.     Max.
-#TAPSVetoBaF2TimeCut:  0        -10.0   +15.0
+TAPSVetoBaF2TimeCut:  0        -10.0   +15.0
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
