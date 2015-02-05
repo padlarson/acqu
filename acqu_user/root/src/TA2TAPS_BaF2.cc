@@ -336,7 +336,8 @@ inline void TA2TAPS_BaF2::ReadDecoded()
     //Use following line for cbsim since 2006-06-22!
     j--; //For reasons Stefan won't tell...
     E = energy[i] * fEnergyScale;                                   //G3/4 output in GeV
-    if(fUseEnergyResolution) E+=pRandoms->Gaus(0.0, GetEnergyResolutionGeV(E));
+    //if(fUseEnergyResolution) E+=pRandoms->Gaus(0.0, GetEnergyResolutionGeV(E));
+    if(fUseEnergyResolution) E+=pRandoms->Gaus(0.0, GetSigmaEnergyGeV(E));
     E*=1000.0;                                                      //G3/4 output in MeV
     EnergyAll[j] = E;
     GammaToF = (Z_c[j] * TMath::Cos(theta_c[j]))/30.0;

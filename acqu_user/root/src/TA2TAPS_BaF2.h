@@ -74,6 +74,7 @@ class TA2TAPS_BaF2 : public TA2ClusterDetector
   Double_t* GetEnergyAll(){ return EnergyAll; }
   Double_t GetEnergyAll(Int_t t){ return EnergyAll[t]; }
   Double_t GetEnergyResolutionGeV(Double_t);
+  Double_t GetSigmaEnergyGeV(Double_t pEnergy);
   Double_t GetEnergyResolution(Double_t);
   Double_t GetPhiResolution();
   Double_t GetPhiResolutionDg();
@@ -187,7 +188,13 @@ inline Double_t TA2TAPS_BaF2::GetEnergyResolutionGeV(Double_t pEnergy)
 {
   // Returns energy resolution in GeV when supplied Energy in GeV
   return (fEnergyResolutionFactor * TMath::Sqrt(pEnergy) + fEnergyResolutionConst * pEnergy);
+}
 
+//---------------------------------------------------------------------------
+inline Double_t TA2TAPS_BaF2::GetSigmaEnergyGeV(Double_t pEnergy)
+{
+  // Returns energy resolution in GeV when supplied Energy in GeV
+  return (fEnergyResolutionFactor * TMath::Power(pEnergy, fEnergyResolutionConst));
 }
 
 //---------------------------------------------------------------------------
