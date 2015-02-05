@@ -1,34 +1,27 @@
-# Modified setup file from Geant4 package for NaI. ( Collicott, Feb 2014)
-##-----------------------------------------------------------------------
+#------------------------------------------------------------------------------
+#                   Configuration file for TA2TAPS_BaF2
+#            (AcquRoot 4v4 user package TAPS BaF2 detector class)
+#------------------------------------------------------------------------------
 #
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#General configuration of detector elements and information (energy, time,
+#position) to be used
 #       No. of elements   Energy  Time    Position
 Size:   438               1       1       1
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #
-## 		 Max # clusters   Clust-Thresh(MeV)
-Max-TAPSCluster: 16		  5
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#Global (all BaF2/PbWO4 elements) scaling parameter for energy correction
+Energy-Scale:   1.05
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #
-# -----------------------------------------------------------------------
-# Some MC controls
-#
-# Apply an energy scale
-Energy-Scale: 1.05
-#
-# Energy resolution using the form A*(E^B): A, B,   Use to smear MC data (0/1 = off/on) 
-# Dominik Werthmueller values used, see thesis fig 3.11
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#MC resolution parameters
 Energy-Resolution: 0.022 1.1 1
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #
-# Time resolution, apply gaus. smear (sigma in ns), Use to smear MC data (0/1 = off/on)
-Time-Resolution: 2.87 0
-#
-# Theta Resolution in Degrees
-Theta-Resolution: 2.5
-#
-# Phi Resolution in Degrees (divided by sin(theta) for res @ specific theta)
-Phi-Resolution: 2.0
-#
-#-------------------------------------------------------------------------
-#
-##
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#Configuration of detector elements.
 #Block A
 #          ADC chan.  Low thres. [MeV]  High thres.[MeV]  Pedestal [chan.]  MeV/Chan.  TDC chan.  Low thres. [ns]  High thres.[MeV]  Offset [chan.]  ns/Chan.  Position [x,y,z]
 #4 PbWO4 Ring 1
@@ -499,6 +492,14 @@ Element:   25263      4.0               2000.0             105.905           0.3
 Element:   25264      4.0               2000.0             106.973           0.139831   25464      -400.0          400.0             2591.6813       0.099403  -51.961520   36.000000   145.700000
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#Set-up of clustering
+#                 No. of clusters to be processed   Cluster threshold energy [MeV]
+#Max-TAPSCluster:  64                                20
+Max-TAPSCluster:  16                                5
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #Definitions of nearest neighbours for each element. Normally there are 12
 # nearest neighbours for each CB NaI element.

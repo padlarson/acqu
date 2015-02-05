@@ -51,7 +51,9 @@ Branch:   emwpc         1024
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #ROOT file(s) (GEANT4 output) to be analysed. Add more lines for more files
 #
-TreeFile: /home/adlarson/MC/Geant/GEANT_etap_etapi0pi0_6g.root
+#TreeFile: /home/adlarson/MC/Geant/GEANT_etap_etapi0pi0_6g.root
+TreeFile: /home/adlarson/MC/ParticleGun/GEANT_proton.root
+#
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
