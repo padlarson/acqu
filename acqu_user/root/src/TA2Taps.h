@@ -366,7 +366,14 @@ inline void TA2Taps::SetParticleInfo(UInt_t NrParticle)
 {
   particles[NrParticle].Reset();
   particles[NrParticle].SetP4(fP4[NrParticle]);
-  particles[NrParticle].SetTime(fBaF2->GetTime(id_clBaF2[NrParticle]) + fTapsTimeshift);
+  if(fBaF2->GetElement(id_clBaF2[NrParticle])->GetT1() > 0 || gAR->GetProcessType() == EMCProcess)
+  {
+      particles[NrParticle].SetTime(-(fBaF2->GetTime(id_clBaF2[NrParticle])) + fTapsTimeshift);
+  }
+  else
+  {
+      particles[NrParticle].SetTime((fBaF2->GetTime(id_clBaF2[NrParticle])) + fTapsTimeshift);
+  }
   particles[NrParticle].SetParticleIDA(fPDG_ID[NrParticle]);
   particles[NrParticle].SetCentralIndex(id_clBaF2[NrParticle]);
   particles[NrParticle].SetApparatus(EAppTAPS);
@@ -375,16 +382,23 @@ inline void TA2Taps::SetParticleInfo(UInt_t NrParticle)
   //particles[NrParticle].SetPDG(fPDG_ID[NrParticle]);
   if(fIsVCharged[NrParticle] == kFALSE) //fIsVCharged ... V is for VETO
   {
-    particles[NrParticle].SetVetoEnergy(0.0);
+      particles[NrParticle].SetVetoEnergy(0.0);
   }
   else
   {
-    particles[NrParticle].SetVetoEnergy(fVeto_dE);
-    //particles[NrParticle].SetIsCharged(fIsVCharged[NrParticle]);
-    particles[NrParticle].SetDetector(EDetVeto);
-    particles[NrParticle].SetVetoIndex(fVetoIndex );
-    particles[NrParticle].SetVetoTime(fVeto_Time);
-   }
+      particles[NrParticle].SetVetoEnergy(fVeto_dE);
+      //particles[NrParticle].SetIsCharged(fIsVCharged[NrParticle]);
+      particles[NrParticle].SetDetector(EDetVeto);
+      particles[NrParticle].SetVetoIndex(fVetoIndex );
+      if(fVeto->GetElement(fVetoIndex)->GetT1() > 0 || gAR->GetProcessType() == EMCProcess)
+      {
+          particles[NrParticle].SetVetoTime(-fVeto_Time);
+      }
+      else
+      {
+          particles[NrParticle].SetVetoTime(fVeto_Time);
+      }
+  }
   particles[NrParticle].SetPSAShort(fBaF2->GetSGEnergy(id_clBaF2[NrParticle]));
 
   particles[NrParticle].SetSigmaE(fBaF2->GetEnergyResolution(clBaF2[id_clBaF2[NrParticle]]->GetEnergy()));
@@ -392,53 +406,6 @@ inline void TA2Taps::SetParticleInfo(UInt_t NrParticle)
   particles[NrParticle].SetSigmaTheta(fBaF2->GetThetaResolution());
   particles[NrParticle].SetSigmaTime(fBaF2->GetTimeResolution());
 }
-
-/* Use this function with AR_HB2vX (User Acqu of H Berghaeuser)
-//-----------------------------------------------------------------------------
-
-inline void TA2Taps::SetParticleInfo(UInt_t NrParticle)
-{
-  Double_t ClEnergy = (clBaF2[id_clBaF2[NrParticle]])->GetEnergy();
-  ClEnergy = ClEnergy*fTapsRingEnergycorr1[GetTAPSRing(clBaF2[id_clBaF2[NrParticle]]->GetIndex()) -1] + ClEnergy*ClEnergy*fTapsRingEnergycorr2[GetTAPSRing(clBaF2[id_clBaF2[NrParticle]]->GetIndex()) -1];
-
-  particles[NrParticle].Initialize();
-  particles[NrParticle].SetApparatus(2);
-  particles[NrParticle].SetPDG(fPDG_ID[NrParticle]);
-  particles[NrParticle].SetParticleNumber(NrParticle);
-  particles[NrParticle].SetTLVec(fP4[NrParticle]);
-  particles[NrParticle].SetClusterEnergy(ClEnergy);
-  particles[NrParticle].SetSGEnergyIndex(fBaF2->GetSGEnergy(id_clBaF2[NrParticle]));
-  particles[NrParticle].SetTime(fBaF2->GetTime(id_clBaF2[NrParticle]));
-  particles[NrParticle].SetClusterSize(clBaF2[id_clBaF2[NrParticle]]->GetNhits());
-  particles[NrParticle].SetClusterNumber(id_clBaF2[NrParticle]);
-  particles[NrParticle].SetClusterIndex(clBaF2[id_clBaF2[NrParticle]]->GetIndex() );
-
-
-  if(fSimpleReconstruct == kTRUE)
-  {
-  particles[NrParticle].SetDeltaEnergy(0.0);
-  particles[NrParticle].SetSGEnergyIndex(0.0);
-  }
-  else
-  {
-  particles[NrParticle].SetSGEnergyIndex(0.0); // not being used
-  if(fIsVCharged[NrParticle] == kFALSE)
-	{
-	particles[NrParticle].SetDeltaEnergy(0.0);
-	}
-  else  {
-	particles[NrParticle].SetDeltaEnergy(fVeto_dE);
-	particles[NrParticle].SetIsCharged(fIsVCharged[NrParticle]);
-	particles[NrParticle].SetVetoIndex(fVetoIndex[NrParticle]);
-	particles[NrParticle].SetVetoTime(fVeto_Time);
-	}
-  }
-
-  //particles[NrParticle].SetEventNumber(0);  // check later how to get actual eventnumber!
-}
-*/
-
-//-----------------------------------------------------------------------------
 
 inline UInt_t TA2Taps::GetTAPSRing(UInt_t ClusterIndex)
 {

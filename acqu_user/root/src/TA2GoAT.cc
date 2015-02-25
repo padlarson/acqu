@@ -9,6 +9,7 @@ TA2GoAT::TA2GoAT(const char* Name, TA2Analysis* Analysis) : TA2AccessSQL(Name, A
                                                                     treeTrigger(0),
                                                                     treeDetectorHits(0),
                                                                     treeScalers(0),
+                                                                    treeMoeller(0),
                                                                     treeSetupParameters(0),
                                                                     nParticles(0),
                                                                     clusterEnergy(0),
@@ -18,7 +19,7 @@ TA2GoAT::TA2GoAT(const char* Name, TA2Analysis* Analysis) : TA2AccessSQL(Name, A
                                                                     clusterSize(0),
                                                                     centralCrystal(0),
                                                                     centralVeto(0),
-                                                                    apparatus(0),
+                                                                    detectors(0),
                                                                     vetoEnergy(0),
                                                                     MWPC0Energy(0),
                                                                     MWPC1Energy(0),
@@ -55,7 +56,9 @@ TA2GoAT::TA2GoAT(const char* Name, TA2Analysis* Analysis) : TA2AccessSQL(Name, A
                                                                     errorModuleIndex(0),
                                                                     errorCode(0),
                                                                     eventNumber(0),
-                                                                    eventID(0)														
+                                                                    eventID(0),
+                                                                    moellerRead(0),
+                                                                    moellerPairs(0)
 {
     	strcpy(outputFolder,"");
     	strcpy(inputName,"");
@@ -79,6 +82,8 @@ TA2GoAT::~TA2GoAT()
 		delete treeDetectorHits;
     if(treeScalers)
         delete treeScalers;
+    if(treeMoeller)
+        delete treeMoeller;
     if(treeSetupParameters)
         delete treeSetupParameters;
     if(file)
@@ -168,22 +173,22 @@ void    TA2GoAT::PostInit()
     clusterSize      = new Int_t[TA2GoAT_MAX_PARTICLE];
     centralCrystal   = new Int_t[TA2GoAT_MAX_PARTICLE];
     centralVeto      = new Int_t[TA2GoAT_MAX_PARTICLE];
-	
-    taggedEnergy     = new Double_t[TA2GoAT_MAX_TAGGER];
-    taggedChannel    = new Int_t[TA2GoAT_MAX_TAGGER];
-    taggedTime       = new Double_t[TA2GoAT_MAX_TAGGER];
-    
-    apparatus        = new Int_t[TA2GoAT_MAX_PARTICLE];
+
+    detectors        = new Int_t[TA2GoAT_MAX_PARTICLE];
     vetoEnergy       = new Double_t[TA2GoAT_MAX_PARTICLE];
     MWPC0Energy      = new Double_t[TA2GoAT_MAX_PARTICLE];
     MWPC1Energy      = new Double_t[TA2GoAT_MAX_PARTICLE];
-        
+
+    taggedChannel    = new Int_t[TA2GoAT_MAX_TAGGER];
+    taggedTime       = new Double_t[TA2GoAT_MAX_TAGGER];
+    taggedEnergy     = new Double_t[TA2GoAT_MAX_TAGGER];
+
     NaIHits	         = new Int_t[TA2GoAT_MAX_HITS];
     NaICluster       = new Int_t[TA2GoAT_MAX_HITS];
     PIDHits	         = new Int_t[TA2GoAT_MAX_HITS];
     MWPCHits		 = new Int_t[TA2GoAT_MAX_HITS];
-    BaF2Hits	 = new Int_t[TA2GoAT_MAX_HITS];
-    BaF2Cluster = new Int_t[TA2GoAT_MAX_HITS];
+    BaF2Hits	     = new Int_t[TA2GoAT_MAX_HITS];
+    BaF2Cluster      = new Int_t[TA2GoAT_MAX_HITS];
     VetoHits         = new Int_t[TA2GoAT_MAX_HITS];
     
     triggerPattern   = new Int_t[32];
@@ -229,7 +234,7 @@ void    TA2GoAT::PostInit()
     treeTracks->Branch("clusterSize", clusterSize, "clusterSize[nTracks]/I");
     treeTracks->Branch("centralCrystal", centralCrystal, "centralCrystal[nTracks]/I");
     treeTracks->Branch("centralVeto", centralVeto, "centralVeto[nTracks]/I");
-    treeTracks->Branch("apparatus", apparatus, "apparatus[nTracks]/I");
+    treeTracks->Branch("detectors", detectors, "detectors[nTracks]/I");
     treeTracks->Branch("vetoEnergy", vetoEnergy, "vetoEnergy[nTracks]/D");
     treeTracks->Branch("MWPC0Energy", MWPC0Energy, "MWPC0Energy[nTracks]/D");
     treeTracks->Branch("MWPC1Energy", MWPC1Energy, "MWPC1Energy[nTracks]/D");
@@ -287,7 +292,39 @@ void    TA2GoAT::PostInit()
             treeLinPol->Branch("polarizationTable", fLinPol->GetPolTable_TC(), "polarizationTable[352]/D");
             treeLinPol->Branch("enhancementTable", fLinPol->GetEnhTable_TC(), "enhancementTable[352]/D");
 		}
-	}
+
+        if(fMoeller)
+        {
+            treeMoeller = new TTree("moeller", "moeller");
+            treeMoeller->Branch("eventNumber", &eventNumber, "eventNumber/I");
+            moellerRead = false;
+            moellerPairs = new UInt_t*[fMoeller->GetNPairs()];
+            Char_t moellerName[256];
+            Char_t moellerType[256];
+            for(UShort_t i=0; i<(fMoeller->GetNVuproms()); i++)
+            {
+                for(UShort_t j=0; j<(fMoeller->GetNLeftChannels()); j++)
+                {
+                    for(UShort_t k=0; k<(fMoeller->GetNPairsPerCh()); k++)
+                    {
+                        for(UShort_t hel=0;hel<2;hel++)
+                        {
+                            UShort_t idx = (i*2*(fMoeller->GetNLeftChannels())*(fMoeller->GetNPairsPerCh()));
+                            idx += (j*2*(fMoeller->GetNPairsPerCh()));
+                            idx += (k*2);
+                            idx += hel;
+                            sprintf(moellerName, "pair_V%d_L%d_R%d_H%d", i, j, k, hel);
+                            sprintf(moellerType, "pair_V%d_L%d_R%d_H%d[256]/i", i, j, k, hel);
+                            moellerPairs[idx] = new UInt_t[fMoeller->GetNBins()];
+                            treeMoeller->Branch(moellerName, moellerPairs[idx], moellerType);
+
+                            for(UInt_t bin=0; bin<fMoeller->GetNBins(); bin++) moellerPairs[idx][bin] = 0;
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     // Adding Tagger information to parameters tree
 
@@ -324,7 +361,7 @@ void    TA2GoAT::PostInit()
             TaggerElectronEnergy[i] = ChToE[i];
             TaggerPhotonEnergy[i] = BeamE - ChToE[i];
         }
-        if(fLadder->IsOverlap()) TaggerEnergyWidth = fLadder->GetEOverlap();
+        TaggerEnergyWidth = fLadder->GetEWidth();
 
         treeSetupParameters->Branch("nTagger", &nTagger, "nTagger/I");
         treeSetupParameters->Branch("TaggerGlobalOffset", &TaggerGlobalOffset, "TaggerGlobalOffset/D");
@@ -333,7 +370,7 @@ void    TA2GoAT::PostInit()
         treeSetupParameters->Branch("TaggerTDCOffset", TaggerTDCOffset, "TaggerTDCOffset[nTagger]/D");
         treeSetupParameters->Branch("TaggerElectronEnergy", TaggerElectronEnergy, "TaggerElectronEnergy[nTagger]/D");
         treeSetupParameters->Branch("TaggerPhotonEnergy", TaggerPhotonEnergy, "TaggerPhotonEnergy[nTagger]/D");
-        if(fLadder->IsOverlap()) treeSetupParameters->Branch("TaggerEnergyWidth", TaggerEnergyWidth, "TaggerEnergyWidth[nTagger]/D");
+        treeSetupParameters->Branch("TaggerEnergyWidth", TaggerEnergyWidth, "TaggerEnergyWidth[nTagger]/D");
     }
 
     // Adding NaI information to parameters tree
@@ -589,7 +626,33 @@ void    TA2GoAT::Reconstruct()
 			edgeSetting = fLinPol->GetEdgeSetting();
 			if(treeLinPol) treeLinPol->Fill();
 		}
+
+        if(fMoeller)
+        {
+            if(fMoeller->IsReadoutStarted())
+            {
+                moellerRead = true;
+                //printf("Moeller read started - Event %d\n",eventNumber);
+            }
+        }
 	}
+
+    if(fMoeller)
+    {
+        if(moellerRead && !fMoeller->IsReadoutStarted())
+        {
+            for(Int_t i=0; i<fMoeller->GetNPairs(); i++)
+            {
+                for(UInt_t j=0; j<fMoeller->GetNBins(); j++)
+                {
+                    moellerPairs[i][j] = fMoeller->GetTDCValue(i,j);
+                }
+            }
+            treeMoeller->Fill();
+            moellerRead = false;
+            //printf("Moeller read finish  - Event %d\n",eventNumber);
+        }
+    }
 
 	nTagged = 0;
 	if(fTagger && fLadder)
@@ -603,11 +666,11 @@ void    TA2GoAT::Reconstruct()
 		if ( fNmult <= 1 )
 		{
         		// Collect Tagger Hits without Multihits
-        		nTagged	= fLadder->GetNhits();
+                nTagged	= fLadder->GetNhitsAll();
                 for(Int_t i=0; i<nTagged; i++)
         		{
-                    taggedChannel[i]	= fLadder->GetHits(i);
-                    taggedTime[i]	= (fLadder->GetTimeOR())[i];
+                    taggedChannel[i] = (fLadder->GetHitsAll())[i];
+                    taggedTime[i] = (fLadder->GetTimeORAll())[i];
                     taggedEnergy[i] = electron_E - ChToE[taggedChannel[i]];
 	        	}
 		}
@@ -656,18 +719,20 @@ void    TA2GoAT::Reconstruct()
 			
             if(TMath::Abs(part.GetEnergyMwpc1()) >= TA2GoAT_NULL) MWPC1Energy[i] = 0.0;
             else MWPC1Energy[i] = part.GetEnergyMwpc1();
-						
+
+            if(part.GetClusterSize() == ENullHit) clusterSize[i] = 0;
+            else clusterSize[i] = part.GetClusterSize();
+
             if(part.GetCentralIndex() == ENullHit) centralCrystal[i] = -1;
             else centralCrystal[i] = part.GetCentralIndex();
 						
 			if(part.GetVetoIndex() == ENullHit) centralVeto[i] = -1;
 			else centralVeto[i]	= part.GetVetoIndex();		
-			
+
 			// Store other values which don't have this "no-value" option
-            apparatus[i]	= (Int_t)EAppCB;
+            detectors[i]	= part.GetDetectors();
             theta[i]		= part.GetThetaDg();
             phi[i]			= part.GetPhiDg();
-            clusterSize[i]  = part.GetClusterSize();
 
 		}
 	}
@@ -691,23 +756,25 @@ void    TA2GoAT::Reconstruct()
 			
             if(TMath::Abs(part.GetVetoEnergy()) >= TA2GoAT_NULL) vetoEnergy[nParticles+i] = 0.0;
             else vetoEnergy[nParticles+i]	= part.GetVetoEnergy();
-		
+
+            if(part.GetClusterSize() == ENullHit) clusterSize[nParticles+i] = 0;
+            else clusterSize[nParticles+i] = part.GetClusterSize();
+
             if(part.GetCentralIndex() == ENullHit) centralCrystal[nParticles+i] = -1;
             else centralCrystal[nParticles+i]	= part.GetCentralIndex();
 			
 			if(part.GetVetoIndex() == ENullHit) centralVeto[nParticles+i] = -1;
 			else centralVeto[nParticles+i]	= part.GetVetoIndex();		
-			
+
 			// Set WC values to NULL
             MWPC0Energy[nParticles+i] = 0.0;
             MWPC1Energy[nParticles+i] = 0.0;
 			
 			// Store other values which don't have this "no-value" option
-            apparatus[nParticles+i]		= (Int_t)EAppTAPS;
+            detectors[nParticles+i]		= part.GetDetectors();
             theta[nParticles+i]			= part.GetThetaDg();
             phi[nParticles+i]			= part.GetPhiDg();
 			time[nParticles+i]			= part.GetTime();	
-            clusterSize[nParticles+i]  	= part.GetClusterSize();
 
 		}
 		nParticles += fTAPS->GetNParticle(); // update number of particles
@@ -844,17 +911,36 @@ void    TA2GoAT::Reconstruct()
 		}
 	}
 
+
 	//Apply EndBuffer
     clusterEnergy[nParticles] = EBufferEnd;
     theta[nParticles]         = EBufferEnd;
     phi[nParticles]           = EBufferEnd;
     time[nParticles]          = EBufferEnd;
+    clusterSize[nParticles]   = EBufferEnd;
+    centralCrystal[nParticles]= EBufferEnd;
+    centralVeto[nParticles]   = EBufferEnd;
+    detectors[nParticles] 	  = EBufferEnd;
+    vetoEnergy[nParticles] 	  = EBufferEnd;
     MWPC0Energy[nParticles]   = EBufferEnd;
     MWPC1Energy[nParticles]   = EBufferEnd;
-    vetoEnergy[nParticles] 	  = EBufferEnd;
+
     taggedChannel[nTagged] 	  = EBufferEnd;
     taggedTime[nTagged] 	  = EBufferEnd;
-	
+    taggedEnergy[nTagged] 	  = EBufferEnd;
+
+    NaIHits[nNaIHits] 	      = EBufferEnd;
+    NaICluster[nNaIHits] 	  = EBufferEnd;
+    PIDHits[nPIDHits] 	      = EBufferEnd;
+    MWPCHits[nMWPCHits] 	  = EBufferEnd;
+    BaF2Hits[nBaF2Hits] 	  = EBufferEnd;
+    BaF2Cluster[nBaF2Hits] 	  = EBufferEnd;
+    VetoHits[nVetoHits] 	  = EBufferEnd;
+
+    errorModuleID[nErrors] 	  = EBufferEnd;
+    errorModuleIndex[nErrors] = EBufferEnd;
+    errorCode[nErrors] 	      = EBufferEnd;
+
 	//Fill Trees
     if(treeTracks) 	treeTracks->Fill();
 	if(treeTagger)			treeTagger->Fill();
@@ -1168,6 +1254,11 @@ void    TA2GoAT::Finish()
 	{
         treeScalers->Write();	// Write
         delete treeScalers; 	// Close and delete in memory
+    }
+    if(treeMoeller)
+    {
+        treeMoeller->Write();	// Write
+        delete treeMoeller; 	// Close and delete in memory
     }
     if(treeSetupParameters)
     {

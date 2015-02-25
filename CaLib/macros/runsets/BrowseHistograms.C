@@ -120,10 +120,12 @@ void BrowseHistograms() {
 
 	TSystemDirectory dir(fFileDir,fFileDir);
 	TList *files = dir.GetListOfFiles();
+	if (!files) {
+		cerr << "Error: No files found in " << fFileDir << endl;
+		return;
+	}
 	files->Sort();
 	
-	if (!files)
-		return;
 
 	histograms = new TList();
 	saved = new TList();

@@ -31,6 +31,7 @@
 #include "TA2LongScint.h"
 #include "TA2GenericApparatus.h"
 #include "TA2GenericDetector.h"
+#include "TA2Moeller.h"
 
 
 enum {
@@ -90,7 +91,7 @@ protected:
   TA2LongScint* fTOF;                                     // pointer to the TOF wall
   TA2GenericApparatus* fPbGlassApp;                       // pointer to the Pb glass detector apparatus
   TA2GenericDetector* fPbGlass;                           // pointer to the Pb glass detector
-  
+  TA2Moeller* fMoeller; // pointer to the Moeller detector
   
 public:
   TA2AccessSQL(const char* name, TA2Analysis* analysis);

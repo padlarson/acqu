@@ -71,11 +71,11 @@ TA2Ladder::TA2Ladder( const char* name, TA2System* apparatus )
   fTrigg = fDoubles = fHitsAll = fWindows = NULL;
   fHitsRand = fHitsPrompt = fMuHits = NULL;
   fECalibration = fEelec = fEelecOR = fMeanEelecOR = fEOverlap = 
-    fRandMin = fRandMax = NULL;
+    fRandMin = fRandMax = fTimeORAll = NULL;
   fMeanTime = fMeanTimeOR = fMeanEnergy = fMeanEnergyOR = 
     fDiffTime = fDiffTimeOR = NULL;
   fTimingRes = fPromptRand = fPromptMin = fPromptMax = 0.0; 
-  fNDoubles = fNThits = fNtrigger = fNtrig = 0;
+  fNDoubles = fNThits = fNtrigger = fNtrig = fNhitsAll = 0;
   fNRandWindows = fNhitsPrompt = fNhitsRand  = fFence = 0;
   fIsOverlap = fIsTimeWindows = fIsFence = fIsMicro = EFalse;
   AddCmdList( kLaddKeys );                  // for SetConfig()
@@ -93,6 +93,7 @@ TA2Ladder::~TA2Ladder()
   }
   if( fDoubles ) delete[] fDoubles;
   if( fECalibration ) delete[] fECalibration;
+  if( fEWidth ) delete[] fEWidth;
   if( fEOverlap ) delete[] fEOverlap;
   if( fWindows ) delete[] fWindows;
   if( fEelec ) delete[] fEelec;
@@ -100,6 +101,7 @@ TA2Ladder::~TA2Ladder()
   if( fMeanEelecOR ) delete[] fMeanEelecOR;
   if( fHitsRand ) delete[] fHitsRand;
   if( fHitsPrompt ) delete[] fHitsPrompt;
+  if( fTimeORAll ) delete[] fTimeORAll;
   if( fMeanTime ) delete[] fMeanTime;
   if( fMeanTimeOR ) delete[] fMeanTimeOR;
   if( fMeanEnergy ) delete[] fEnergy;
@@ -182,7 +184,7 @@ void TA2Ladder::SetConfig( char* line, int key )
   // Initialise: Any post initialisation
   // Disply: ...histogeams - should be done after post-initialisation
 
-  Double_t calib,overlap, min, max;
+  Double_t calib,width, min, max;
   Int_t isscaler,isecalib,isoverlap,ismicro;
   Int_t scaler;
 
@@ -192,9 +194,9 @@ void TA2Ladder::SetConfig( char* line, int key )
     // here we deal with the extra params not handled by that
     if( fNelem >= fNelement ) goto error;
     if ( sscanf( line, "%*s%*s%*s%*s%*s%*s%*s%*s%*s%*s%*s%*s%*s%lf%lf%d",
-		 &calib,&overlap,&scaler) != 3) goto error;
+         &calib,&width,&scaler) != 3) goto error;
     if(fIsECalib) fECalibration[fNelem] = calib;
-    if(fIsOverlap) fEOverlap[fNelem] = overlap;
+    fEWidth[fNelem] = width;
     if(fIsScaler) fScalerIndex[fNelem] = scaler;
   }
 
@@ -216,7 +218,8 @@ void TA2Ladder::SetConfig( char* line, int key )
     if(fNelement){
       if( fIsECalib ){
 	fECalibration = new Double_t[fNelement];
-	if( fIsOverlap ) fEOverlap = new Double_t[fNelement];
+    fEWidth = new Double_t[fNelement];
+    if( fIsOverlap ) fEOverlap = new Double_t[fNelement];
       }
       if( fIsScaler ){
 	fScalerIndex = new UInt_t[fNelement];
@@ -284,9 +287,9 @@ void TA2Ladder::PostInit()
 
   UInt_t i;
 
-  if( fIsOverlap ){ //make overlaps mid point between elements if not specified
+  if( fIsOverlap ){
     for( i=0; i<fNelem-1; i++ ){
-      if(fEOverlap[i]==0)fEOverlap[i]=(fECalibration[i+1]-fECalibration[i]);
+        fEOverlap[i]=(0.5*(fECalibration[i]+fECalibration[i+1])+0.25*(fEWidth[i]-fEWidth[i+1]));
     }
     if( fIsTime ){
       fMeanTime = new Double_t[fNelem];
@@ -312,6 +315,7 @@ void TA2Ladder::PostInit()
   if( !fNtrig ) fNtrig = 1;            	// at least 1 "trigger" loop
   fTrigg = new UInt_t[fNelem];
   fHitsAll = new UInt_t[fNelem];
+  if( fIsTime ) fTimeORAll = new Double_t[fNelem];
   fWindows = new UInt_t[fNelem];
   if(fIsTimeWindows){ 	                // windows defined? prompt/rand ratio
     Double_t randTotal=0.0;
@@ -342,7 +346,7 @@ void TA2Ladder::Decode( )
   // Adapted from TA2KensLadder::Decode() to extend TA2Detector functionality
   // Add Multihit TDC decoding
 
-  fNADChits = fNTDChits = fNhits = 0;
+  fNADChits = fNTDChits = fNhits = fNhitsAll = 0;
   if( fHitsM ){
     for( UInt_t m=0; m<fNMultihit; m++ ) fNhitsM[m] = 0;
   }
@@ -395,7 +399,8 @@ void TA2Ladder::Decode( )
       if( fIsTime ){
 	fTime[j] -= trigtime;
 	fTimeOR[fNhits] = fTime[j];
-	if( fTimeM ){
+    fTimeORAll[fNhits] = fTime[j];
+    if( fTimeM ){
 	  for( Int_t m=0; m<elem->GetNhit(); m++ ){
 	    fHitsM[m][fNhitsM[m]] = j;
 	    fTimeM[m][j] -= trigtime; 
@@ -414,9 +419,10 @@ void TA2Ladder::Decode( )
     if( fIsTime )fRawTimeHits[fNTDChits] = EBufferEnd;
     if( fIsEnergy ) fRawEnergyHits[fNADChits] = EBufferEnd;
   }
-  //??
-  fHitsAll[fNhits] = EBufferEnd;  
+
   fTrigg[fNhits] = EBufferEnd;
+
+  fNhitsAll = fNhits;
 
   // Decode double hits
   DecodeDoubles();
@@ -428,8 +434,10 @@ void TA2Ladder::Decode( )
   if( fIsFence ) fFence = Fence();
   
   fHits[fNhits] = EBufferEnd;
-  if(fIsTime){ 
+  fHitsAll[fNhitsAll] = EBufferEnd;
+  if(fIsTime){
     fTimeOR[fNhits] = (Double_t)EBufferEnd;
+    fTimeORAll[fNhitsAll] = (Double_t)EBufferEnd;
     for(UInt_t m=0; m<fNMultihit; m++){
       fHitsM[m][fNhitsM[m]] = EBufferEnd;
       fTimeORM[m][fNhitsM[m]] = EBufferEnd;
@@ -460,52 +468,83 @@ void TA2Ladder::ReadDecoded( )
   fNDoubles = 0; 
   Float_t* energy = (Float_t*)(fEvent[EI_beam]);
   Double_t Ee = ((TA2Tagger*)fParent)->GetBeamEnergy() - 1000.0*energy[3];
+
+  // Determine nearest channel with energy smaller than this energy
   UInt_t iHit = TMath::BinarySearch( fNelem, fECalibration, Ee );
+
+  // Ensure that we do not go out of range, also handles the above returning -1
   if( iHit >= fNelem ) iHit = 0;
-  //
-  //  Double_t El0,Em0,Eh0,dE0, El1,Em1,Eh1,dE1, El2,Em2,Eh2,dE2;
-  Double_t El0,Eh0,dE0,Eh1,dE1,El2,dE2;
-  dE0 = fEOverlap[iHit];
-  Eh0 = fECalibration[iHit] + 0.5*dE0;
-  if( Eh0 < Ee ){
-    iHit++;
-    dE0 = fEOverlap[iHit];
-    Eh0 = fECalibration[iHit] + 0.5*dE0;
+
+  Double_t centLo,centHi,nextLo;
+
+  // If widths were set, use these to determine limits of the channel
+  if( fEWidth[iHit] ){
+      centLo = fECalibration[iHit] - 0.5*fEWidth[iHit];
+      centHi = fECalibration[iHit] + 0.5*fEWidth[iHit];
   }
-  fHits[fNhits] = fHitsPrompt[fNhits] = fHitsAll[fNhits] = iHit;
-  fNhits++;
-  El0 = Eh0;
-  if( iHit < (fNelem-1) ){
-    dE2 = fEOverlap[iHit+1];
-    El2 = fECalibration[iHit+1] - 0.5*dE2;
+  // Otherwise set the limits as midpoints between this channel and its neighbors
+  else{
+      if( iHit > 0 ) centLo = 0.5*(fECalibration[iHit-1]+fECalibration[iHit]);
+      else centLo = (fECalibration[iHit]-0.5*(fECalibration[iHit+1]-fECalibration[iHit]));
+      if( iHit < (fNelem-1) ) centHi = 0.5*(fECalibration[iHit]+fECalibration[iHit+1]);
+      else centHi = (fECalibration[iHit]+0.5*(fECalibration[iHit]-fECalibration[iHit-1]));
   }
-  else El2 = Eh0;
-  if( iHit > 0 ){
-    dE1 = fEOverlap[iHit-1];
-    Eh1 = fECalibration[iHit-1] + 0.5*dE1;
+
+  // Increment channel (without going out of range) if energy is beyond limit of this channel
+  if( Ee > centHi && iHit < (fNelem-1) ){
+      iHit++;
+
+      // If widths were set, use these to determine limits of the channel
+      if( fEWidth[iHit] ){
+          centLo = fECalibration[iHit] - 0.5*fEWidth[iHit];
+          centHi = fECalibration[iHit] + 0.5*fEWidth[iHit];
+      }
+      // Otherwise set the limits as midpoints between this channel and its neighbors
+      else{
+          if( iHit > 0 ) centLo = 0.5*(fECalibration[iHit-1]+fECalibration[iHit]);
+          else centLo = (fECalibration[iHit]-0.5*(fECalibration[iHit+1]-fECalibration[iHit]));
+          if( iHit < (fNelem-1) ) centHi = 0.5*(fECalibration[iHit]+fECalibration[iHit+1]);
+          else centHi = (fECalibration[iHit]+0.5*(fECalibration[iHit]-fECalibration[iHit-1]));
+      }
   }
-  else Eh1 = El0;
-  if( (Ee > El2) && (Ee < Eh0) ){  
-    fHits[fNhits] = fHitsPrompt[fNhits] = fHitsAll[fNhits] = iHit + 1;
-    // new
-    fDoubles[fNDoubles] = iHit + 1;
-    fNhits++;
-    fNDoubles++;
-    fEelecOR[0] = fRandom->Uniform(El2, Eh0);
+
+  // Set limits for next channel to do double decoding
+  // If widths were set, use these to determine limits of the channel
+  if( iHit < (fNelem-1) && fEWidth[iHit] ) nextLo = fECalibration[iHit+1] - 0.5*fEWidth[iHit+1];
+  else nextLo = centHi;
+
+  // Fill central element if energy is within range, this check may seem extraneous but
+  // it's necessary for cases outside of the range of the tagger, or for detectors like
+  // the end-point tagger, which have gaps between detectors
+  if( (Ee >= centLo) && (Ee < centHi) ){
+      fHits[fNhits] = fHitsAll[fNhits] = iHit;
+      if(fIsECalib) fEelecOR[fNhits] = fECalibration[iHit];
+      if(fIsTime) fTimeOR[fNhits] = 0.0;
+      if(fIsTime) fTimeORAll[fNhits] = 0.0;
+      fNhits++;
+
+      // Fill next channel too for double hit
+      if( Ee >= nextLo ){
+          fHits[fNhits] = fHitsAll[fNhits] = iHit + 1;
+          if(fIsECalib) fEelecOR[fNhits] = fECalibration[iHit+1];
+          if(fIsTime) fTimeOR[fNhits] = 0.0;
+          if(fIsTime) fTimeORAll[fNhits] = 0.0;
+          fNhits++;
+      }
   }
-  else fEelecOR[0] = fRandom->Uniform(Eh1, El2);
+
+  fNhitsAll = fNhits;
+
+  DecodeDoubles();
+
+  DecodePrRand();
 
   // Ensure some arrays properly terminated
-  // Single prompt hit
-  fEelecOR[1] = EBufferEnd;
-  fTimeOR[0] = 0.0; 
-  fTimeOR[1] = EBufferEnd;
   fHits[fNhits] = EBufferEnd;
-  fDoubles[fNDoubles] = EBufferEnd;
-  fHitsPrompt[fNhits] = EBufferEnd;
-  fWindows[0] = ELaddPrompt;
-  fHitsAll[fNhits] = EBufferEnd;
-  fHitsRand[0] = EBufferEnd;
+  fHitsAll[fNhitsAll] = EBufferEnd;
+  if(fIsECalib) fEelecOR[fNhits] = EBufferEnd;
+  if(fIsTime) fTimeOR[fNhits] = EBufferEnd;
+  if(fIsTime) fTimeORAll[fNhitsAll] = EBufferEnd;
   return;
 }
 
