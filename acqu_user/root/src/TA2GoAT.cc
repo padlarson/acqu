@@ -23,6 +23,9 @@ TA2GoAT::TA2GoAT(const char* Name, TA2Analysis* Analysis) : TA2AccessSQL(Name, A
                                                                     vetoEnergy(0),
                                                                     MWPC0Energy(0),
                                                                     MWPC1Energy(0),
+                                                                    pseudoVertexX(0),
+                                                                    pseudoVertexY(0),
+                                                                    pseudoVertexZ(0),
                                                                     nTagged(0),
                                                                     taggedEnergy(0),
                                                                     taggedChannel(0),
@@ -179,6 +182,10 @@ void    TA2GoAT::PostInit()
     MWPC0Energy      = new Double_t[TA2GoAT_MAX_PARTICLE];
     MWPC1Energy      = new Double_t[TA2GoAT_MAX_PARTICLE];
 
+    pseudoVertexX    = new Double_t[TA2GoAT_MAX_PARTICLE];
+    pseudoVertexY    = new Double_t[TA2GoAT_MAX_PARTICLE];
+    pseudoVertexZ    = new Double_t[TA2GoAT_MAX_PARTICLE];
+
     taggedChannel    = new Int_t[TA2GoAT_MAX_TAGGER];
     taggedTime       = new Double_t[TA2GoAT_MAX_TAGGER];
     taggedEnergy     = new Double_t[TA2GoAT_MAX_TAGGER];
@@ -238,7 +245,10 @@ void    TA2GoAT::PostInit()
     treeTracks->Branch("vetoEnergy", vetoEnergy, "vetoEnergy[nTracks]/D");
     treeTracks->Branch("MWPC0Energy", MWPC0Energy, "MWPC0Energy[nTracks]/D");
     treeTracks->Branch("MWPC1Energy", MWPC1Energy, "MWPC1Energy[nTracks]/D");
-	
+    treeTracks->Branch("pseudoVertexX", pseudoVertexX, "pseudoVertexX[nTracks]/D");
+    treeTracks->Branch("pseudoVertexY", pseudoVertexY, "pseudoVertexY[nTracks]/D");
+    treeTracks->Branch("pseudoVertexZ", pseudoVertexZ, "pseudoVertexZ[nTracks]/D");
+
 	treeTagger->Branch("nTagged", &nTagged,"nTagged/I");
     treeTagger->Branch("taggedChannel", taggedChannel, "taggedChannel[nTagged]/I");
     treeTagger->Branch("taggedTime", taggedTime, "taggedTime[nTagged]/D");
@@ -692,95 +702,59 @@ void    TA2GoAT::Reconstruct()
 	}
 	
 	// Gather particle information
-	nParticles = 0;
-	if(fCB)
-	{
-	// Collect CB Hits
-    	nParticles	= fCB->GetNParticle();      
-        for(Int_t i=0; i<nParticles; i++)
-		{
-			TA2Particle part = fCB->GetParticles(i);
-			
-			part.SetParticleID(kRootino); // Set mass to 0 (rootino)
-			part.SetMass(0.0);
+    Int_t nCB = 0;
+    if(fCB) nCB	= fCB->GetNParticle();
 
-			// Reset a bunch of inconsistant "no-value" markers
-            if(TMath::Abs(part.GetT()) >= TA2GoAT_NULL) clusterEnergy[i] = 0.0;
-            else clusterEnergy[i] = part.GetT();
+    Int_t nTAPS = 0;
+    if(fTAPS) nTAPS = fTAPS->GetNParticle();
 
-			if(TMath::Abs(part.GetTime()) >= TA2GoAT_NULL) time[i] = 0.0;
-			else time[i] = part.GetTime();
-			
-            if(TMath::Abs(part.GetVetoEnergy()) >= TA2GoAT_NULL) vetoEnergy[i] = 0.0;
-            else vetoEnergy[i]	= part.GetVetoEnergy();
-			
-            if(TMath::Abs(part.GetEnergyMwpc0()) >= TA2GoAT_NULL) MWPC0Energy[i] = 0.0;
-            else MWPC0Energy[i] = part.GetEnergyMwpc0();
-			
-            if(TMath::Abs(part.GetEnergyMwpc1()) >= TA2GoAT_NULL) MWPC1Energy[i] = 0.0;
-            else MWPC1Energy[i] = part.GetEnergyMwpc1();
+    nParticles = nCB + nTAPS;
+    TA2Particle part;
 
-            if(part.GetClusterSize() == ENullHit) clusterSize[i] = 0;
-            else clusterSize[i] = part.GetClusterSize();
+    for(Int_t i=0; i<nParticles; i++)
+    {
+        if(i < nCB) part = fCB->GetParticles(i);
+        else part = fTAPS->GetParticles(i-nCB);
 
-            if(part.GetCentralIndex() == ENullHit) centralCrystal[i] = -1;
-            else centralCrystal[i] = part.GetCentralIndex();
-						
-			if(part.GetVetoIndex() == ENullHit) centralVeto[i] = -1;
-			else centralVeto[i]	= part.GetVetoIndex();		
+        part.SetParticleID(kRootino); // Set mass to 0 (rootino)
+        part.SetMass(0.0);
 
-			// Store other values which don't have this "no-value" option
-            detectors[i]	= part.GetDetectors();
-            theta[i]		= part.GetThetaDg();
-            phi[i]			= part.GetPhiDg();
+        // Reset a bunch of inconsistant "no-value" markers
+        if(TMath::Abs(part.GetT()) >= TA2GoAT_NULL) clusterEnergy[i] = 0.0;
+        else clusterEnergy[i] = part.GetT();
 
-		}
-	}
+        if(TMath::Abs(part.GetTime()) >= TA2GoAT_NULL) time[i] = 0.0;
+        else time[i] = part.GetTime();
 
-	if(fTAPS)
-	{
-		// Collect TAPS Hits
-        for(Int_t i=0; i<fTAPS->GetNParticle(); i++)
-		{
-			TA2Particle part = fTAPS->GetParticles(i);
-			
-			part.SetParticleID(kRootino); // Set mass to 0 (rootino)
-			part.SetMass(0.0);				
+        if(TMath::Abs(part.GetVetoEnergy()) >= TA2GoAT_NULL) vetoEnergy[i] = 0.0;
+        else vetoEnergy[i]	= part.GetVetoEnergy();
 
-			// Reset a bunch of inconsistant "no-value" markers
-            if(TMath::Abs(part.GetT()) >= TA2GoAT_NULL) clusterEnergy[nParticles+i] = 0.0;
-            else clusterEnergy[nParticles+i] = part.GetT();
+        if(TMath::Abs(part.GetEnergyMwpc0()) >= TA2GoAT_NULL) MWPC0Energy[i] = 0.0;
+        else MWPC0Energy[i] = part.GetEnergyMwpc0();
 
-			if(TMath::Abs(part.GetTime()) >= TA2GoAT_NULL) time[nParticles+i] = 0.0;
-			else time[nParticles+i] = part.GetTime();
-			
-            if(TMath::Abs(part.GetVetoEnergy()) >= TA2GoAT_NULL) vetoEnergy[nParticles+i] = 0.0;
-            else vetoEnergy[nParticles+i]	= part.GetVetoEnergy();
+        if(TMath::Abs(part.GetEnergyMwpc1()) >= TA2GoAT_NULL) MWPC1Energy[i] = 0.0;
+        else MWPC1Energy[i] = part.GetEnergyMwpc1();
 
-            if(part.GetClusterSize() == ENullHit) clusterSize[nParticles+i] = 0;
-            else clusterSize[nParticles+i] = part.GetClusterSize();
+        if(part.GetClusterSize() == ENullHit) clusterSize[i] = 0;
+        else clusterSize[i] = part.GetClusterSize();
 
-            if(part.GetCentralIndex() == ENullHit) centralCrystal[nParticles+i] = -1;
-            else centralCrystal[nParticles+i]	= part.GetCentralIndex();
-			
-			if(part.GetVetoIndex() == ENullHit) centralVeto[nParticles+i] = -1;
-			else centralVeto[nParticles+i]	= part.GetVetoIndex();		
+        if(part.GetCentralIndex() == ENullHit) centralCrystal[i] = -1;
+        else centralCrystal[i] = part.GetCentralIndex();
 
-			// Set WC values to NULL
-            MWPC0Energy[nParticles+i] = 0.0;
-            MWPC1Energy[nParticles+i] = 0.0;
-			
-			// Store other values which don't have this "no-value" option
-            detectors[nParticles+i]		= part.GetDetectors();
-            theta[nParticles+i]			= part.GetThetaDg();
-            phi[nParticles+i]			= part.GetPhiDg();
-			time[nParticles+i]			= part.GetTime();	
+        if(part.GetVetoIndex() == ENullHit) centralVeto[i] = -1;
+        else centralVeto[i]	= part.GetVetoIndex();
 
-		}
-		nParticles += fTAPS->GetNParticle(); // update number of particles
-	}
+        // Store other values which don't have this "no-value" option
+        detectors[i]	= part.GetDetectors();
+        theta[i]		= part.GetThetaDg();
+        phi[i]			= part.GetPhiDg();
+        pseudoVertexX[i] = part.GetPsVertex().X();
+        pseudoVertexY[i] = part.GetPsVertex().Y();
+        pseudoVertexZ[i] = part.GetPsVertex().Z();
 
-	UInt_t *clhits;
+    }
+
+    UInt_t *clhits;
 	HitCluster_t *cl;
 	UInt_t *hits;
 	Int_t clindex[720];
@@ -924,6 +898,9 @@ void    TA2GoAT::Reconstruct()
     vetoEnergy[nParticles] 	  = EBufferEnd;
     MWPC0Energy[nParticles]   = EBufferEnd;
     MWPC1Energy[nParticles]   = EBufferEnd;
+    pseudoVertexX[nParticles] = EBufferEnd;
+    pseudoVertexY[nParticles] = EBufferEnd;
+    pseudoVertexZ[nParticles] = EBufferEnd;
 
     taggedChannel[nTagged] 	  = EBufferEnd;
     taggedTime[nTagged] 	  = EBufferEnd;

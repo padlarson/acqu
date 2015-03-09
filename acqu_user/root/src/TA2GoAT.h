@@ -65,7 +65,12 @@ private:
         Double_t*	vetoEnergy;
         Double_t*	MWPC0Energy;
         Double_t*	MWPC1Energy;
-    
+
+        //Pseudo Vertex Info
+        Double_t*   pseudoVertexX;
+        Double_t*   pseudoVertexY;
+        Double_t*   pseudoVertexZ;
+
     	//Tagger
     	Int_t		nTagged;
         Double_t*	taggedEnergy;

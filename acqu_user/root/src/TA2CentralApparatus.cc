@@ -1186,7 +1186,7 @@ void TA2CentralApparatus::AddParticleInfo(const TA2CentralTrack &track)
   fParticleInfo[fNparticle].SetSigmaTheta(track.GetSigmaThetaNaI());
   fParticleInfo[fNparticle].SetParticleIDA(fType[fNparticle]);
   fParticleInfo[fNparticle].SetVetoTime(track.GetThitPid());
-  fParticleInfo[fNparticle].SetVetoEnergy(track.GetEhitPid());
+  fParticleInfo[fNparticle].SetVetoEnergy(track.GetEhitPidCorr());
   fParticleInfo[fNparticle].SetVetoIndex(iPid);
   fParticleInfo[fNparticle].SetDetectorA( fDet[fNparticle] - fParticleInfo[fNparticle].GetDetectors() );
 //  fParticleInfo[fNparticle].SetIintersMwpc(track.GetIinterMwpc(0),track.GetIinterMwpc(1));
