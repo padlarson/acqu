@@ -40,6 +40,7 @@ private:
         TTree*		treeLinPol;         // Tagger information (filled each event)
         TTree* 		treeTrigger;		// Trigger information (filled each event)
         TTree* 		treeDetectorHits;	// Detector system hit patterns (filled each event)
+        TTree*      treeVertex;         // Two track vertex information
         TTree*		treeScalers; 		// Scaler read information (filled each scaler read)
         TTree*      treeMoeller;        // Moeller information (filled each moeller read)
         TTree*      treeSetupParameters;// Calibration parameters (filled once)
@@ -70,6 +71,12 @@ private:
         Double_t*   pseudoVertexX;
         Double_t*   pseudoVertexY;
         Double_t*   pseudoVertexZ;
+
+        //Vertex Info
+        Int_t       nVertex;
+        Double_t*   vertexX;
+        Double_t*   vertexY;
+        Double_t*   vertexZ;
 
     	//Tagger
     	Int_t		nTagged;

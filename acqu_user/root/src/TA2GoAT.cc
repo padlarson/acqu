@@ -8,6 +8,7 @@ TA2GoAT::TA2GoAT(const char* Name, TA2Analysis* Analysis) : TA2AccessSQL(Name, A
                                                                     treeLinPol(0),
                                                                     treeTrigger(0),
                                                                     treeDetectorHits(0),
+                                                                    treeVertex(0),
                                                                     treeScalers(0),
                                                                     treeMoeller(0),
                                                                     treeSetupParameters(0),
@@ -26,6 +27,10 @@ TA2GoAT::TA2GoAT(const char* Name, TA2Analysis* Analysis) : TA2AccessSQL(Name, A
                                                                     pseudoVertexX(0),
                                                                     pseudoVertexY(0),
                                                                     pseudoVertexZ(0),
+                                                                    nVertex(0),
+                                                                    vertexX(0),
+                                                                    vertexY(0),
+                                                                    vertexZ(0),
                                                                     nTagged(0),
                                                                     taggedEnergy(0),
                                                                     taggedChannel(0),
@@ -83,6 +88,8 @@ TA2GoAT::~TA2GoAT()
 		delete treeTrigger;
 	if(treeDetectorHits)
 		delete treeDetectorHits;
+    if(treeVertex)
+        delete treeVertex;
     if(treeScalers)
         delete treeScalers;
     if(treeMoeller)
@@ -112,6 +119,10 @@ void    TA2GoAT::LoadVariable()
     TA2DataManager::LoadVariable("vetoEnergy",    vetoEnergy,    EDMultiX);
     TA2DataManager::LoadVariable("MWPC0Energy",   MWPC0Energy,   EDMultiX);
     TA2DataManager::LoadVariable("MWPC1Energy",   MWPC1Energy,   EDMultiX);
+
+    TA2DataManager::LoadVariable("vertexX",       vertexX,       EDMultiX);
+    TA2DataManager::LoadVariable("vertexY",       vertexY,       EDMultiX);
+    TA2DataManager::LoadVariable("vertexZ",       vertexZ,       EDMultiX);
 
     TA2DataManager::LoadVariable("energySum",     &energySum,    EDSingleX);
 
@@ -185,6 +196,10 @@ void    TA2GoAT::PostInit()
     pseudoVertexX    = new Double_t[TA2GoAT_MAX_PARTICLE];
     pseudoVertexY    = new Double_t[TA2GoAT_MAX_PARTICLE];
     pseudoVertexZ    = new Double_t[TA2GoAT_MAX_PARTICLE];
+
+    vertexX          = new Double_t[TA2GoAT_MAX_PARTICLE];
+    vertexY          = new Double_t[TA2GoAT_MAX_PARTICLE];
+    vertexZ          = new Double_t[TA2GoAT_MAX_PARTICLE];
 
     taggedChannel    = new Int_t[TA2GoAT_MAX_TAGGER];
     taggedTime       = new Double_t[TA2GoAT_MAX_TAGGER];
@@ -280,6 +295,15 @@ void    TA2GoAT::PostInit()
     treeDetectorHits->Branch("BaF2Cluster", BaF2Cluster, "BaF2Cluster[nBaF2Hits]/I");
     treeDetectorHits->Branch("nVetoHits", &nVetoHits, "nVetoHits/I");
     treeDetectorHits->Branch("VetoHits", VetoHits, "VetoHits[nVetoHits]/I");
+
+    if(fNaI && fMWPC)
+    {
+        treeVertex = new TTree("vertex", "vertex");
+        treeVertex->Branch("nVertex", &nVertex, "nVertex/I");
+        treeVertex->Branch("vertexX", vertexX, "vertexX[nVertex]/D");
+        treeVertex->Branch("vertexY", vertexY, "vertexY[nVertex]/D");
+        treeVertex->Branch("vertexZ", vertexZ, "vertexZ[nVertex]/D");
+    }
 
 	// Store Scalers for non-MC process
 	if (gAR->GetProcessType() != EMCProcess) 
@@ -830,6 +854,19 @@ void    TA2GoAT::Reconstruct()
         for(Int_t i=0; i<nVetoHits; i++)
             { VetoHits[i] = fVeto->GetHits(i);}
 	}
+
+    // Get two track vertex information from CentralApparatus
+    if(fNaI && fMWPC)
+    {
+        nVertex = fCB->GetNvertexes();
+        const TVector3 *vertex = fCB->GetVertexes();
+        for(Int_t i=0; i<nVertex; i++)
+        {
+            vertexX[i] = vertex[i].X();
+            vertexY[i] = vertex[i].Y();
+            vertexZ[i] = vertex[i].Z();
+        }
+    }
 	
 	// Get Trigger information
 	TriggerReconstruction();
@@ -902,6 +939,10 @@ void    TA2GoAT::Reconstruct()
     pseudoVertexY[nParticles] = EBufferEnd;
     pseudoVertexZ[nParticles] = EBufferEnd;
 
+    vertexX[nVertex]          = EBufferEnd;
+    vertexY[nVertex]          = EBufferEnd;
+    vertexZ[nVertex]          = EBufferEnd;
+
     taggedChannel[nTagged] 	  = EBufferEnd;
     taggedTime[nTagged] 	  = EBufferEnd;
     taggedEnergy[nTagged] 	  = EBufferEnd;
@@ -923,6 +964,7 @@ void    TA2GoAT::Reconstruct()
 	if(treeTagger)			treeTagger->Fill();
 	if(treeTrigger)  		treeTrigger->Fill();
 	if(treeDetectorHits)	treeDetectorHits->Fill();
+    if(treeVertex)          treeVertex->Fill();
 
 	//increment event number
 	eventNumber++;	
@@ -1226,7 +1268,12 @@ void    TA2GoAT::Finish()
 	{
 		treeDetectorHits->Write();// Write	
 		delete treeDetectorHits;  // Close and delete in memory
-	}		
+    }
+    if(treeVertex)
+    {
+        treeVertex->Write();    // Write
+        delete treeVertex;      // Close and delete in memory
+    }
     if(treeScalers)
 	{
         treeScalers->Write();	// Write
