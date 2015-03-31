@@ -24,6 +24,7 @@ TA2GoAT::TA2GoAT(const char* Name, TA2Analysis* Analysis) : TA2AccessSQL(Name, A
                                                                     vetoEnergy(0),
                                                                     MWPC0Energy(0),
                                                                     MWPC1Energy(0),
+                                                                    shortEnergy(0),
                                                                     pseudoVertexX(0),
                                                                     pseudoVertexY(0),
                                                                     pseudoVertexZ(0),
@@ -192,6 +193,7 @@ void    TA2GoAT::PostInit()
     vetoEnergy       = new Double_t[TA2GoAT_MAX_PARTICLE];
     MWPC0Energy      = new Double_t[TA2GoAT_MAX_PARTICLE];
     MWPC1Energy      = new Double_t[TA2GoAT_MAX_PARTICLE];
+    shortEnergy      = new Double_t[TA2GoAT_MAX_PARTICLE];
 
     pseudoVertexX    = new Double_t[TA2GoAT_MAX_PARTICLE];
     pseudoVertexY    = new Double_t[TA2GoAT_MAX_PARTICLE];
@@ -260,6 +262,7 @@ void    TA2GoAT::PostInit()
     treeTracks->Branch("vetoEnergy", vetoEnergy, "vetoEnergy[nTracks]/D");
     treeTracks->Branch("MWPC0Energy", MWPC0Energy, "MWPC0Energy[nTracks]/D");
     treeTracks->Branch("MWPC1Energy", MWPC1Energy, "MWPC1Energy[nTracks]/D");
+    treeTracks->Branch("shortEnergy", shortEnergy, "shortEnergy[nTracks]/D");
     treeTracks->Branch("pseudoVertexX", pseudoVertexX, "pseudoVertexX[nTracks]/D");
     treeTracks->Branch("pseudoVertexY", pseudoVertexY, "pseudoVertexY[nTracks]/D");
     treeTracks->Branch("pseudoVertexZ", pseudoVertexZ, "pseudoVertexZ[nTracks]/D");
@@ -759,6 +762,9 @@ void    TA2GoAT::Reconstruct()
         if(TMath::Abs(part.GetEnergyMwpc1()) >= TA2GoAT_NULL) MWPC1Energy[i] = 0.0;
         else MWPC1Energy[i] = part.GetEnergyMwpc1();
 
+        if(TMath::Abs(part.GetPSAShort()) >= TA2GoAT_NULL) shortEnergy[i] = 0.0;
+        else shortEnergy[i] = part.GetPSAShort();
+
         if(part.GetClusterSize() == ENullHit) clusterSize[i] = 0;
         else clusterSize[i] = part.GetClusterSize();
 
@@ -935,6 +941,7 @@ void    TA2GoAT::Reconstruct()
     vetoEnergy[nParticles] 	  = EBufferEnd;
     MWPC0Energy[nParticles]   = EBufferEnd;
     MWPC1Energy[nParticles]   = EBufferEnd;
+    shortEnergy[nParticles]   = EBufferEnd;
     pseudoVertexX[nParticles] = EBufferEnd;
     pseudoVertexY[nParticles] = EBufferEnd;
     pseudoVertexZ[nParticles] = EBufferEnd;

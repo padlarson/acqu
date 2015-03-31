@@ -67,6 +67,9 @@ private:
         Double_t*	MWPC0Energy;
         Double_t*	MWPC1Energy;
 
+        // TAPS PSA Short-gate Energy
+        Double_t*   shortEnergy;
+
         //Pseudo Vertex Info
         Double_t*   pseudoVertexX;
         Double_t*   pseudoVertexY;
