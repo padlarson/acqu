@@ -11,7 +11,7 @@ Reconstruct:
 #
 
 #RootTree-Output-Folder:		~
-RootTree-Input-Name:		A2G4
+RootTree-Input-Name:		GEANT
 RootTree-File-Name:		Acqu
 
 # Optional argument to include tagged photon energies in the tagger tree
