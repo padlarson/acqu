@@ -48,6 +48,7 @@
 #include "SG3sumADC_t.h"               // 3-sum SG output handler
 #include "TA2Physics.h"                // Physics analysis
 #include <vector>
+#include <sstream>
 
 class TA2Apparatus;
 class TA2Detector;
@@ -140,16 +141,22 @@ inline void TA2Analysis::RawDecode( )
 
   for( int j=0; j<fNhits; ){
     if( d->id > fMaxADC ){
-      fprintf(fLogStream, " Error found undefined ADC %d in DAQ event %d\n",
-	      d->id, fNDAQEvent);
+      std::stringstream ss;
+      ss << " Error found undefined ADC " << d->id << " in DAQ event "
+         << fNDAQEvent << "\n";
+      PrintMessage(ss.str().c_str(), kTRUE);
       return;
     }
     switch( fADCdefined[d->id] ){
     case 0:                             // something wrong if this happens
-      fprintf(fLogStream, " Error found undefined ADC %d in DAQ event %d\n",
-	      d->id, fNDAQEvent);
+    {
+      std::stringstream ss;
+      ss << " Error found undefined ADC " << d->id << " in DAQ event "
+         << fNDAQEvent << "\n";
+      PrintMessage(ss.str().c_str(), kTRUE);
       d++;j++;
       break ;                           // cannot process
+    }
     case EFlashADC:                     // save the multiple flash data
       f = fFlash[d->id];
       f->Fill( d );

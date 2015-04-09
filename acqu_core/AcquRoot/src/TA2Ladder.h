@@ -188,8 +188,8 @@ inline void TA2Ladder::DecodeDoubles( )
       // Look for a chain of coincident hits
       UInt_t k,ik,jk;
       for( k=1;; k++ ){
-	if( (ik = i+k) >= fNhits ) break;
 	jk = j+k;
+	if( (ik = i+k) >= fNhits ) break;
 	if( jk != fHitsAll[ik]) break;
 	tdiff = fTime[j]-fTime[jk];
 	if( fabs(tdiff) >= fTimingRes ) break;
@@ -220,6 +220,7 @@ inline void TA2Ladder::DecodeDoubles( )
 	if(fIsECalib)
 	  fEelecOR[ngood] = fMeanEelecOR[fNDoubles] = fEOverlap[j];
 	fNDoubles++;
+        ngood++;
       }
       // >2 adjacent hits....clear hit and energy/time element
       else{
