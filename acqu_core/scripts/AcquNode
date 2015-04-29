@@ -15,6 +15,7 @@ cd ${ACQU_MAINDIR}
 
 # Make any required directories
 mkdir -p ${ACQU_NODEDIR}
+mkdir -p ${ACQU_OUTPUTDIR}
 
 # Create log file for this process
 LogFile="${ACQU_OUTPUTDIR}/log/${ACQU_BASENAME}_AcquNode.log"
@@ -22,6 +23,7 @@ LogFile="${ACQU_OUTPUTDIR}/log/${ACQU_BASENAME}_AcquNode.log"
 # Now run AcquRoot in batch mode
 echo "AcquRoot --batch --batchdir ${ACQU_NODEDIR}/ --directory ${ACQU_NODEDIR}/ --datafile ${ACQU_INPUTDIR}/${ACQU_INPUTFILE} ${ACQU_SETUPFILE} &> $LogFile"
 AcquRoot --batch --batchdir ${ACQU_NODEDIR}/ --directory ${ACQU_NODEDIR}/ --datafile ${ACQU_INPUTDIR}/${ACQU_INPUTFILE} ${ACQU_SETUPFILE} &> $LogFile
+result=$?
 
 # List all the files in the output directory
 echo 
@@ -57,4 +59,4 @@ echo "/bin/rm -f  ${ACQU_NODEDIR}/*.*"
 echo "rmdir ${ACQU_NODEDIR}"
 rmdir ${ACQU_NODEDIR}
 
-exit 0;
+exit $result

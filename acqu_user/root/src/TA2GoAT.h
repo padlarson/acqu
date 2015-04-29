@@ -97,16 +97,24 @@ private:
         Int_t		nNaIHits;
         Int_t*		NaIHits;
         Int_t*		NaICluster;
+        Double_t*   NaIEnergy;
+        Double_t*   NaITime;
         Int_t		nPIDHits;
         Int_t*		PIDHits;
+        Double_t*   PIDEnergy;
+        Double_t*   PIDTime;
         Int_t		nMWPCHits;
         Int_t*		MWPCHits;
         Int_t		nBaF2Hits;
         Int_t*		BaF2Hits;
         Int_t*		BaF2Cluster;
+        Double_t*   BaF2Energy;
+        Double_t*   BaF2Time;
         Int_t		nVetoHits;
         Int_t*		VetoHits;
-    
+        Double_t*   VetoEnergy;
+        Double_t*   VetoTime;
+
     	//Trigger 
         Double_t 	energySum;	// or Detector Energies
         Int_t 		multiplicity;

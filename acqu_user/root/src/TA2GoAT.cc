@@ -43,15 +43,23 @@ TA2GoAT::TA2GoAT(const char* Name, TA2Analysis* Analysis) : TA2AccessSQL(Name, A
                                                                     nNaIHits(0),
                                                                     NaIHits(0),
                                                                     NaICluster(0),
+                                                                    NaIEnergy(0),
+                                                                    NaITime(0),
                                                                     nPIDHits(0),
                                                                     PIDHits(0),
+                                                                    PIDEnergy(0),
+                                                                    PIDTime(0),
                                                                     nMWPCHits(0),
                                                                     MWPCHits(0),
                                                                     nBaF2Hits(0),
                                                                     BaF2Hits(0),
                                                                     BaF2Cluster(0),
+                                                                    BaF2Energy(0),
+                                                                    BaF2Time(0),
                                                                     nVetoHits(0),
                                                                     VetoHits(0),
+                                                                    VetoEnergy(0),
+                                                                    VetoTime(0),
                                                                     energySum(0),
                                                                     multiplicity(0),
                                                                     nTriggerPattern(0),
@@ -209,12 +217,20 @@ void    TA2GoAT::PostInit()
 
     NaIHits	         = new Int_t[TA2GoAT_MAX_HITS];
     NaICluster       = new Int_t[TA2GoAT_MAX_HITS];
+    NaIEnergy        = new Double_t[TA2GoAT_MAX_HITS];
+    NaITime          = new Double_t[TA2GoAT_MAX_HITS];
     PIDHits	         = new Int_t[TA2GoAT_MAX_HITS];
+    PIDEnergy        = new Double_t[TA2GoAT_MAX_HITS];
+    PIDTime          = new Double_t[TA2GoAT_MAX_HITS];
     MWPCHits		 = new Int_t[TA2GoAT_MAX_HITS];
     BaF2Hits	     = new Int_t[TA2GoAT_MAX_HITS];
     BaF2Cluster      = new Int_t[TA2GoAT_MAX_HITS];
+    BaF2Energy       = new Double_t[TA2GoAT_MAX_HITS];
+    BaF2Time         = new Double_t[TA2GoAT_MAX_HITS];
     VetoHits         = new Int_t[TA2GoAT_MAX_HITS];
-    
+    VetoEnergy       = new Double_t[TA2GoAT_MAX_HITS];
+    VetoTime         = new Double_t[TA2GoAT_MAX_HITS];
+
     triggerPattern   = new Int_t[32];
 
     errorModuleID 	 = new Int_t[TA2GoAT_MAX_ERROR];
@@ -289,15 +305,23 @@ void    TA2GoAT::PostInit()
     treeDetectorHits->Branch("nNaIHits", &nNaIHits, "nNaIHits/I");
     treeDetectorHits->Branch("NaIHits", NaIHits, "NaIHits[nNaIHits]/I");
     treeDetectorHits->Branch("NaICluster", NaICluster, "NaICluster[nNaIHits]/I");
+    treeDetectorHits->Branch("NaIEnergy", NaIEnergy, "NaIEnergy[nNaIHits]/D");
+    treeDetectorHits->Branch("NaITime", NaITime, "NaITime[nNaIHits]/D");
     treeDetectorHits->Branch("nPIDHits", &nPIDHits, "nPIDHits/I");
     treeDetectorHits->Branch("PIDHits", PIDHits, "PIDHits[nPIDHits]/I");
+    treeDetectorHits->Branch("PIDEnergy", PIDEnergy, "PIDEnergy[nPIDHits]/D");
+    treeDetectorHits->Branch("PIDTime", PIDTime, "PIDTime[nPIDHits]/D");
     treeDetectorHits->Branch("nMWPCHits", &nMWPCHits, "nMWPCHits/I");
     treeDetectorHits->Branch("MWPCHits", MWPCHits, "MWPCHits[nMWPCHits]/I");
     treeDetectorHits->Branch("nBaF2Hits", &nBaF2Hits, "nBaF2Hits/I");
     treeDetectorHits->Branch("BaF2Hits", BaF2Hits, "BaF2Hits[nBaF2Hits]/I");
     treeDetectorHits->Branch("BaF2Cluster", BaF2Cluster, "BaF2Cluster[nBaF2Hits]/I");
+    treeDetectorHits->Branch("BaF2Energy", BaF2Energy, "BaF2Energy[nBaF2Hits]/D");
+    treeDetectorHits->Branch("BaF2Time", BaF2Time, "BaF2Time[nBaF2Hits]/D");
     treeDetectorHits->Branch("nVetoHits", &nVetoHits, "nVetoHits/I");
     treeDetectorHits->Branch("VetoHits", VetoHits, "VetoHits[nVetoHits]/I");
+    treeDetectorHits->Branch("VetoEnergy", VetoEnergy, "VetoEnergy[nVetoHits]/D");
+    treeDetectorHits->Branch("VetoTime", VetoTime, "VetoTime[nVetoHits]/D");
 
     if(fNaI && fMWPC)
     {
@@ -812,14 +836,20 @@ void    TA2GoAT::Reconstruct()
 		{
             NaIHits[i] = fNaI->GetHits(i);
             NaICluster[i] = clindex[NaIHits[i]];
-		}
+            NaIEnergy[i] = fNaI->GetEnergy(NaIHits[i]);
+            NaITime[i] = fNaI->GetTime(NaIHits[i]);
+        }
 	}
 
 	if(fPID)
 	{
         nPIDHits = fPID->GetNhits();
         for(Int_t i=0; i<nPIDHits; i++)
-        { PIDHits[i] = fPID->GetHits(i); }
+        {
+            PIDHits[i] = fPID->GetHits(i);
+            PIDEnergy[i] = fPID->GetEnergy(PIDHits[i]);
+            PIDTime[i] = fPID->GetTime(PIDHits[i]);
+        }
 	}
 
 	if(fMWPC)
@@ -851,14 +881,20 @@ void    TA2GoAT::Reconstruct()
 		{
             BaF2Hits[i] = fBaF2PWO->GetHits(i);
             BaF2Cluster[i] = clindex[BaF2Hits[i]];
-		}
+            BaF2Energy[i] = fBaF2PWO->GetEnergy(NaIHits[i]);
+            BaF2Time[i] = fBaF2PWO->GetTime(NaIHits[i]);
+        }
 	}
 
 	if(fVeto)
 	{
         nVetoHits = fVeto->GetNhits();
         for(Int_t i=0; i<nVetoHits; i++)
-            { VetoHits[i] = fVeto->GetHits(i);}
+        {
+            VetoHits[i] = fVeto->GetHits(i);
+            VetoEnergy[i] = fVeto->GetEnergy(VetoHits[i]);
+            VetoTime[i] = fVeto->GetTime(VetoHits[i]);
+        }
 	}
 
     // Get two track vertex information from CentralApparatus
@@ -956,11 +992,19 @@ void    TA2GoAT::Reconstruct()
 
     NaIHits[nNaIHits] 	      = EBufferEnd;
     NaICluster[nNaIHits] 	  = EBufferEnd;
+    NaIEnergy[nNaIHits] 	  = EBufferEnd;
+    NaITime[nNaIHits]         = EBufferEnd;
     PIDHits[nPIDHits] 	      = EBufferEnd;
+    PIDEnergy[nNaIHits] 	  = EBufferEnd;
+    PIDTime[nNaIHits]         = EBufferEnd;
     MWPCHits[nMWPCHits] 	  = EBufferEnd;
     BaF2Hits[nBaF2Hits] 	  = EBufferEnd;
     BaF2Cluster[nBaF2Hits] 	  = EBufferEnd;
+    BaF2Energy[nNaIHits] 	  = EBufferEnd;
+    BaF2Time[nNaIHits]        = EBufferEnd;
     VetoHits[nVetoHits] 	  = EBufferEnd;
+    VetoEnergy[nNaIHits] 	  = EBufferEnd;
+    VetoTime[nNaIHits]        = EBufferEnd;
 
     errorModuleID[nErrors] 	  = EBufferEnd;
     errorModuleIndex[nErrors] = EBufferEnd;

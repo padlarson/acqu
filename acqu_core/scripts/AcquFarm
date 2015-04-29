@@ -155,41 +155,48 @@ do
     # Check for running compressed files
     CompFile=`echo $File | grep -c ".xz"`
 
-    #now make the job file
-    echo "#!/bin/sh" > $JobFile;
-    echo "#PBS -N Acqu_${RunNumber}" >> $JobFile;
-    echo "#PBS -m abe" >> $JobFile;
-    echo "#PBS -M $MailAddress"  >> $JobFile;
-    echo "#PBS -V"  >> $JobFile;
-    echo "#PBS -l walltime=${WALLTIME}" >> $JobFile;
-    # if not DirectIO and we have compressed file, use 2 CPUs
+	#default queue
+	OptQueue="batch_x86_64"
+	
+	#use 1 cpu per default
+	OptNCpu=1
+
+	# if not DirectIO and we have compressed file, use 2 CPUs
     if [ $DirectIO -eq 0 -a $CompFile -eq 1 ]
     then
-	echo "#PBS -l ncpus=2" >> $JobFile;
-	echo "#PBS -q batch" >> $JobFile;
-    else
-	echo "#PBS -q batch_x86_64" >> $JobFile;
+		OptQueue="batch"
+		OptNCpu=2
     fi
-    echo "#PBS -e ${JobDir}/jobfiles"  >> $JobFile;
-    echo "#PBS -o ${JobDir}/jobfiles"  >> $JobFile;
-    echo "#"  >> $JobFile;
-    echo "#InputDir: $FileDir" >> $JobFile;
-    echo "#InputFile: $File" >> $JobFile;
-    echo "#"  >> $JobFile;
-    echo "export ACQU_MAINDIR=\"$MainDir\""  >> $JobFile;
-    echo "export ACQU_SETUPFILE=\"$AcquSetup\""  >> $JobFile;
-    echo "export ACQU_INPUTDIR=\"$FileDir\""  >> $JobFile;
-    echo "export ACQU_OUTPUTDIR=\"$OutputDir\""  >> $JobFile;
-    echo "export ACQU_BASENAME=\"$BaseName\""  >> $JobFile;
-    echo "export ACQU_NODEDIR=\"$NodeDir\""  >> $JobFile;
-    echo "export ACQU_INPUTFILE=\"$File\""  >> $JobFile;
-    echo "export PATH=\$PATH:\$PBS_O_PATH"  >> $JobFile;    
-    echo "#"  >> $JobFile;
-    echo "#This is the executable that gets run on the node"  >> $JobFile;
-    echo "AcquNode"  >> $JobFile;
-    echo "#"  >> $JobFile;
-    echo "exit 0"  >> $JobFile;
-    echo "##end of job script"  >> $JobFile;
+
+    #now make the job file
+	cat > "${JobFile}" << EOF 
+#!/bin/sh
+#PBS -N Acqu_${RunNumber}
+#PBS -m abe
+#PBS -M ${MailAddress}
+#PBS -V
+#PBS -l walltime=${WALLTIME}
+#PBS -e ${JobDir}/jobfiles
+#PBS -o ${JobDir}/jobfiles
+#PBS -q ${OptQueue}
+#PBS -l ncpus=${OptNCpu}
+#
+#InputDir: $FileDir
+#InputFile: $File
+#
+export ACQU_MAINDIR="${MainDir}"
+export ACQU_SETUPFILE="${AcquSetup}"
+export ACQU_INPUTDIR="${FileDir}"
+export ACQU_OUTPUTDIR="${OutputDir}"
+export ACQU_BASENAME="${BaseName}"
+export ACQU_NODEDIR="${NodeDir}"
+export ACQU_INPUTFILE="${File}"
+export PATH+=\$PBS_O_PATH
+#
+#This is the executable that gets run on the node
+AcquNode
+##end of job script
+EOF
 
     chmod +x $JobFile;
     
