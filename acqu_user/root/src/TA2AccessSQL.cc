@@ -19,7 +19,7 @@
 
 //______________________________________________________________________________
 TA2AccessSQL::TA2AccessSQL(const char* name, TA2Analysis* analysis)	: TA2Physics(name, analysis), 
-  CBEnergyPerRunCorrection(false),
+  CBEnergyPerRunCorrection(false), TAPSEnergyPerRunCorrection(false),
   fCaLibReader(0)
 {
   // command-line recognition for SetConfig()
@@ -221,6 +221,7 @@ void TA2AccessSQL::SetConfig(Char_t* line, Int_t key)
   case ESQL_CALIB_CBENERGY_PER_RUN:
   {  
     Char_t tmp[128];
+    Bool_t file_found = 0;
     
     printf("try to enable CBEnergy correction per Run\n");
     
@@ -240,25 +241,133 @@ void TA2AccessSQL::SetConfig(Char_t* line, Int_t key)
         printf("   or comment it out. Then no CBEnergy Calibration per Run is done.\n\n");
         exit(1);
       }
-      Int_t 		num;
-      Double_t 	val[4];
-      while(!feof(f))
+
+      ifstream  stream;
+      stream.open(tmp);
+      std::vector<double> gainsCB;
+      gainsCB.resize(0);
+
+      while( (!feof(f)) && (!file_found) )
       {
-        if (fscanf(f, "%d %lf %lf %lf %lf\n", &num, &val[0], &val[1], &val[2], &val[3]) == 5) 
-        {
-          if(num == fRunNumber)
-          {
-            CBEnergyPerRunCorrection		= true;
-            CBEnergyPerRunCorrectionFactor	= val[0];
-            printf("CBEnergy correction factor for run %d is %lf with error %lf\n", fRunNumber, CBEnergyPerRunCorrectionFactor, val[1]);
-            break;
+          std::string   line;
+          std::getline(stream, line);
+
+          //std::string   runnr(line.substr(0,5));
+          std::stringstream s_line(line);
+          int runnumber;
+
+          if(!(s_line >> runnumber)) {
+              std::cerr << "Cannot parse runnumber" << std::endl;
+              continue;
           }
-        }
+          if(runnumber == fRunNumber){
+
+            CBEnergyPerRunCorrection = true;
+            double gain;
+            gainsCB.reserve(720);
+            while(s_line >> gain) {
+              gainsCB.push_back(gain);
+            }
+            file_found = 1;
+          }
+          else
+            continue;
       }
       fclose(f);
+      stream.close();
+      if(file_found)
+      {
+          for(UInt_t i=0; i < gainsCB.size(); i++)
+          {
+            CBEnergyPerRunCorrectionFactor[i] = gainsCB[i];
+            std::cout << gainsCB[i] << "\n";
+          }
+      }
+      else  //( ifound == 0 )
+      {
+        printf("Could not find gaincorrections for run %d.\n", fRunNumber);
+        for(int i=0; i<720; i++)
+            CBEnergyPerRunCorrectionFactor[i]= 1.0;
+        break;
+      }
       break;
     }
   }
+  case ESQL_CALIB_TAPSENERGY_PER_RUN:
+  {
+      Char_t tmp[128];
+      Bool_t file_found = 0;
+
+      printf("try to enable TAPS Energy correction per Run\n");
+      if (sscanf(line, "%s", tmp) == 1)
+      {
+        FILE*	f = fopen(tmp,"r");
+        if(!f)
+        {
+          Char_t tmp2[140];
+          sprintf(tmp2,"data/%s",tmp);
+          f = fopen(tmp2,"r");
+        }
+        if(!f)
+        {
+          printf("\nERROR: could not open %s as calibration per Run file! --> exiting\n", tmp);
+          printf("   correct the filename after the 'Use-CaLib-TAPSEnergyPerRun:' keyword in the physics class config file\n");
+          printf("   or comment it out. Then no TAPSEnergy Calibration per Run is done.\n\n");
+          exit(1);
+        }
+
+        ifstream  stream;
+        stream.open(tmp);
+        std::vector<double> gainsTAPS;
+        gainsTAPS.resize(0);
+
+        while( (!feof(f)) && (!file_found) )
+        {
+            std::string   line;
+            std::getline(stream, line);
+
+            std::stringstream s_line(line);
+            int runnumber;
+
+            if(!(s_line >> runnumber)) {
+                std::cerr << "Cannot parse runnumber" << std::endl;
+                continue;
+            }
+            if(runnumber == fRunNumber){
+
+              TAPSEnergyPerRunCorrection = true;
+              double gain;
+              gainsTAPS.reserve(438);
+              while(s_line >> gain) {
+                gainsTAPS.push_back(gain);
+              }
+              file_found = 1;
+            }
+            else
+              continue;
+        }
+        fclose(f);
+        stream.close();
+        if(file_found)
+        {
+            for(UInt_t i=0; i < gainsTAPS.size(); i++)
+            {
+              TAPSEnergyPerRunCorrectionFactor[i] = gainsTAPS[i];
+  //            std::cout << gainsTAPS[i] << "\n";
+            }
+        }
+        else  //( ifound == 0 )
+        {
+          printf("Could not find gaincorrections for run %d.\n", fRunNumber);
+          for(int i=0; i<438; i++)
+              TAPSEnergyPerRunCorrectionFactor[i]= 1.0;
+          break;
+        }
+        break;
+      }
+    }
+
+
   default:
   {
     // default main apparatus SetConfig()
@@ -475,14 +584,24 @@ void TA2AccessSQL::PostInit()
   
   if(fNaI && CBEnergyPerRunCorrection)
   {
+    //printf("gain after calib:		%lf\n", fNaI->GetElement(10)->GetA1());
     for(UInt_t i=0; i<fNaI->GetNelement(); i++)
-      fNaI->GetElement(i)->SetA1(CBEnergyPerRunCorrectionFactor * (fNaI->GetElement(i)->GetA1()));
-    printf("gain after calib:		%lf\n", fNaI->GetElement(10)->GetA1());
-    
-    for(UInt_t i=0; i<fNaI->GetNelement(); i++)
-      fNaI->GetElement(i)->SetA1(CBEnergyPerRunCorrectionFactor * (fNaI->GetElement(i)->GetA1()));
-    printf("gain after correction:	%lf\n", fNaI->GetElement(10)->GetA1());    
+    {
+        fNaI->GetElement(i)->SetA1(CBEnergyPerRunCorrectionFactor[i] * (fNaI->GetElement(i)->GetA1()));
+    }
+    //printf("gain after correction:	%lf\n", fNaI->GetElement(10)->GetA1());
   }
+  if(fBaF2PWO && TAPSEnergyPerRunCorrection)
+  {
+//      for( UInt_t i = 0; i < fBaF2PWO->GetNelement(); i++ )
+//    printf("gain after calib:		%lf\n", fBaF2PWO->GetElement(10)->GetA1());
+    for(UInt_t i=0; i<fBaF2PWO->GetNelement(); i++)
+    {
+        fBaF2PWO->GetElement(i)->SetA1(TAPSEnergyPerRunCorrectionFactor[i] * (fBaF2PWO->GetElement(i)->GetA1()));
+    }
+    //printf("gain after correction:	%lf\n", fNaI->GetElement(10)->GetA1());
+  }
+
 }
 
 void TA2AccessSQL::LoadVariable()
