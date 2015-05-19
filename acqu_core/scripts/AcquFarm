@@ -32,7 +32,7 @@ exe=`basename $0`
 #the maximum time the job will be allowed HH:MM:SS
 #This is the max allowed on the batch_x86 queue.
 #Set high in case 
-WALLTIME=24:00:00
+WALLTIME=2:00:00
 
 print_usage(){
     echo
@@ -172,7 +172,16 @@ do
 	cat > "${JobFile}" << EOF 
 #!/bin/sh
 #PBS -N Acqu_${RunNumber}
-#PBS -m abe
+
+## Send eMail if job aborts
+#PBS -m a
+
+## Send eMail when job starts
+##PBS -m b
+
+## Send eMail if job ends
+##PBS -m e
+
 #PBS -M ${MailAddress}
 #PBS -V
 #PBS -l walltime=${WALLTIME}

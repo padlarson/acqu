@@ -881,8 +881,8 @@ void    TA2GoAT::Reconstruct()
 		{
             BaF2Hits[i] = fBaF2PWO->GetHits(i);
             BaF2Cluster[i] = clindex[BaF2Hits[i]];
-            BaF2Energy[i] = fBaF2PWO->GetEnergy(NaIHits[i]);
-            BaF2Time[i] = fBaF2PWO->GetTime(NaIHits[i]);
+            BaF2Energy[i] = fBaF2PWO->GetEnergy(BaF2Hits[i]);
+            BaF2Time[i] = fBaF2PWO->GetTime(BaF2Hits[i]);
         }
 	}
 

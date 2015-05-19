@@ -401,6 +401,12 @@ void ButtonWindow::StartModule()
     TList set_list;
     fLB_RunSet->GetSelectedEntries(&set_list);
 
+    // check if a run set is actually selected
+    if(set_list.GetSize() ==0) {
+        puts("No Run Set selected!\n");
+        return;
+    }
+
     // fill sets
     Int_t nSet = set_list.GetSize();
     Int_t set[999];     

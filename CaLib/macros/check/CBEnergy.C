@@ -85,6 +85,11 @@ void CBEnergy()
     // get number of sets
     Int_t nSets = TCMySQLManager::GetManager()->GetNsets(data, calibration);
 
+    if(nSets <= 0) {
+        printf("No run sets found for calibration \"%s\"\n", calibration );
+        return;
+    }
+
     // create canvas
     Int_t n = TMath::Sqrt(nSets);
     TCanvas* cOverview = new TCanvas();
