@@ -11,22 +11,18 @@ Reconstruct:
 #
 
 # General:      dbhost       		dbname   dbuser      dbpass        calibration
-Use-CaLib:      a2calib.online.a2.kph   CaLib_2004_01-2012_08    calib       basel10       2012_08_EtaP_Ott
+Use-CaLib:      a2calib.online.a2.kph   CaLib_2004_01-2012_08    calib       basel10       2012_08_EtaP_Adlarson
 #
-# miscellaneous calibrations    # target position  (0=off/1=on)
-Use-CaLib-Misc:                 0
 # tagger calib:     time  (0=off/1=on)
 Use-CaLib-TAGG:     1
-# CB calib:         energy  time    timewalk    quadr. energy  (0=off/1=on)
-Use-CaLib-CB:       1       1       0           1
-# TAPS calib:       energy  time    quadr. energy   LED thr.  (0=off/1=on)
-Use-CaLib-TAPS:     0       1       0               0
-# PID calib:        phi     droop   energy  time  (0=off/1=on)
-Use-CaLib-PID:      1       0       0       1
-# Veto calib:       energy  time  (0=off/1=on)
-Use-CaLib-Veto:     0       1
-
-Use-CaLib-CBEnergyPerRun:	data/CBEnergyCorrectionPerRun.txt
+# CB calib:         energy  time    timewalk    quadr. energy    led  (0=off/1=on)
+Use-CaLib-CB:       1       1       1           0                0 
+# TAPS calib:       energy  time    quadr. energy   LED thr.    CFD thr.  (0=off/1=on)
+Use-CaLib-TAPS:     1       1       0               0           0
+# PID calib:        phi     energy  time  (0=off/1=on)
+Use-CaLib-PID:      1       0       1
+# Veto calib:       energy  time    LED thr. (0=off/1=on)
+Use-CaLib-Veto:     0       1       0
 
 
 RootTree-Output-Folder: /home/adlarson/data201208/acqucb
