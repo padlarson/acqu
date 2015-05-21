@@ -59,8 +59,8 @@ Reconstruct-Analysis:
 ##
 ## Specify physics analysis
 ##						Name		Class			Config File
-#Physics-Analysis:       MyCaLib     TA2MyCaLib     	Physics-CaLib-PA.dat
-Physics-Analysis:       GoAT     	TA2GoAT		   	AR-Analysis-GoAT.dat
+Physics-Analysis:       MyCaLib     TA2MyCaLib     	Physics-CaLib.dat
+#Physics-Analysis:       GoAT     	TA2GoAT		   	AR-Analysis-GoAT.dat
 ##
 ## Do some post initialisation...usually necessary
 Initialise:
@@ -73,11 +73,11 @@ Period:	100000	root/macros/PeriodMacro.C	PeriodMacro()
 ##
 ## EndFile...each time an input data file is closed
 #EndFile:	root/macros/EndFileMacro_v4.C  EndFileMacro()
-#EndFile:	root/macros/EndFileMacro.C  EndFileMacro()
+EndFile:	root/macros/EndFileMacro.C  EndFileMacro()
 #EndFile:  
 ##
 ## Finish...when all input data files processed
-#Finish:	        root/macros/MyFinishMacro.C  MyFinishMacro()
+Finish:	        root/macros/MyFinishMacro.C  MyFinishMacro()
 #Finish:  
 ##
 ## Save all accepted events (ie those which pass all data cuts) to a
