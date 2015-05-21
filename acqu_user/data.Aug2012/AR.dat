@@ -34,5 +34,5 @@ AnalysisSetup: Analysis.dat
 SplitScaler: 2 128 540
 ##
 ## Set up of data files
-ServerSetup: CBServerPA.Offline
+ServerSetup: Server.dat
 

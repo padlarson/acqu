@@ -77,7 +77,8 @@ EndFile:	root/macros/EndFileMacro.C  EndFileMacro()
 #EndFile:  
 ##
 ## Finish...when all input data files processed
-Finish:	        root/macros/MyFinishMacro.C  MyFinishMacro()
+#Finish:	        root/macros/MyFinishMacro.C  MyFinishMacro()
+Finish:		    root/macros/FinishWorker.C	Finish()
 #Finish:  
 ##
 ## Save all accepted events (ie those which pass all data cuts) to a
