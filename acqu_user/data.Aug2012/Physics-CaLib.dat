@@ -11,12 +11,12 @@ Reconstruct:
 #
 
 # General:      dbhost       		dbname   dbuser      dbpass        calibration
-Use-CaLib:      a2calib.online.a2.kph   CaLib_2004_01-2012_08    calib       basel10       2012_08_EtaP_Adlarson
+Use-CaLib:      blaster                 CaLib_2004_01-2012_08    calib       basel10       2012_08_EtaP_Adlarson
 #
-# tagger calib:     time  (0=off/1=on)
-Use-CaLib-TAGG:     1
+# tagger calib:     time  (0=off/1=on) efficiency (0=off/1=on)
+Use-CaLib-TAGG:     1	0
 # CB calib:         energy  time    timewalk    quadr. energy    led  (0=off/1=on)
-Use-CaLib-CB:       1       1       1           0                0 
+Use-CaLib-CB:       1       1       0          0                0 
 # TAPS calib:       energy  time    quadr. energy   LED thr.    CFD thr.  (0=off/1=on)
 Use-CaLib-TAPS:     1       1       0               0           0
 # PID calib:        phi     energy  time  (0=off/1=on)
@@ -37,14 +37,14 @@ CaLib-CB-Energy: 1
 
 # CB quadratic energy correction
 #              on/off  pi0_min  pi0_max  eta_min  eta_max
-CaLib-CB-Quad: 1       100      150      480      575
+#CaLib-CB-Quad: 1       100      150      480      575
 
 # CB time calibration
 CaLib-CB-Time: 1
 
 # CB time walk calibration
 #              on/off  pi0_min  pi0_max  prompt_min  prompt_max  bg1_min  bg1_max  bg2_min  bg2_max  mm_min  mm_max
-CaLib-CB-Walk: 1       100      160      -130        -118        -550     -200     -50     300      -100    100
+#CaLib-CB-Walk: 1       100      160      -130        -118        -550     -200     -50     300      -100    100
 
 # TAPS energy calibration
 CaLib-TAPS-Energy: 1
@@ -78,7 +78,7 @@ CaLib-TAPS-Time: 1
 CaLib-Veto-Energy: 1
 
 # Veto time
-CaLib-Veto-Time: 1
+#CaLib-Veto-Time: 1
 
 # tagger time calibration
 CaLib-Tagger-Time: 1

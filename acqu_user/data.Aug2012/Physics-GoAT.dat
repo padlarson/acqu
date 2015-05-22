@@ -11,12 +11,12 @@ Reconstruct:
 #
 
 # General:      dbhost       		dbname   dbuser      dbpass        calibration
-Use-CaLib:      a2calib.online.a2.kph   CaLib_2004_01-2012_08    calib       basel10       2012_08_EtaP_Adlarson
+Use-CaLib:      blaster   CaLib_2004_01-2012_08    calib       basel10       2012_08_EtaP_Adlarson
 #
-# tagger calib:     time  (0=off/1=on)
-Use-CaLib-TAGG:     1
+# tagger calib:     time  (0=off/1=on) efficiency (0=off/1=on)
+Use-CaLib-TAGG:     1	0
 # CB calib:         energy  time    timewalk    quadr. energy    led  (0=off/1=on)
-Use-CaLib-CB:       1       1       1           0                0 
+Use-CaLib-CB:       1       1       0           0                0 
 # TAPS calib:       energy  time    quadr. energy   LED thr.    CFD thr.  (0=off/1=on)
 Use-CaLib-TAPS:     1       1       0               0           0
 # PID calib:        phi     energy  time  (0=off/1=on)
@@ -25,8 +25,8 @@ Use-CaLib-PID:      1       0       1
 Use-CaLib-Veto:     0       1       0
 
 
-RootTree-Output-Folder: /home/adlarson/data201208/acqucb
-RootTree-File-Name:		ACQU
+RootTree-Output-Folder: output/
+RootTree-File-Name:	ACQU
 
 Initialise:
 
