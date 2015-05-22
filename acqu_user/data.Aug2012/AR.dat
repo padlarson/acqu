@@ -11,8 +11,10 @@
 ## Expected to reside in directory $acqu/data/
 ## To use invoke for example... AcquRoot ARPA.dat
 ##-----------------------------------------------------------------------
+# use experimental DirectIO mode
+UseDirectIO:
 ## Batch mode operation...redirect output directory for log files etc.
-BatchDir: /home/adlarson/logfiles/
+BatchDir: ~/
 ##
 ## Tree Name # branches Process Type
 Name: RawEvent_AR_Save 3 Raw
@@ -35,4 +37,3 @@ SplitScaler: 2 128 540
 ##
 ## Set up of data files
 ServerSetup: Server.dat
-
