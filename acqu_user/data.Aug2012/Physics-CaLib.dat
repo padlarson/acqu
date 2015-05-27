@@ -23,7 +23,8 @@ Use-CaLib-TAPS:     1       1       0               0           0
 Use-CaLib-PID:      1       0       1
 # Veto calib:       energy  time    LED thr. (0=off/1=on)
 Use-CaLib-Veto:     0       1       0
-
+CaLib-TAPS-Time-Cut: -5.0 5.0
+CaLib-TAPS-Time-Cut-MaxRing: 4
 
 #
 # TA2MyCaLib calibration configuration
