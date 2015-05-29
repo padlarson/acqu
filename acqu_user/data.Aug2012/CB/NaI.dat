@@ -2191,6 +2191,69 @@ Next-Neighbour: 13	718	719	716	717	715	713	714	572	574	575	143	142	141
 Next-Neighbour: 12	719	718	575	143	574	142	287	141	716	717	572	431	
 ## Moliere Radius for NaI
 Moliere-Radius: 4.8
+## Ignore elements, no pi0 peak visible:
+Ignore-Elem: 17
+Ignore-Elem: 26
+Ignore-Elem: 28
+Ignore-Elem: 29
+Ignore-Elem: 30
+Ignore-Elem: 31
+Ignore-Elem: 32
+Ignore-Elem: 34
+Ignore-Elem: 35
+Ignore-Elem: 36
+Ignore-Elem: 37
+Ignore-Elem: 38
+Ignore-Elem: 40
+Ignore-Elem: 125
+Ignore-Elem: 203
+Ignore-Elem: 267
+Ignore-Elem: 310
+Ignore-Elem: 311
+Ignore-Elem: 315
+Ignore-Elem: 316
+Ignore-Elem: 318
+Ignore-Elem: 319
+Ignore-Elem: 353
+Ignore-Elem: 354
+Ignore-Elem: 354
+Ignore-Elem: 355
+Ignore-Elem: 356
+Ignore-Elem: 357
+Ignore-Elem: 358
+Ignore-Elem: 359
+Ignore-Elem: 360
+Ignore-Elem: 361
+Ignore-Elem: 362
+Ignore-Elem: 363
+Ignore-Elem: 364
+Ignore-Elem: 365
+Ignore-Elem: 366
+Ignore-Elem: 400
+Ignore-Elem: 401
+Ignore-Elem: 402
+Ignore-Elem: 405
+Ignore-Elem: 408
+Ignore-Elem: 479
+Ignore-Elem: 549
+Ignore-Elem: 565
+Ignore-Elem: 581
+Ignore-Elem: 582
+Ignore-Elem: 597
+Ignore-Elem: 677
+Ignore-Elem: 678
+Ignore-Elem: 679
+Ignore-Elem: 681
+Ignore-Elem: 682
+Ignore-Elem: 683
+Ignore-Elem: 684
+Ignore-Elem: 685
+Ignore-Elem: 686
+Ignore-Elem: 687
+Ignore-Elem: 688
+Ignore-Elem: 689
+Ignore-Elem: 691
+Ignore-Elem: 692
 ##
 ##
 ## Do some further array initialisation BEFORE display specification
