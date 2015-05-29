@@ -44,8 +44,12 @@ CaLib-CB-Energy: 1
 CaLib-CB-Time: 1
 
 # CB time walk calibration
-#              on/off  pi0_min  pi0_max  prompt_min  prompt_max  bg1_min  bg1_max  bg2_min  bg2_max  mm_min  mm_max
-#CaLib-CB-Walk: 1       100      160      -130        -118        -550     -200     -50     300      -100    100
+# For EPT, we use a variant of the method from Marc Unverzagt's thesis
+# the proton time is used as reference, so proton should have sufficiently high energy
+# to minimize their own timewalk (but also lower than the punch through limit)
+# the advantage is that it only depends on CB
+#                   on/off  pi0_min  pi0_max  phi_min  phi_max  protonE_min  protonE_max
+CaLib-CB-Walk-EPT:  1       115      155      170      190      250          400      
 
 # TAPS energy calibration
 CaLib-TAPS-Energy: 1
