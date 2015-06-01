@@ -10,7 +10,14 @@
 Size:	720	1	1	1
 #RawHits:
 #Energy-Scale: 1.060
-#
+########################################################################
+## Process raw ADC/TDC hits, uncomment if desired
+########################################################################
+##
+#RawHits:
+# CB TDCs actually are MultiHit capable
+Multi-hit: 8
+###
 # Calibration factors for each crystal...one line for each crystal
 # Can optionally enter TDC-Time onfo...extra 5 parameters per line
 # low, high are energy cuts, ped is the pedestal, MeV/chan conversion gain
