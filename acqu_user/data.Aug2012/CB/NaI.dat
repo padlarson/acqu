@@ -2198,7 +2198,7 @@ Next-Neighbour: 13	718	719	716	717	715	713	714	572	574	575	143	142	141
 Next-Neighbour: 12	719	718	575	143	574	142	287	141	716	717	572	431	
 ## Moliere Radius for NaI
 Moliere-Radius: 4.8
-## Ignore elements, no pi0 peak visible:
+## Ignore elements, no pi0 peak visible: (189, 290, 586, 602, 672, 696 ID bad from TimeWalk)
 Ignore-Elem: 17
 Ignore-Elem: 26
 Ignore-Elem: 28
@@ -2213,8 +2213,10 @@ Ignore-Elem: 37
 Ignore-Elem: 38
 Ignore-Elem: 40
 Ignore-Elem: 125
+Ignore-Elem: 189
 Ignore-Elem: 203
 Ignore-Elem: 267
+Ignore-Elem: 290
 Ignore-Elem: 310
 Ignore-Elem: 311
 Ignore-Elem: 315
@@ -2246,7 +2248,10 @@ Ignore-Elem: 549
 Ignore-Elem: 565
 Ignore-Elem: 581
 Ignore-Elem: 582
+Ignore-Elem: 586
 Ignore-Elem: 597
+Ignore-Elem: 602
+Ignore-Elem: 672
 Ignore-Elem: 677
 Ignore-Elem: 678
 Ignore-Elem: 679
@@ -2261,6 +2266,7 @@ Ignore-Elem: 688
 Ignore-Elem: 689
 Ignore-Elem: 691
 Ignore-Elem: 692
+Ignore-Elem: 696
 ##
 ##
 ## Do some further array initialisation BEFORE display specification
