@@ -16,7 +16,7 @@ Use-CaLib:      blaster                 CaLib_2004_01-2012_08    calib       bas
 # tagger calib:     time  (0=off/1=on) efficiency (0=off/1=on)
 Use-CaLib-TAGG:     1	0
 # CB calib:         energy  time    timewalk    quadr. energy    led  (0=off/1=on)
-Use-CaLib-CB:       1       1       0          0                0 
+Use-CaLib-CB:       1       1       1          0                0 
 # TAPS calib:       energy  time    quadr. energy   LED thr.    CFD thr.  (0=off/1=on)
 Use-CaLib-TAPS:     1       1       0               0           0
 # PID calib:        phi     energy  time  (0=off/1=on)
@@ -49,7 +49,7 @@ CaLib-CB-Time: 1
 # to minimize their own timewalk (but also lower than the punch through limit)
 # the advantage is that it only depends on CB
 #                   on/off  pi0_min  pi0_max  phi_min  phi_max  protonE_min  protonE_max
-CaLib-CB-Walk-EPT:  1       115      155      170      190      250          400      
+#CaLib-CB-Walk-EPT:  1       115      155      170      190      250          400      
 
 # TAPS energy calibration
 CaLib-TAPS-Energy: 1
@@ -83,7 +83,7 @@ CaLib-TAPS-Time: 1
 CaLib-Veto-Energy: 1
 
 # Veto time
-#CaLib-Veto-Time: 1
+CaLib-Veto-Time: 1
 
 # tagger time calibration
 CaLib-Tagger-Time: 1
