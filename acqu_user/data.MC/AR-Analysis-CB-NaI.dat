@@ -4,6 +4,27 @@
 #
 #	Total	Energy?	Time?	Position?
 Size:	720	1	1	1
+# -----------------------------------------------------------------------
+# Some MC controls
+#
+# Apply an energy scale
+Energy-Scale: 1.04
+#
+# Energy resolution using the form A*(E^B): A, B,   Use to smear MC data (0/1 = off/on) 
+# Dominik Werthmueller smearing see fig 3.11 in his thesis
+Energy-Resolution: 0.015 0.62 1 
+#
+#
+# Time resolution, apply gaus. smear (sigma in ns), Use to smear MC data (0/1 = off/on)
+#Time-Resolution: 2.87 0
+#
+# Theta Resolution in Degrees
+#Theta-Resolution: 2.5
+#
+# Phi Resolution in Degrees (divided by sin(theta) for res @ specific theta)
+#Phi-Resolution: 2.0
+#
+#-------------------------------------------------------------------------
 #
 #
 ## 		Max # clusters   	Clust-Thresh(MeV)
@@ -1457,8 +1478,9 @@ Next-Neighbour: 13	716	715	718	141	719	143	138	142	95	711	713	714	717
 Next-Neighbour: 13	717	714	572	718	571	575	719	716	715	713	671	567	574	
 Next-Neighbour: 13	718	719	716	717	715	713	714	572	574	575	143	142	141	
 Next-Neighbour: 12	719	718	575	143	574	142	287	141	716	717	572	431	
+## Moliere Radius for NaI
+Moliere-Radius: 4.8
 ##
-Energy-Scale: 1.03
 ## Do some further array initialisation BEFORE display specification
 Initialise:
 ##
