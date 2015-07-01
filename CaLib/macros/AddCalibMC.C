@@ -23,13 +23,13 @@ void AddCalibMC()
     // macro configuration: just change here for your beamtime and leave
     // the other parts of the code unchanged
     const Char_t target[]           = "LH2";
-    const Int_t dummyRun            = 999001;
-    const Char_t calibName[]        = "2015-MC-Init-Test";
-    const Char_t calibDesc[]        = "Calibration for MC data, test to set proper starting values";
+    const Int_t dummyRun            = 0;
+    const Char_t calibName[]        = "2015-MC-eta_prime";
+    const Char_t calibDesc[]        = "Calibration for MC data eta prime prod run";
     const Char_t calibFileTagger[]  = "../acqu_user/data/AR-Analysis-Tagger-EPT.dat";
-    const Char_t calibFileCB[]      = "../acqu_user/data/AR-Analysis-CB-NaI.dat";
+    const Char_t calibFileCB[]      = "../acqu_user/data/AR-Analysis-CentApp-NaI.dat";
     const Char_t calibFileTAPS[]    = "../acqu_user/data/AR-Analysis-TAPS-BaF2.dat";
-    const Char_t calibFilePID[]     = "../acqu_user/data/AR-Analysis-CB-PID.dat";
+    const Char_t calibFilePID[]     = "../acqu_user/data/AR-Analysis-CentApp-PID.dat";
     const Char_t calibFileVeto[]    = "../acqu_user/data/AR-Analysis-TAPS-Veto.dat";
 
     // set MC mode to pass 0s and 1s to the database for gains, offset, pedestals, etc.

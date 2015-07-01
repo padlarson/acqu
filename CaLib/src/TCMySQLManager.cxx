@@ -1307,13 +1307,17 @@ void TCMySQLManager::AddCalibAR(CalibDetector_t det, const Char_t* calibFileAR,
             e1[i] = r.GetElement(i)->GetADCGain();
             t0[i] = r.GetElement(i)->GetOffset();
             t1[i] = r.GetElement(i)->GetTDCGain();
-        } else {
+        } 
+        else {
             e0[i] = 0.;
             e1[i] = 1.;
             t0[i] = 0.;
             t1[i] = 1.;
         }
     }
+
+    if(MC)
+        printf("At least MC is set to true");
 
     // read detector specific calibration values
     // and write the data to the database (depends also
@@ -1324,6 +1328,10 @@ void TCMySQLManager::AddCalibAR(CalibDetector_t det, const Char_t* calibFileAR,
         case kDETECTOR_TAGG:
         {
             // write to database
+            for(int i = 0; i < 20; i++)
+            {
+                printf(" TAGG(%d) offset is %f \n", i, t0[i]);
+            }
             AddDataSet("Data.Tagger.T0", calib, desc, first_run, last_run, t0, nDet);
             
             break;
@@ -1332,6 +1340,11 @@ void TCMySQLManager::AddCalibAR(CalibDetector_t det, const Char_t* calibFileAR,
         case kDETECTOR_CB:
         {
             // write to database
+            for(int i = 0; i < 20; i++)
+            {
+                printf(" CB(%d) gain is %f \n CB(%d) pedestal is %f\n", i, e1[i], i, e0[i]);
+            }
+
             AddDataSet("Data.CB.E1", calib, desc, first_run, last_run, e1, nDet);
             AddDataSet("Data.CB.T0", calib, desc, first_run, last_run, t0, nDet);
             
@@ -1643,7 +1656,8 @@ Bool_t TCMySQLManager::AddDataSet(const Char_t* data, const Char_t* calibration,
         ins_query.Append(TString::Format("par_%03d = %.17g", j, par[j]));
         if (j != length - 1) ins_query.Append(",");
     }
-
+printf("AddDataSet query:\n");
+printf("%s\n\n", ins_query.Data());
     // write data to database
     TSQLResult* res = SendQuery(ins_query.Data());
     
