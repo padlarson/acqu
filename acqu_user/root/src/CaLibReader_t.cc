@@ -66,6 +66,7 @@ CaLibReader_t::CaLibReader_t(const Char_t* dbHost, const Char_t* dbName,
     fTotNScR = 0;
     fNBadScR = 0;
     fBadScR = 0;
+    fMC = false;
     
     // connect to the SQL server
     Char_t tmp[256];
@@ -80,6 +81,11 @@ CaLibReader_t::CaLibReader_t(const Char_t* dbHost, const Char_t* dbName,
         Error("CaLibReader_t", "Could not connect to CaLib database server!");
         fWasError = kTRUE;
     }
+
+    if(gAR->GetProcessType() == EMCProcess){
+     fMC = true;
+    }
+
 }
 
 //______________________________________________________________________________
@@ -1006,7 +1012,11 @@ Bool_t CaLibReader_t::ApplyPerRunCorr(const Char_t* table, Double_t* par, Int_t 
     return kTRUE;
   
   cout << "Calib/PerRunCorr: Found correction file " << corr_filename.str() << " for Calib table " << table << endl;
-  UInt_t runNumber = gAR->GetRunNumber();
+
+
+  UInt_t runNumber = 0;
+  if( !fMC )
+    runNumber = gAR->GetRunNumber();
   // let's find the line starting with the current runNumber in that file
   string line;
   

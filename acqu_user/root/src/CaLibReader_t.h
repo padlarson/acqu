@@ -51,6 +51,7 @@ private:
     Bool_t fVetoenergy;                 // Veto energy flag
     Bool_t fVetotime;                   // Veto time flag
     Bool_t fVetoled;                    // Veto led flag
+    Bool_t fMC;                         // MC or EXP?
 
     Bool_t fBadScRlist;                 // bad scaler read list flag
     Bool_t fBadScRfirst;                // bad scaler read first flag
