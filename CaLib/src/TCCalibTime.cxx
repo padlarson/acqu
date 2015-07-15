@@ -77,7 +77,8 @@ void TCCalibTime::Init()
         {
             sprintf(tmp, "%s.TDCGain", GetName());
             Double_t tdc_gain;
-            if (!TCReadConfig::GetReader()->GetConfig(tmp)) tdc_gain = 0.11771;
+            if (TCReadConfig::GetReader()->GetConfig("File.Input.MC")) tdc_gain = 1.;
+            else if (!TCReadConfig::GetReader()->GetConfig(tmp)) tdc_gain = 0.11771;
             else tdc_gain = TCReadConfig::GetReader()->GetConfigDouble(tmp);
             for (Int_t i = 0; i < fNelem; i++) fTimeGain[i] = tdc_gain;
             Info("Init", "Using a TDC gain of %f ns/channel", tdc_gain);
