@@ -28,6 +28,11 @@ Use-CaLib-Veto:     1       1       0
 RootTree-Output-Folder:         ~/
 RootTree-File-Name:		Acqu
 
+# Optional argument to include tagged photon energies in the tagger tree
+# GoAT currently handles this with an included histogram, reducing file size
+#
+Save-Tagged-Energy: 1
+
 # Read in and decode beam helicity ADC
 # First number is the ADC channel, other numbers are the bit pattern
 # to set the beam helicity bit to 'true', where I is an inhibit bit,
