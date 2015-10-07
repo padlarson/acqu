@@ -1548,3 +1548,15 @@ Ignore-Elem: 346
 Ignore-Elem: 356
 Ignore-Elem: 357
 Ignore-Elem: 364
+## ignored elements which in addition were found from PerRunCorr
+Ignore-Elem: 064
+Ignore-Elem: 072
+Ignore-Elem: 139
+Ignore-Elem: 144
+Ignore-Elem: 217
+Ignore-Elem: 222
+Ignore-Elem: 283
+Ignore-Elem: 291
+Ignore-Elem: 358
+Ignore-Elem: 419
+Ignore-Elem: 437
