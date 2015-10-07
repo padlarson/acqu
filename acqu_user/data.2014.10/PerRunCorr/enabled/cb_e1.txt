@@ -1,1 +1,1 @@
-../available/cb_e1.dat
+../available/cb_e1.txt
