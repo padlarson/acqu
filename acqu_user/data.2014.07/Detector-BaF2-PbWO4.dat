@@ -1032,16 +1032,20 @@ Ignore-Elem: 357
 Ignore-Elem: 364
 # no PerRunCorr possible
 Ignore-Elem: 0
+Ignore-Elem: 3
 Ignore-Elem: 64
 Ignore-Elem: 72
 Ignore-Elem: 74
+Ignore-Elem: 75
 Ignore-Elem: 139
 Ignore-Elem: 144
 Ignore-Elem: 146
 Ignore-Elem: 147
+Ignore-Elem: 149
 Ignore-Elem: 210
 Ignore-Elem: 217
 Ignore-Elem: 218
+Ignore-Elem: 219
 Ignore-Elem: 220
 Ignore-Elem: 222
 Ignore-Elem: 273
@@ -1055,13 +1059,12 @@ Ignore-Elem: 419
 Ignore-Elem: 437
 
 
-
-#Ignore-Elem: 0
-#Ignore-Elem: 3
-#Ignore-Elem: 75
+# Elements which had high gain but were eventually decided to keep
 #Ignore-Elem: 1
-#Ignore-Elem: 149
-#Ignore-Elem: 219
+#Ignore-Elem: 76
+#Ignore-Elem: 148
+
+
 
 
 ########################################################################
