@@ -6,9 +6,29 @@
 
 Reconstruct:
 
+Reconstruct:
+
 #
-# CaLib configuration, off for MC
+# CaLib configuration
 #
+MC-Run-Number: 0
+
+# General:      dbhost     dbname                  dbuser      dbpass        calibration
+#Use-CaLib:      blaster.kph.uni-mainz.de    CaLib_2013_10-Present   calib       basel10       2015-MC-eta_prime
+Use-CaLib:      a2calib.online.a2.kph    CaLib_2013_10-Present   calib       basel10       2015-MC-eta_prime      
+#
+#
+# tagger calib:     time    efficiency (0=off/1=on)
+Use-CaLib-TAGG:     1       0
+# CB calib:         energy  time    timewalk    quadr. energy    led  (0=off/1=on)
+Use-CaLib-CB:       1       1       0           0                0 
+# TAPS calib:       energy  time    quadr. energy   LED thr.    CFD thr.  (0=off/1=on)
+Use-CaLib-TAPS:     1       1       0               0           0
+# PID calib:        phi     energy  time  (0=off/1=on)
+Use-CaLib-PID:      1       0       1
+# Veto calib:       energy  time    LED thr. (0=off/1=on)
+Use-CaLib-Veto:     1       1       0
+
 
 #RootTree-Output-Folder:		~
 RootTree-Input-Name:		A2G4
