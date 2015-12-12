@@ -87,7 +87,7 @@ TA2ClusterDetector::TA2ClusterDetector( const char* name,
   fClustHit = NULL;
   fNCluster =  fMaxCluster = 0;
   fNClustHitOR = NULL;
-  fTheta = fPhi = fClEnergyOR = fClTimeOR = fClCentFracOR = fClRadiusOR = NULL;
+  fTheta = fPhi = fClEnergyOR = fSmearedClEnergyOR = fClTimeOR = fClCentFracOR = fClRadiusOR = NULL;
   fEthresh = 0.0;
   fClusterWeightingType = EClustDetWeightingTypeLog;
   // see calc_energy_weight for meaning of Par1/Par2
@@ -536,7 +536,6 @@ static void build_cluster(list<crystal_t>& crystals,
 }
 
 
-
 void TA2ClusterDetector::DecodeCluster( )
 {
 
@@ -595,8 +594,13 @@ void TA2ClusterDetector::DecodeCluster( )
       continue;
 
     fClEnergyOR[fNCluster] = calc_total_energy(cluster);
+    if (gAR->GetProcessType() == EMCProcess){
+        //fSmearedClEnergyOR[fNCluster] = SmearClusterEnergy(fClEnergyOR[fNCluster]);
+        fSmearedClEnergyOR[fNCluster] = SmearClusterEnergy(fClEnergyOR[fNCluster], cluster);
+    }
     // kick out low energetic clusters...
-    if(fClEnergyOR[fNCluster]<fEthresh)
+    if((gAR->GetProcessType() == EMCProcess && fSmearedClEnergyOR[fNCluster] < fEthresh)
+            || (gAR->GetProcessType() != EMCProcess && fClEnergyOR[fNCluster] < fEthresh))
       continue;
 
     // kmax is crystal index with highest energy in cluster
@@ -652,6 +656,11 @@ void TA2ClusterDetector::DecodeCluster( )
     fTheta[fNCluster] = TMath::RadToDeg() * weightedPosition.Theta();
     fClRadiusOR[fNCluster] = weightedRadius / weightedSum;
 
+    if (gAR->GetProcessType() == EMCProcess)
+    {
+        fClEnergyOR[fNCluster] = fSmearedClEnergyOR[fNCluster];
+    }
+
     fCluster[kmax]->SetFields(cluster,
                               fClEnergyOR[fNCluster],
                               weightedPosition);
@@ -661,6 +670,8 @@ void TA2ClusterDetector::DecodeCluster( )
     if(fNCluster==fMaxCluster)
       break;
   }
+
+
 
   // mark ends in those stupid c-arrays...
   fClustHit[fNCluster] = EBufferEnd;
@@ -729,6 +740,7 @@ void TA2ClusterDetector::SetConfig( char* line, int key )
     fTheta = new Double_t[fMaxCluster+1];
     fPhi      = new Double_t[fMaxCluster+1];
     fClEnergyOR  = new Double_t[fMaxCluster+1];
+    fSmearedClEnergyOR = new Double_t[fMaxCluster+1];
     fClTimeOR  = new Double_t[fMaxCluster+1];
     fClCentFracOR  = new Double_t[fMaxCluster+1];
     fClRadiusOR  = new Double_t[fMaxCluster+1];

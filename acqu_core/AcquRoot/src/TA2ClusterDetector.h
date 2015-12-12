@@ -99,6 +99,7 @@ protected:
   Double_t* fTheta;                     // theta of cluster hit
   Double_t* fPhi;                       // phi of cluster hit
   Double_t* fClEnergyOR;                // OR of cluster energies
+  Double_t* fSmearedClEnergyOR;         // smeared energy of clusters
   Double_t* fClTimeOR;                  // OR of cluster times
   Double_t* fClCentFracOR;              // OR of energy ratios in central elem.
   Double_t* fClRadiusOR;                // OR E-weighted cluster radii
@@ -132,6 +133,8 @@ public:
   virtual void SaveDecoded( ) = 0;     // specialist
   virtual void ReadDecoded( ) = 0;     // specialist
   virtual void DeleteClusterArrays();  // flush cluster-specific arrays
+  virtual Double_t SmearClusterEnergy(double) = 0;
+  virtual Double_t SmearClusterEnergy(double, std::vector<crystal_t>) = 0; // SmearClusterEnergy as fcn of Energy and Theta
 
   HitCluster_t** GetCluster(){ return fCluster; }
   HitCluster_t* GetCluster( UInt_t i ){ return fCluster[i]; }
