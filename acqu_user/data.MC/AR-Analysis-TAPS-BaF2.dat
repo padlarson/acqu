@@ -11,20 +11,28 @@ Max-Cluster: 16		  5
 # Some MC controls
 #
 # Apply an energy scale
-Energy-Scale: 1.05
+#Energy-Scale: 1.05
 #
-# Energy resolution using the form A*(E^B): A, B,   Use to smear MC data (0/1 = off/on) 
-Energy-Resolution: 0.022 1.1 1
+# Energy resolution using the form A*sqrt(E) + B*E,   Use to smear MC data (0/1 = off/on) 
+#Energy-Resolution: 0.022 1.1 1
+#Energy-Resolution: 0.008 0.018 1
+Energy-Resolution: 0 0 1
+#Energy-Resolution: 0.09 0.018 1
 #
 # Time resolution, apply gaus. smear (sigma in ns), Use to smear MC data (0/1 = off/on)
-Time-Resolution: 2.87 0
+#Time-Resolution: 2.87 0
 #
 # Theta Resolution in Degrees
-Theta-Resolution: 2.5
+#Theta-Resolution: 2.5
 #
 # Phi Resolution in Degrees (divided by sin(theta) for res @ specific theta)
-Phi-Resolution: 2.0
+#Phi-Resolution: 2.0
 #
+# TODO
+MC-SmearMin: 0.03
+MC-SmearMax: 0.07
+MC-Smear-EnergyMax: 0.5
+MC-Smear-EnergyRes: 0.01
 #-------------------------------------------------------------------------
 #
 ##
@@ -950,9 +958,44 @@ Moliere-Radius: 2.2 219 230
 Moliere-Radius: 2.2 292 303
 Moliere-Radius: 2.2 365 376
 ##
-
 ## Shower Depth Correction
 ShowerDepthCorrection: 1.2
+# TAPS dead elements as in July 2014 setup
+Ignore-Elem: 2
+Ignore-Elem: 73
+Ignore-Elem: 127
+Ignore-Elem: 137
+Ignore-Elem: 138 
+Ignore-Elem: 145 
+Ignore-Elem: 200 
+Ignore-Elem: 218 
+Ignore-Elem: 283 
+Ignore-Elem: 291 
+Ignore-Elem: 356 
+Ignore-Elem: 357 
+Ignore-Elem: 364
+# no PerRunCorr possible
+Ignore-Elem: 0
+Ignore-Elem: 64
+Ignore-Elem: 72
+Ignore-Elem: 74
+Ignore-Elem: 139
+Ignore-Elem: 144
+Ignore-Elem: 146
+Ignore-Elem: 147
+Ignore-Elem: 217
+Ignore-Elem: 218
+Ignore-Elem: 220
+Ignore-Elem: 222
+Ignore-Elem: 273
+Ignore-Elem: 284
+Ignore-Elem: 295
+Ignore-Elem: 346
+Ignore-Elem: 358
+Ignore-Elem: 368
+Ignore-Elem: 419
+Ignore-Elem: 437
+
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
