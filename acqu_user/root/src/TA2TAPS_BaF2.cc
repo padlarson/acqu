@@ -24,7 +24,8 @@
 enum {
   ETAPSSGMaxDet=510, ETAPSSG, 
   ETAPSEnergyResolution, ETAPSTimeResolution, ETAPSThetaResolution, ETAPSPhiResolution,
-  ETAPSVetoEnergy, ETAPSVetoEfficiency, ETAPSVetoThreshold, ETAPSOffsetTime
+  ETAPSVetoEnergy, ETAPSVetoEfficiency, ETAPSVetoThreshold, ETAPSOffsetTime,
+  ETAPSMCSmearMin, ETAPSMCSmearMax, ETAPSMCSmearEnergyMax, ETAPSMCSmearEnergyResolution
 };
 
 // Command-line key words which determine what to read in
@@ -39,6 +40,10 @@ static const Map_t kTAPSClustDetKeys[] = {
   {"Veto-Efficiency:",     ETAPSVetoEfficiency},
   {"Veto-Threshold:",      ETAPSVetoThreshold},
   {"Offset-Time:",         ETAPSOffsetTime},
+  {"MC-SmearMin:",         ETAPSMCSmearMin},
+  {"MC-SmearMax:",         ETAPSMCSmearMax},
+  {"MC-Smear-EnergyMax:",  ETAPSMCSmearEnergyMax},
+  {"MC-Smear-EnergyRes:",  ETAPSMCSmearEnergyResolution},
   {NULL,          -1}
 };
 
@@ -182,6 +187,22 @@ void TA2TAPS_BaF2::SetConfig(Char_t* line, Int_t key)
     if(sscanf(line, "%lf", &fOffsetTime) < 1)
       PrintError(line,"<TA2TAPS_BaF2 Timeoffset>");
     break;
+  case ETAPSMCSmearMin:
+     if(sscanf(line, "%lf", &fMCSmearMin) < 1)
+       PrintError(line,"<TA2TAPS_BaF2 MC-SmearMin>");
+     break;
+  case ETAPSMCSmearMax:
+     if(sscanf(line, "%lf", &fMCSmearMax) < 1)
+       PrintError(line,"<TA2TAPS_BaF2 MC-SmearMax>");
+     break;
+  case ETAPSMCSmearEnergyMax:
+     if(sscanf(line, "%lf", &fMCSmearEnergyMax) < 1)
+       PrintError(line,"<TA2TAPS_BaF2 MC-Smear-EnergyMax>");
+     break;
+  case ETAPSMCSmearEnergyResolution:
+     if(sscanf(line, "%lf", &fMCSmearEnergyResolution) < 1)
+       PrintError(line,"<TA2TAPS_BaF2 MC-Smear-EnergyRes>");
+     break;
   default:
     // Command not found...possible pass to next config
     TA2ClusterDetector::SetConfig(line, key);
@@ -245,6 +266,31 @@ void TA2TAPS_BaF2::PostInit()
 
   TA2ClusterDetector::PostInit();
   fLGEnergy = TA2Detector::GetElement();
+}
+
+//---------------------------------------------------------------------------
+
+Double_t TA2TAPS_BaF2::SmearClusterEnergy(double energy)
+{
+    return (energy += pRandoms->Gaus(0.0, GetEnergyResolutionGeV(energy)));
+}
+
+Double_t TA2TAPS_BaF2::SmearClusterEnergy(double energy, std::vector<crystal_t> cluster)
+{
+    double sigma; // smearing to be applied
+
+    energy /= 1000.;
+    if(energy < fMCSmearEnergyMax){
+        sigma = fMCSmearMax - energy/fMCSmearEnergyMax * (fMCSmearMax - fMCSmearMin);
+    }
+    else
+        sigma = 0.;
+
+    sigma = sigma*sqrt(energy) + fMCSmearEnergyResolution*energy;
+    energy += pRandoms->Gaus(0.0, sigma);
+    energy = energy*1000.;
+
+    return energy;
 }
 
 //-----------------------------------------------------------------------------

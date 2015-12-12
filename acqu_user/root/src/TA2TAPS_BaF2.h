@@ -60,6 +60,11 @@ class TA2TAPS_BaF2 : public TA2ClusterDetector
   Double_t  fVetoThreshold;
   Double_t  fVetoEfficiency[5];
   Double_t  fVetoEnergy[5];
+  //        Smearing function = A*sqrt(E)  + B*E
+  Double_t  fMCSmearMin;                // minimum smearing percentage for linear function- A
+  Double_t  fMCSmearMax;                // maximum smearing percentage for linear function- A
+  Double_t  fMCSmearEnergyMax;          // max energy where the linear contribution is valid- A
+  Double_t  fMCSmearEnergyResolution;   // percentage for energy dependend smearing- B
  public:
   TA2TAPS_BaF2( const char*, TA2System* ); //Normal use
   virtual ~TA2TAPS_BaF2();
@@ -68,6 +73,8 @@ class TA2TAPS_BaF2 : public TA2ClusterDetector
   virtual void ReadDecoded();              //Read back previous analysis
   virtual void Decode();
   virtual void SetConfig(Char_t*, Int_t);
+  virtual Double_t SmearClusterEnergy(double);
+  virtual Double_t SmearClusterEnergy(double, std::vector<crystal_t>);
   Int_t GetMaxSGElements() { return fMaxSGElements; }
   Double_t GetSGEnergy(Int_t);             //Get short-gate energy of crystal i
   Double_t GetLGEnergy(Int_t);             //Get long-gate energy of crystal i
@@ -187,7 +194,8 @@ inline HitD2A_t* TA2TAPS_BaF2::GetSGElement(Int_t i)
 inline Double_t TA2TAPS_BaF2::GetEnergyResolutionGeV(Double_t pEnergy)
 {
   // Returns energy resolution in GeV when supplied Energy in GeV
-  return (fEnergyResolutionFactor * TMath::Sqrt(pEnergy) + fEnergyResolutionConst * pEnergy);
+  pEnergy = pEnergy/1000.;
+  return (1000.*(fEnergyResolutionFactor * TMath::Sqrt(pEnergy) + fEnergyResolutionConst * pEnergy));
 }
 
 //---------------------------------------------------------------------------
@@ -330,7 +338,7 @@ inline void TA2TAPS_BaF2::ReadDecoded()
 
     // convert energy and smear
     E = energy[i] * fEnergyScale * fElement[elem]->GetA1();
-    if (fUseEnergyResolution) E += pRandoms->Gaus(0.0, GetSigmaEnergyGeV(E));
+//    if (fUseEnergyResolution) E += pRandoms->Gaus(0.0, GetSigmaEnergyGeV(E));
     E *= 1000.;
     EnergyAll[elem] = E;
 
