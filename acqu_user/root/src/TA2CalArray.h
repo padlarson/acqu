@@ -38,7 +38,16 @@ class TA2CalArray : public TA2ClusterDetector
   Double_t  fOffsetTime;            // MC time offset
   Double_t  fSigmaTheta;            // Theta resolution for CB
   Double_t  fSigmaPhi;              // Phi Resolution for CB
-
+  // Smearing parameters
+  Double_t fSmearThetaMin;
+  Double_t fSmearThetaMax;
+  Double_t fSmearCBThetaBoundary;
+  Double_t fSmearThetaSigma;
+  Double_t fSmearMin;
+  Double_t fSmearMax;
+  Double_t fSmearBoundaryMin;
+  Double_t fSmearBoundaryMax;
+  Double_t fSmearEnergyMax;
  public:
   TA2CalArray(const char*, TA2System*);// Normal use
   virtual ~TA2CalArray();
@@ -49,6 +58,8 @@ class TA2CalArray : public TA2ClusterDetector
   virtual void ReadDecoded();          // read back previous analysis
   virtual void DecodeSaved( );         // decode previously written data
   virtual void SetConfig(char*, int);  // read in TA2CalArray specific parameters
+  virtual Double_t SmearClusterEnergy(double);
+  virtual Double_t SmearClusterEnergy(double, std::vector<crystal_t>);
   Double_t GetSigmaEnergyGeV(Double_t);
   Double_t GetSigmaEnergy(Double_t);
   Double_t GetSigmaPhi(Double_t);
@@ -74,8 +85,14 @@ inline void TA2CalArray::DecodeSaved()
 
 inline Double_t TA2CalArray::GetSigmaEnergyGeV(Double_t pEnergy)
 {
-  // Returns energy resolution in GeV when supplied Energy in GeV
-  return (fSigmaEnergyFactor * TMath::Power(pEnergy, fSigmaEnergyPower));
+// Returns energy resolution in GeV when supplied Energy in GeV
+  pEnergy = pEnergy/1000;
+  Double_t test;
+
+  test = 1000.*(fSigmaEnergyFactor * TMath::Power(pEnergy, fSigmaEnergyPower));
+  return test;
+//  return (1000.*(fSigmaEnergyFactor * TMath::Power(pEnergy, fSigmaEnergyPower)));
+
 }
 
 //---------------------------------------------------------------------------
@@ -192,7 +209,7 @@ inline void TA2CalArray::ReadDecoded()
 
     // convert energy and smear
     Double_t e = energy[i] * fEnergyScale * fElement[elem]->GetA1();
-    if (fUseSigmaEnergy) e += fRandom->Gaus(0.0, GetSigmaEnergyGeV(e));
+//    if (fUseSigmaEnergy) e += fRandom->Gaus(0.0, GetSigmaEnergyGeV(e));
     e *= 1000;
     fEnergyAll[i] = e;
 

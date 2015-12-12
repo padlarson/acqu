@@ -26,7 +26,9 @@
 enum
 {
   ECAEnergyResolution=1900, ECATimeResolution, ECAThetaResolution, ECAPhiResolution,
-  ECAOffsetTime
+  ECAOffsetTime, ECASmearThetaMin, ECASmearThetaMax, ECASmearCBThetaBoundary,
+  ECAThetaSigma, ECASmearMin, ECASmearMax, ECASmearBoundaryMin, ECASmearBoundaryMax,
+  ECASmearEnergyMax
 };
 
 static const Map_t kCalArrayKeys[] =
@@ -36,9 +38,17 @@ static const Map_t kCalArrayKeys[] =
   {"Theta-Resolution:",    ECAThetaResolution},
   {"Phi-Resolution:",      ECAPhiResolution},
   {"Offset-Time:",         ECAOffsetTime},
+  {"MC-Smear-ThetaMin:",   ECASmearThetaMin},
+  {"MC-Smear-ThetaMax:",   ECASmearThetaMax},
+  {"MC-Smear-CBThetaBoundary:", ECASmearCBThetaBoundary},
+  {"MC-Smear-ThetaSigma:", ECAThetaSigma},
+  {"MC-SmearMin:",         ECASmearMin},
+  {"MC-SmearMax:",         ECASmearMax},
+  {"MC-SmearBoundaryMin:", ECASmearBoundaryMin},
+  {"MC-SmearBoundaryMax:", ECASmearBoundaryMax},
+  {"MC-Smear-EnergyMax:",  ECASmearEnergyMax},
   {NULL,            -1}
 };
-
 
 //---------------------------------------------------------------------------
 TA2CalArray::TA2CalArray(const char* name, TA2System* apparatus)
@@ -58,6 +68,15 @@ TA2CalArray::TA2CalArray(const char* name, TA2System* apparatus)
   fSigmaTheta           = -1.0;
   fSigmaPhi             = -1.0;
   fEthresh              = 0.0;
+  fSmearThetaMin        = 0.0;
+  fSmearThetaMax        = 0.0;
+  fSmearCBThetaBoundary = 0.0;
+  fSmearThetaSigma      = 0.0;
+  fSmearMin             = 0.0;
+  fSmearMax             = 0.0;
+  fSmearBoundaryMin     = 0.0;
+  fSmearBoundaryMax     = 0.0;
+  fSmearEnergyMax       = 0.0;
 
   fRandom = new TRandom();
 
@@ -121,6 +140,43 @@ void TA2CalArray::SetConfig(char* line, int key)
     if(sscanf(line, "%lf", &fOffsetTime) < 1)
       PrintError(line,"<TA2CalArray Time Offset>");
     break;
+  case ECASmearThetaMin:
+     if(sscanf(line, "%lf", &fSmearThetaMin) < 1)
+       PrintError(line,"<TA2CalArray MC-Smear-ThetaMin>");
+     break;
+  case ECASmearThetaMax:
+     if(sscanf(line, "%lf", &fSmearThetaMax) < 1)
+       PrintError(line,"<TA2CalArray MC-Smear-ThetaMax>");
+     break;
+  case ECASmearCBThetaBoundary:
+     if(sscanf(line, "%lf", &fSmearCBThetaBoundary) < 1)
+       PrintError(line,"<TA2CalArray MC-Smear-CBThetaBoundary>");
+     break;
+  case ECAThetaSigma:
+     if(sscanf(line, "%lf", &fSmearThetaSigma) < 1)
+       PrintError(line,"<TA2CalArray MC-Smear-ThetaSigma>");
+     break;
+  case ECASmearMin:
+      if(sscanf(line, "%lf", &fSmearMin) < 1)
+        PrintError(line,"<TA2CalArray MC-SmearMin>");
+      break;
+  case ECASmearMax:
+      if(sscanf(line, "%lf", &fSmearMax) < 1)
+        PrintError(line,"<TA2CalArray MC-SmearMax>");
+      break;
+  case ECASmearBoundaryMin:
+      if(sscanf(line, "%lf", &fSmearBoundaryMin) < 1)
+        PrintError(line,"<TA2CalArray MC-SmearBoundaryMin>");
+      break;
+  case ECASmearBoundaryMax:
+      if(sscanf(line, "%lf", &fSmearBoundaryMax) < 1)
+        PrintError(line,"<TA2CalArray MC-SmearBoundaryMax>");
+      break;
+  case ECASmearEnergyMax:
+      if(sscanf(line, "%lf", &fSmearEnergyMax) < 1)
+        PrintError(line,"<TA2CalArray MC-Smear-EnergyMax>");
+      break;
+
   default:
     // Command not found...possible pass to next config
     TA2ClusterDetector::SetConfig(line, key);
@@ -166,6 +222,47 @@ void TA2CalArray::SaveDecoded()
 {
   // Save decoded info to Root Tree file
 }
+
+//---------------------------------------------------------------------------
+
+Double_t TA2CalArray::SmearClusterEnergy(double energy)
+{
+    return (energy += fRandom->Gaus(0.0, GetSigmaEnergyGeV(energy)));
+}
+
+Double_t TA2CalArray::SmearClusterEnergy(Double_t energy, std::vector<crystal_t> cluster)
+{
+    crystal_t center = cluster.front();
+    double theta = center.Position.Theta()*TMath::RadToDeg();
+//    const double theta_min = 20., theta_max = 160., theta_boundary = 28., theta_sigma = 2.5;
+//    const double smear_min = 0.01, smear_max = 0.06; // max and min smearing value to be applied.
+//    const double smear_boundary_min = 0.001, smear_boundary_max = 0.1, E_max = 1.2;
+    double sigma, c; // smearing to be applied, decay constant
+
+    // convert to GeV
+    energy /= 1000.;
+
+    // smear theta angle
+    theta += fRandom->Gaus(0.0, fSmearThetaSigma);
+
+    // "decay" constant to mimic the experimental resolution
+    c = ( TMath::Log(fSmearMax/fSmearMin) )/( fSmearThetaMax-fSmearThetaMin );
+    // calculate smearing value, mutliply by the minimum smearing value
+    sigma = fSmearMin*TMath::Exp(c*(fSmearThetaMax-theta));
+
+    // increase smearing closer to the CB boundary region
+    if( (theta < fSmearCBThetaBoundary) && (energy < fSmearEnergyMax)){
+        // linearly decreasing in E
+        sigma += fSmearBoundaryMax - energy*(fSmearBoundaryMax - fSmearBoundaryMin)/fSmearEnergyMax;
+    }
+
+    sigma *= TMath::Power(energy, fSigmaEnergyPower);
+    energy += fRandom->Gaus(0.0, sigma);
+    energy *= 1000.;
+
+    return energy;
+}
+
 
 //---------------------------------------------------------------------------
 
