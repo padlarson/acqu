@@ -18,7 +18,7 @@ Use-CaLib:      blaster    CaLib_2013_10-Present   calib       basel10       201
 # tagger calib:     time    efficiency (0=off/1=on)
 Use-CaLib-TAGG:     1       0
 # CB calib:         energy  time    timewalk    quadr. energy    led  (0=off/1=on)
-Use-CaLib-CB:       1       1       0           0                0 
+Use-CaLib-CB:       1       1       1           0                0 
 # TAPS calib:       energy  time    quadr. energy   LED thr.    CFD thr.  (0=off/1=on)
 Use-CaLib-TAPS:     1       1       0               0           0
 # PID calib:        phi     energy  time  (0=off/1=on)
@@ -70,7 +70,7 @@ CaLib-Veto-Time: 1
 
 # CB quadratic energy correction
 #              on/off  pi0_min  pi0_max  eta_min  eta_max
-CaLib-CB-Quad: 1       100      150      480      620
+#CaLib-CB-Quad: 1       100      150      480      620
 
 # tagger time calibration
 CaLib-Tagger-Time: 1
@@ -80,9 +80,17 @@ CaLib-Tagger-Time: 1
 # Ensure that you have enough statistics for the time walk correction
 
 # CB time walk calibration
+# For EPT, we use a variant of the method from Marc Unverzagt's thesis
+# the proton time is used as reference, so proton should have sufficiently high energy
+# to minimize their own timewalk (but also lower than the punch through limit)
+# the advantage is that it only depends on CB
+#                   on/off  pi0_min  pi0_max  phi_min  phi_max  protonE_min  protonE_max
+CaLib-CB-Walk-EPT:  0       115      155      170      190      250          400
+
+# CB time walk calibration
 # For EPT, use prompt_min>prompt_max, which disables any kind of tagging information
 #              on/off  pi0_min  pi0_max  prompt_min  prompt_max  bg1_min  bg1_max  bg2_min  bg2_max  mm_min  mm_max
-CaLib-CB-Walk: 1       120      150      5           -5          50     -20        20       -50      -100    100
+#CaLib-CB-Walk: 1       120      150      5           -5          50     -20        20       -50      -100    100
 
 # TAPS energy calibration
 CaLib-TAPS-Energy: 1
