@@ -1085,9 +1085,11 @@ Bool_t CaLibReader_t::ApplyPerRunCorr(const Char_t* table, Double_t* par, Int_t 
     for(Int_t i=0;i<length;i++) {
       if(applyWithMultiplyOrAdd) {
         par[i] += corr_params[i];
+        std::cout<< "added "<< corr_params[i] << std::endl;
       }
       else {
         par[i] *= corr_params[i];
+        std::cout<< "multiplied "<< corr_params[i] << std::endl;
       }      
     }
     cout << "Calib/PerRunCorr: Successfully corrected " << length << " parameters for run " << runNumber << endl;
