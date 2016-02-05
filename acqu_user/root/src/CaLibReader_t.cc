@@ -1006,11 +1006,11 @@ Bool_t CaLibReader_t::ApplyPerRunCorr(const Char_t* table, Double_t* par, Int_t 
   stringstream corr_filename;
   corr_filename << "./data/PerRunCorr/enabled/" << table << ".txt"; 
   corr_file.open(corr_filename.str().c_str());
-  
+
   // if the file isn't readable, silently ignore it
   if(!corr_file.is_open())
     return kTRUE;
-  
+
   cout << "Calib/PerRunCorr: Found correction file " << corr_filename.str() << " for Calib table " << table << endl;
 
 
@@ -1019,15 +1019,26 @@ Bool_t CaLibReader_t::ApplyPerRunCorr(const Char_t* table, Double_t* par, Int_t 
     runNumber = gAR->GetRunNumber();
   // let's find the line starting with the current runNumber in that file
   string line;
-  
+
   bool applyWithMultiplyOrAdd = false; // default apply correction value with multiply 
   unsigned n_lines = 0;
+  // determine parameters depending on content of the line, average previous and next non-1 run in case of non-calibrated file
+  bool prior = true;
+  bool got_next = false;
+  // indicate if the current run should be averaged with the previous and next runs with parameters distinct from 1
+  // this is done automatically if the corrections for the current run are only 1
+  bool average = false;
+  double corr_param;
+  std::vector<double> prev_params;  // factors prior to the desired run (for averaging)
+  std::vector<double> next_params;  // factors after the desired run (for averaging)
+  std::vector<double> corr_params;  // correction factors to be applied
+  const size_t test_params = 10;  // number of values which should be tested if set of factors are not just 1s
   while (getline(corr_file,line)) {
     // ignore empty lines
     if(line.empty()) 
       continue;
     n_lines++;
-       
+
     // check if first line is config line, i.e. starts with "#"
     if(n_lines==1 && line.find("#") == 0) {
       line = line.substr(1);
@@ -1061,22 +1072,71 @@ Bool_t CaLibReader_t::ApplyPerRunCorr(const Char_t* table, Double_t* par, Int_t 
       }
       continue;
     }
-    
+
     // from here, the lines should always represent a run-dependent set of factors
+    stringstream probe_line(line);  // for tests if the set of factors are just 1s or "real" corrections values
     stringstream s_line(line);
-    
+
     // we expect the first number to be the run number
     UInt_t run;
     if(!(s_line >> run)) {
       cerr << "Calib/PerRunCorr: ERROR: Malformed line " << n_lines << " in file, aborting. " << endl;
       return kFALSE;
     }
-    if(runNumber != run)
+    // start reading the parameters and check if they are 1 or not
+    size_t test_is_1 = 0;
+    if (got_next)
       continue;
-    std::vector<double> corr_params;
-    double corr_param;
-    while(s_line >> corr_param) 
-      corr_params.push_back(corr_param);
+    if (runNumber != run) {
+      size_t i = 0;
+      while (probe_line >> corr_param) {
+        if (i++ == test_params)
+          break;
+        if ((corr_param - 1.) < std::numeric_limits<double>::epsilon())
+          test_is_1++;
+      }
+      if (test_is_1 == test_params)  // check if we saw only 1s in the current line
+        continue;
+      while(s_line >> corr_param)  // if there are not only 1s in the line, read them
+        if (prior)
+          prev_params.push_back(corr_param);
+        else {
+          next_params.push_back(corr_param);
+          got_next = true;
+        }
+    } else {
+      prior = false;
+      size_t i = 0;
+      while (probe_line >> corr_param) {
+        if (i++ == test_params)
+          break;
+        if ((corr_param - 1.) < std::numeric_limits<double>::epsilon())
+          test_is_1++;
+      }
+      if (test_is_1 == test_params)  // check if we saw only 1s in the current line
+        average = true;  // average this run
+      else
+        while(s_line >> corr_param)
+          corr_params.push_back(corr_param);
+    }
+    if (!average && corr_params.size() != (size_t)length) {
+      cerr << "Calib/PerRunCorr: ERROR: Found " << corr_params.size() << " correction parameters, expected " << length << endl;
+      return kFALSE;
+    }
+    if (average && prev_params.size() != (size_t)length) {
+      cerr << "Calib/PerRunCorr: ERROR: Found " << prev_params.size() << " correction parameters for previous run, expected " << length << endl;
+      return kFALSE;
+    }
+    if (average && next_params.size() != (size_t)length) {
+      cerr << "Calib/PerRunCorr: ERROR: Found " << next_params.size() << " correction parameters for next run, expected " << length << endl;
+      return kFALSE;
+    }
+    if (average) {
+      cout << "Calib/PerRunCorr: Averaging neighbouring " << length << " parameters for run " << runNumber << endl;
+      for (int i = 0; i < length; i++)
+        corr_params.push_back((prev_params.at(i) + next_params.at(i))/2.);
+    }
+    // check that everything went well, i. e. the length of the vector is correct
     if(corr_params.size() != (size_t)length) {
       cerr << "Calib/PerRunCorr: ERROR: Found " << corr_params.size() << " correction parameters, expected " << length << endl;
       return kFALSE;
@@ -1089,13 +1149,15 @@ Bool_t CaLibReader_t::ApplyPerRunCorr(const Char_t* table, Double_t* par, Int_t 
       }
       else {
         par[i] *= corr_params[i];
+
         std::cout<< "multiplied "<< corr_params[i] << std::endl;
       }      
+
     }
     cout << "Calib/PerRunCorr: Successfully corrected " << length << " parameters for run " << runNumber << endl;
     return kTRUE;
   }
-  
+
   cerr << "Calib/PerRunCorr: ERROR: RunNumber " << runNumber << " not found in file" << endl;
   return kFALSE;
 }
