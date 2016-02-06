@@ -1028,7 +1028,7 @@ Bool_t CaLibReader_t::ApplyPerRunCorr(const Char_t* table, Double_t* par, Int_t 
   // indicate if the current run should be averaged with the previous and next runs with parameters distinct from 1
   // this is done automatically if the corrections for the current run are only 1
   bool average = false;
-  double corr_param;  // temp buffer
+  double corr_param;
   std::vector<double> prev_params;  // factors prior to the desired run (for averaging)
   std::vector<double> next_params;  // factors after the desired run (for averaging)
   std::vector<double> corr_params;  // correction factors to be applied
@@ -1092,13 +1092,11 @@ Bool_t CaLibReader_t::ApplyPerRunCorr(const Char_t* table, Double_t* par, Int_t 
       while (probe_line >> corr_param) {
         if (i++ == test_params)
           break;
-        if ((corr_param - 1.) < 2*std::numeric_limits<double>::epsilon())
+        if ((corr_param - 1.) < std::numeric_limits<double>::epsilon())
           test_is_1++;
       }
       if (test_is_1 == test_params)  // check if we saw only 1s in the current line
         continue;
-	  if (prior)
-        prev_params.clear();  // clear vector for new parameters as the already stored parameters are not the closest
       while(s_line >> corr_param)  // if there are not only 1s in the line, read them
         if (prior)
           prev_params.push_back(corr_param);
@@ -1112,7 +1110,7 @@ Bool_t CaLibReader_t::ApplyPerRunCorr(const Char_t* table, Double_t* par, Int_t 
       while (probe_line >> corr_param) {
         if (i++ == test_params)
           break;
-        if ((corr_param - 1.) < 2*std::numeric_limits<double>::epsilon())
+        if ((corr_param - 1.) < std::numeric_limits<double>::epsilon())
           test_is_1++;
       }
       if (test_is_1 == test_params)  // check if we saw only 1s in the current line
