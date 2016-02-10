@@ -1109,6 +1109,7 @@ Bool_t CaLibReader_t::ApplyPerRunCorr(const Char_t* table, Double_t* par, Int_t 
     } else {
       prior = false;
       size_t i = 0;
+      test_is_1 = 0;
       while (probe_line >> corr_param) {
         if (i++ == test_params)
           break;
