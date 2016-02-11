@@ -1090,15 +1090,16 @@ Bool_t CaLibReader_t::ApplyPerRunCorr(const Char_t* table, Double_t* par, Int_t 
     if (runNumber != run) {
       size_t i = 0;
       while (probe_line >> corr_param) {
-        if (i++ == test_params)
+        if (i++ > test_params)  // greater than because run number is first entry in probe_line
           break;
         if ((corr_param - 1.) < 2*std::numeric_limits<double>::epsilon())
           test_is_1++;
       }
       if (test_is_1 == test_params)  // check if we saw only 1s in the current line
         continue;
-	  if (prior)
+      if (prior)
         prev_params.clear();  // clear vector for new parameters as the already stored parameters are not the closest
+      i = 0;
       while(s_line >> corr_param)  // if there are not only 1s in the line, read them
         if (prior)
           prev_params.push_back(corr_param);
@@ -1111,7 +1112,7 @@ Bool_t CaLibReader_t::ApplyPerRunCorr(const Char_t* table, Double_t* par, Int_t 
       size_t i = 0;
       test_is_1 = 0;
       while (probe_line >> corr_param) {
-        if (i++ == test_params)
+        if (i++ > test_params)  // greater than because run number is first entry in probe_line
           break;
         if ((corr_param - 1.) < 2*std::numeric_limits<double>::epsilon())
           test_is_1++;
@@ -1122,27 +1123,33 @@ Bool_t CaLibReader_t::ApplyPerRunCorr(const Char_t* table, Double_t* par, Int_t 
         while(s_line >> corr_param)
           corr_params.push_back(corr_param);
     }
-    if (!average && corr_params.size() != (size_t)length) {
-      cerr << "Calib/PerRunCorr: ERROR: Found " << corr_params.size() << " correction parameters, expected " << length << endl;
-      return kFALSE;
-    }
-    if (average && prev_params.size() != (size_t)length) {
-      cerr << "Calib/PerRunCorr: ERROR: Found " << prev_params.size() << " correction parameters for previous run, expected " << length << endl;
-      return kFALSE;
-    }
-    if (average && next_params.size() != (size_t)length) {
-      cerr << "Calib/PerRunCorr: ERROR: Found " << next_params.size() << " correction parameters for next run, expected " << length << endl;
-      return kFALSE;
-    }
-    if (average) {
-      cout << "Calib/PerRunCorr: Averaging neighbouring " << length << " parameters for run " << runNumber << endl;
-      for (int i = 0; i < length; i++)
-        corr_params.push_back((prev_params.at(i) + next_params.at(i))/2.);
-    }
-    // check that everything went well, i. e. the length of the vector is correct
-    if(corr_params.size() != (size_t)length) {
-      cerr << "Calib/PerRunCorr: ERROR: Found " << corr_params.size() << " correction parameters, expected " << length << endl;
-      return kFALSE;
+  }
+  if (!average && corr_params.size() != (size_t)length) {
+    cerr << "Calib/PerRunCorr: ERROR: Found " << corr_params.size() << " correction parameters, expected " << length << endl;
+    return kFALSE;
+  }
+  if (average && prev_params.size() != (size_t)length) {
+    cerr << "Calib/PerRunCorr: ERROR: Found " << prev_params.size() << " correction parameters for previous run, expected " << length << endl;
+    return kFALSE;
+  }
+  if (average && next_params.size() != (size_t)length) {
+    cerr << "Calib/PerRunCorr: ERROR: Found " << next_params.size() << " correction parameters for next run, expected " << length << endl;
+    return kFALSE;
+  }
+  if (average) {
+    cout << "Calib/PerRunCorr: Averaging neighbouring " << length << " parameters for run " << runNumber << endl;
+    for (int i = 0; i < length; i++)
+      corr_params.push_back((prev_params.at(i) + next_params.at(i))/2.);
+  }
+  // check that everything went well, i. e. the length of the vector is correct
+  if(corr_params.size() != (size_t)length) {
+    cerr << "Calib/PerRunCorr: ERROR: Found " << corr_params.size() << " correction parameters, expected " << length << endl;
+    return kFALSE;
+  }
+  // finally apply the factors
+  for(Int_t i=0;i<length;i++) {
+    if(applyWithMultiplyOrAdd) {
+      par[i] += corr_params[i];
     }
     // finally apply the factors
     for(Int_t i=0;i<length;i++) {
@@ -1155,12 +1162,9 @@ Bool_t CaLibReader_t::ApplyPerRunCorr(const Char_t* table, Double_t* par, Int_t 
         std::cout<< "multiplied "<< corr_params[i] << std::endl;
       }      
     }
-    cout << "Calib/PerRunCorr: Successfully corrected " << length << " parameters for run " << runNumber << endl;
-    return kTRUE;
   }
-
-  cerr << "Calib/PerRunCorr: ERROR: RunNumber " << runNumber << " not found in file" << endl;
-  return kFALSE;
+  cout << "Calib/PerRunCorr: Successfully corrected " << length << " parameters for run " << runNumber << endl;
+  return kTRUE;
 }
 
 //______________________________________________________________________________
