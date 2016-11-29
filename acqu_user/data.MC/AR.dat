@@ -52,8 +52,85 @@ Branch:   mc_rnd_id     8
 #
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #ROOT file(s) (GEANT4 output) to be analysed. Add more lines for more files
-#
-TreeFile: scratch/geant.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0pi0/GEANT_pi0pi0pi0_01.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0pi0/GEANT_pi0pi0pi0_02.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0pi0/GEANT_pi0pi0pi0_03.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0pi0/GEANT_pi0pi0pi0_04.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0pi0/GEANT_pi0pi0pi0_05.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0pi0/GEANT_pi0pi0pi0_06.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0pi0/GEANT_pi0pi0pi0_07.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0pi0/GEANT_pi0pi0pi0_08.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0pi0/GEANT_pi0pi0pi0_09.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0pi0/GEANT_pi0pi0pi0_10.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0pi0/GEANT_pi0pi0pi0_6g_11.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0pi0/GEANT_pi0pi0pi0_6g_12.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0pi0/GEANT_pi0pi0pi0_6g_13.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0pi0/GEANT_pi0pi0pi0_6g_14.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0pi0/GEANT_pi0pi0pi0_6g_15.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0pi0/GEANT_pi0pi0pi0_6g_16.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0pi0/GEANT_pi0pi0pi0_6g_17.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0pi0/GEANT_pi0pi0pi0_6g_18.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0pi0/GEANT_pi0pi0pi0_6g_19.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0pi0/GEANT_pi0pi0pi0_6g_20.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0/GEANT_pi0pi0_4g_01.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0/GEANT_pi0pi0_4g_02.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0/GEANT_pi0pi0_4g_03.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0/GEANT_pi0pi0_4g_04.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0/GEANT_pi0pi0_4g_05.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0/GEANT_pi0pi0_4g_06.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0/GEANT_pi0pi0_4g_07.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0/GEANT_pi0pi0_4g_08.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0/GEANT_pi0pi0_4g_09.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0/GEANT_pi0pi0_4g_10.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0/GEANT_pi0pi0_4g_11.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0/GEANT_pi0pi0_4g_12.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0/GEANT_pi0pi0_4g_13.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0/GEANT_pi0pi0_4g_14.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0/GEANT_pi0pi0_4g_15.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0/GEANT_pi0pi0_4g_16.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0/GEANT_pi0pi0_4g_17.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0/GEANT_pi0pi0_4g_18.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0/GEANT_pi0pi0_4g_19.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0/GEANT_pi0pi0_4g_20.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0/GEANT_pi0pi0_4g_21.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0/GEANT_pi0pi0_4g_22.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0/GEANT_pi0pi0_4g_23.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0/GEANT_pi0pi0_4g_24.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0/GEANT_pi0pi0_4g_25.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0/GEANT_pi0pi0_4g_26.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0/GEANT_pi0pi0_4g_27.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0/GEANT_pi0pi0_4g_28.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0/GEANT_pi0pi0_4g_29.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0/GEANT_pi0pi0_4g_30.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0/GEANT_pi0pi0_4g_31.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0/GEANT_pi0pi0_4g_32.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0/GEANT_pi0pi0_4g_33.root
+TreeFile: /home/adlarson/MC/Geant/pi0pi0/GEANT_pi0pi0_4g_34.root
+TreeFile: /home/adlarson/MC/Geant/pi0eta/GEANT_pi0eta_4g_01.root
+TreeFile: /home/adlarson/MC/Geant/pi0eta/GEANT_pi0eta_4g_02.root
+TreeFile: /home/adlarson/MC/Geant/pi0eta/GEANT_pi0eta_4g_03.root
+TreeFile: /home/adlarson/MC/Geant/pi0eta/GEANT_pi0eta_4g_04.root
+TreeFile: /home/adlarson/MC/Geant/pi0eta/GEANT_pi0eta_4g_05.root
+TreeFile: /home/adlarson/MC/Geant/pi0eta/GEANT_pi0eta_4g_06.root
+TreeFile: /home/adlarson/MC/Geant/pi0eta/GEANT_pi0eta_4g_07.root
+TreeFile: /home/adlarson/MC/Geant/pi0eta/GEANT_pi0eta_4g_08.root
+TreeFile: /home/adlarson/MC/Geant/pi0eta/GEANT_pi0eta_4g_09.root
+TreeFile: /home/adlarson/MC/Geant/pi0eta/GEANT_pi0eta_4g_10.root
+TreeFile: /home/adlarson/MC/Geant/pi0eta/GEANT_pi0eta_4g_11.root
+TreeFile: /home/adlarson/MC/Geant/pi0eta/GEANT_pi0eta_4g_12.root
+TreeFile: /home/adlarson/MC/Geant/pi0eta/GEANT_pi0eta_4g_13.root
+TreeFile: /home/adlarson/MC/Geant/pi0eta/GEANT_pi0eta_4g_14.root
+TreeFile: /home/adlarson/MC/Geant/pi0eta/GEANT_pi0eta_4g_15.root
+TreeFile: /home/adlarson/MC/Geant/pi0eta/GEANT_pi0eta_4g_16.root
+TreeFile: /home/adlarson/MC/Geant/pi0eta/GEANT_pi0eta_4g_17.root
+TreeFile: /home/adlarson/MC/Geant/pi0eta/GEANT_pi0eta_4g_18.root
+TreeFile: /home/adlarson/MC/Geant/pi0eta/GEANT_pi0eta_4g_19.root
+TreeFile: /home/adlarson/MC/Geant/pi0eta/GEANT_pi0eta_4g_20.root
+TreeFile: /home/adlarson/MC/Geant/pi0eta/GEANT_pi0eta_4g_21.root
+TreeFile: /home/adlarson/MC/Geant/pi0eta/GEANT_pi0eta_4g_22.root
+TreeFile: /home/adlarson/MC/Geant/pi0eta/GEANT_pi0eta_4g_23.root
+TreeFile: /home/adlarson/MC/Geant/pi0eta/GEANT_pi0eta_4g_24.root
+TreeFile: /home/adlarson/MC/Geant/pi0eta8g/GEANT_pi0eta_8g_01.root
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -63,7 +140,7 @@ BatchDir: ./
 #
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #Directory to save any created ROOT files (include final '/')
-Directory: ./
+Directory: output/
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

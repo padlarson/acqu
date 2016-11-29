@@ -38,10 +38,14 @@ MC-Smear-ThetaMax: 160.0
 MC-Smear-CBThetaBoundary: 28.0
 MC-Smear-ThetaSigma: 2.5
 MC-SmearMin: 0.010
-MC-SmearMax: 0.060
-MC-Smear-EnergyMax: 1.2
-MC-SmearBoundaryMin: 0.001
-MC-SmearBoundaryMax: 0.1
+MC-SmearMax: 0.030
+#MC-SmearMax: 0.055
+MC-Smear-EnergyMax: 0
+MC-SmearBoundaryMin: 0
+MC-SmearBoundaryMax: 0
+#MC-Smear-EnergyMax: 1.2
+#MC-SmearBoundaryMin: 0.001
+#MC-SmearBoundaryMax: 0.12
 #
 #-------------------------------------------------------------------------
 #

@@ -14,8 +14,8 @@ Reconstruct:
 MC-Run-Number: 0
 
 # General:      dbhost     dbname                  dbuser      dbpass        calibration
-#Use-CaLib:      blaster.kph.uni-mainz.de    CaLib_2013_10-Present   calib       basel10       2015-MC-eta_prime
-Use-CaLib:      a2calib.online.a2.kph    CaLib_2013_10-Present   calib       basel10       2015-MC-eta_prime      
+Use-CaLib:      blaster.kph.uni-mainz.de    CaLib_2013_10-Present   calib       basel10       2015-MC-eta_prime
+#Use-CaLib:      a2calib.online.a2.kph    CaLib_2013_10-Present   calib       basel10       2015-MC-eta_prime      
 #
 #
 # tagger calib:     time    efficiency (0=off/1=on)

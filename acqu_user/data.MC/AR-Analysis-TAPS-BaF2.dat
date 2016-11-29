@@ -28,9 +28,9 @@ Energy-Resolution: 0 0 1
 # Phi Resolution in Degrees (divided by sin(theta) for res @ specific theta)
 #Phi-Resolution: 2.0
 #
-# TODO
-MC-SmearMin: 0.03
-MC-SmearMax: 0.07
+# 
+MC-SmearMin: 0.015
+MC-SmearMax: 0.060
 MC-Smear-EnergyMax: 0.5
 MC-Smear-EnergyRes: 0.01
 #-------------------------------------------------------------------------
